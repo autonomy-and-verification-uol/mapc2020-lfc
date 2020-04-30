@@ -13,6 +13,7 @@ import jason.asSyntax.Term;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import eis.iilang.Action;
 import eis.iilang.Function;
@@ -51,10 +52,10 @@ public class Translator {
 			if((d == Math.floor(d)) && !Double.isInfinite(d)) return new Numeral((int)d);
 			return new Numeral(d);
 		} else if (t.isList()) {
-			Collection<Parameter> terms = new ArrayList<>();
+			List<Parameter> terms = new ArrayList<>();
 			for (Term listTerm : (ListTerm) t)
 				terms.add(termToParameter(listTerm));
-			return new ParameterList(terms);
+			return new ParameterList(terms); 
 		} else if (t.isString()) {
 			return new Identifier(((StringTerm) t).getString());
 		} else if (t.isLiteral()) {

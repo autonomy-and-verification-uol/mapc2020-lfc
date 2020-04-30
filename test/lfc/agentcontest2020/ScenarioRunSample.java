@@ -1,11 +1,10 @@
-package liv.agentcontest2019;
+package lfc.agentcontest2020;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ import jason.JasonException;
 import massim.Server;
 
 
-public class ScenarioRunSampleTwoTeams {
+public class ScenarioRunSample {
 	
 	@Before
 	public void cleanUpFolders() throws IOException {
@@ -22,7 +21,7 @@ public class ScenarioRunSampleTwoTeams {
 		File currentDir = new File("");
 		String path = currentDir.getAbsolutePath();	
 				
-		ScenarioRunSampleTwoTeams deletefiles = new ScenarioRunSampleTwoTeams();
+		ScenarioRunSample deletefiles = new ScenarioRunSample();
 		deletefiles.delete(5, path + "/logs");
 		deletefiles.delete(4, path + "/log");
 		deletefiles.delete(5, path + "/replays");	
@@ -42,7 +41,7 @@ public class ScenarioRunSampleTwoTeams {
 				}
 			}		
 		}
-	}	
+	}		
 	
 	@Before
 	public void setUp() {
@@ -52,26 +51,28 @@ public class ScenarioRunSampleTwoTeams {
 			public void run() {
 				try {
 					
-					Server.main(new String[] {"-conf", "conf/SampleTwoTeamsConfig.json", "--monitor"});				
+					Server.main(new String[] {"-conf", "conf/SampleConfig.json", "--monitor"});				
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}).start();
-		
+
 		try {			
-			JaCaMoLauncher.main(new String[] {"liv-mapc2019.jcm"});
+			JaCaMoLauncher.main(new String[] {"lfc-mapc2020.jcm"});
 		} catch (JasonException e) {
 			System.out.println("Exception: "+e.getMessage());
 			e.printStackTrace();
 		}
 
 	}
+	
 	@Test
 	public void run() {		
-		
 	}
+
+		
 }
 
 

@@ -163,7 +163,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 		for (Percept percept : percepts) {
 			if (percept.getName().equals("step")) {
 				//logger.info(percept+" "+percept.getParameters().getFirst());
-				step = new Integer(percept.getParameters().getFirst().toString());
+				step = new Integer(percept.getParameters().get(0).toString());
 			}
 			else if (percept.getName().equals("obstacle")) {
 				Literal literal = Translator.perceptToLiteral(percept);
