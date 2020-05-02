@@ -56,7 +56,7 @@
 		.print("My action failed due to random failure, sending it again.");
 		!commit_action(Action); // repeat the previous action
 	}
-	elif (Result == failed_status & LastAction \== clear) {
+	elif (Result == failed_status & LastAction \== clear & LastAction \== accept) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
 			if (common::my_role(origin)) {
