@@ -211,3 +211,11 @@
 	.
 -!skip[code(.fail(action(Action),result(failed_random)))] <- .print("Skip failed random, but we don't care.").
 
+
+// ##### ACCEPT TASK ACTION #####
++!accept(Task)
+<-
+	!action::commit_action(accept(Task));
+	.
+-!accept(Task)[code(.fail(action(Action),result(failed_target)))] <- .print("No task parameter given or no such task found ",Task).
+-!accept(Task)[code(.fail(action(Action),result(failed_status)))] <- .print("The agent is not close to a task board.").
