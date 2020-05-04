@@ -178,7 +178,7 @@
 	.
 -!clear(X,Y)[code(.fail(action(Action),result(failed_parameter)))] <- .print(X," and ",Y," are not valid integers.").
 -!clear(X,Y)[code(.fail(action(Action),result(failed_target)))] <- .print("Target location is not within the agent's vision or outside the grid.").
--!clear(X,Y)[code(.fail(action(Action),result(failed_status)))] : default::energy(Energy) & Energy < 30 <- .print("Energy is too low.").
+-!clear(X,Y)[code(.fail(action(Action),result(failed_resources)))] <- .print("Energy is too low.").
 
 // ##### SKIP ACTION #####
 +!skip
@@ -218,4 +218,4 @@
 	!action::commit_action(accept(Task));
 	.
 -!accept(Task)[code(.fail(action(Action),result(failed_target)))] <- .print("No task parameter given or no such task found ",Task).
--!accept(Task)[code(.fail(action(Action),result(failed_status)))] <- .print("The agent is not close to a task board.").
+-!accept(Task)[code(.fail(action(Action),result(failed_location)))] <- .print("The agent is not close to a task board.").
