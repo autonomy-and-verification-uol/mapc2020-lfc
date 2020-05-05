@@ -10,14 +10,14 @@ Make sure you have the Java JDK 13 or higher installed and working properly.
 
 ### MAS
 
-Download [Eclipse](https://www.eclipse.org/downloads/) if you don't have it yet. Any version should be fine, although newer versions are advised.
+Download [Eclipse](https://www.eclipse.org/downloads/) if you don't have it yet. It must be the **EE** edition. Any version should be fine, although newer versions are advised.
 
 To enable syntax highlight for JaCaMo, install the Eclipse plugin using [this tutorial](http://jacamo.sourceforge.net/eclipseplugin/tutorial/) up to, and including, Step 10.
 
 After restarting Eclipse, select the following menu option:
 > File > Import > Git > Projects from Git > Clone URI
 
-Copy https://github.com/autonomy-and-verification-uol/mapc2010-lfc.git and paste it on the URI field.
+Copy https://github.com/autonomy-and-verification-uol/mapc2020-lfc.git and paste it on the URI field.
 
 Proceed until the "select a wizard to use for importing projects" screen, then pick Import existing Eclipse projects and click next and then finish.
 
