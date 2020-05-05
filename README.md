@@ -10,7 +10,7 @@ Make sure you have the Java JDK 13 or higher installed and working properly.
 
 ### MAS
 
-Download [Eclipse](https://www.eclipse.org/downloads/) if you don't have it yet. It must be the EE edition. Any version should be fine, although newer versions are advised.
+Download [Eclipse](https://www.eclipse.org/downloads/) if you don't have it yet. It must be the **EE** edition. Any version should be fine, although newer versions are advised.
 
 To enable syntax highlight for JaCaMo, install the Eclipse plugin using [this tutorial](http://jacamo.sourceforge.net/eclipseplugin/tutorial/) up to, and including, Step 10.
 
