@@ -4,7 +4,7 @@
     "steps" : 750,
     "randomSeed" : 17,
     "randomFail" : 1,
-    "entities" : {"standard" : 10},
+    "entities" : {"standard" : 15},
     "clusterSize" : 3,
 
     "clearSteps" : 3,
