@@ -28,6 +28,10 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX+1,TargetY) 
 get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY-1) & X = TargetX & Y = TargetY-1.
 get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) & X = TargetX & Y = TargetY+1.
 
+//+default::task(Id, Deadline, Reward, ReqList)
+//	: not task::accepted(Id) & not .desire(action::accept(_))
+//<- .print("@@@@@@@@@@@ Task ",Id," Deadline ",Deadline," Reward ", Reward).
+
 @task[atomic]
 +default::task(Id, Deadline, Reward, ReqList)
 	: task::origin & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_)) & .length(ReqList) <= 6 & task::max_pos_s(MaxPosS) & task::max_pos_w(MaxPosW) & task::max_pos_e(MaxPosE)

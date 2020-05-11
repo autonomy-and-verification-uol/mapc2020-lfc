@@ -49,6 +49,7 @@
 	.print("Last action result ",IntentionId," was: ",Result);
 	
 	?default::lastAction(LastAction);
+//	?default::lastActionParams(LastActionParams);
 	if ( Result == unknown_action){
 		.print("My action ",LastAction," was unknown to the server. This should never happen!");
 	}	
@@ -56,6 +57,9 @@
 		.print("My action failed due to random failure, sending it again.");
 		!commit_action(Action); // repeat the previous action
 	}
+//	elif (Result == success & LastAction == accept) {
+//		+task::accepted(LastActionParams);
+//	}
 	elif (Result == failed_status) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
