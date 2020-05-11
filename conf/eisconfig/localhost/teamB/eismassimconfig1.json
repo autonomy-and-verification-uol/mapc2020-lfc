@@ -1,9 +1,10 @@
 {
-  "scenario": "assemble2019",
+  "scenario": "assemble2020",
   "host": "localhost",
   "port": 12300,
   "scheduling": false,
-  "timeout": 40000,
+  "only-once": false,
+  "timeout": 3000,
   "times": false,
   "notifications": false,
   "queued": true,

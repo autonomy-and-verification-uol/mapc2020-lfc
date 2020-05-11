@@ -13,7 +13,7 @@ import jason.JasonException;
 import massim.Server;
 
 
-public class ScenarioRunSample {
+public class ScenarioRunSampleTwoTeams {
 	
 	@Before
 	public void cleanUpFolders() throws IOException {
@@ -21,7 +21,7 @@ public class ScenarioRunSample {
 		File currentDir = new File("");
 		String path = currentDir.getAbsolutePath();	
 				
-		ScenarioRunSample deletefiles = new ScenarioRunSample();
+		ScenarioRunSampleTwoTeams deletefiles = new ScenarioRunSampleTwoTeams();
 		deletefiles.delete(5, path + "/logs");
 		deletefiles.delete(4, path + "/log");
 		deletefiles.delete(5, path + "/replays");	
@@ -41,7 +41,7 @@ public class ScenarioRunSample {
 				}
 			}		
 		}
-	}		
+	}	
 	
 	@Before
 	public void setUp() {
@@ -51,14 +51,14 @@ public class ScenarioRunSample {
 			public void run() {
 				try {
 					
-					Server.main(new String[] {"-conf", "conf/SampleConfig.json", "--monitor"});				
+					Server.main(new String[] {"-conf", "conf/SampleTwoTeamsConfig.json", "--monitor"});				
 					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}).start();
-
+		
 		try {			
 			JaCaMoLauncher.main(new String[] {"lfc-mapc2020-15.jcm"});
 		} catch (JasonException e) {
@@ -67,17 +67,8 @@ public class ScenarioRunSample {
 		}
 
 	}
-	
 	@Test
 	public void run() {		
-	}
-
 		
+	}
 }
-
-
-
-
-
-
-
