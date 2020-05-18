@@ -104,7 +104,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!add_identified_ags([Ag|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
-	.print(Ag);
+//	.print(Ag);
 	?identification::merge(MergeOldList); 
 	-identification::merge(MergeOldList);
 	?identification::i_know(Ag,LocalX,LocalY);
@@ -335,10 +335,10 @@ i_met_new_agent(Iknow, IdList) :-
 	.findall(pos(X, Y), (identification::doubts_on(X, Y)), DoubtsOn);
 	//.findall(Ag, (identification::i_know(Ag, _, _)), Identified);
 	//.print("Identified: ", Identified);
-	.print("Doubts on: ", DoubtsOn);
-	.print("Agents I know ",Iknow);
+//	.print("Doubts on: ", DoubtsOn);
+//	.print("Agents I know ",Iknow);
 	?identification::identified(IdList);
-	.print("Idlist ",IdList);
+//	.print("Idlist ",IdList);
 	!add_identified_ags(Iknow,IdList);
 	?merge(MergeList);
 	-merge(MergeList);
@@ -359,7 +359,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!check_all_agent_sees([Ag|Ags]) 
 	: agent_sees(see, EverythingSeen)[source(Ag)]
 <- 
-	.print("Agent ", Ag, " sees ", EverythingSeen);
+//	.print("Agent ", Ag, " sees ", EverythingSeen);
 	!check_agent_sees(Ag, EverythingSeen);
 	!check_all_agent_sees(Ags);
 	.
@@ -380,7 +380,7 @@ i_met_new_agent(Iknow, IdList) :-
  	
 +!update_known_agents(Name, MyViewX, MyViewY) : identification::i_know(Name1, MyViewX, MyViewY) & Name \== Name1
 <- 
-	.print("I am not sure who is ", Name, " and who ", Name1, ".. So I do not decide for now."); 
+//	.print("I am not sure who is ", Name, " and who ", Name1, ".. So I do not decide for now."); 
 	// -identification::i_know(Name1, _, _);
 	+identification::doubts_on(MyViewX, MyViewY).
 +!update_known_agents(Name, MyViewX, MyViewY) : true
