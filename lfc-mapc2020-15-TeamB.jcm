@@ -101,7 +101,7 @@ mas scenario {
 		artifact eis_art_agent7: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig7.json")
 		artifact eis_art_agent8: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig8.json")
 		artifact eis_art_agent9: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig9.json")
-		artifact eis_art_agent10: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfiG10.json")
+		artifact eis_art_agent10: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig10.json")
 		artifact eis_art_agent11: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig11.json")
 		artifact eis_art_agent12: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig12.json")
 		artifact eis_art_agent13: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig13.json")
