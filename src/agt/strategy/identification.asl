@@ -5,11 +5,12 @@ identify(WhatItSees, WhoX, WhoY) :-
 		.member(see(X, Y, Kind, Name), WhatItSees) &
 		X1 = WhoX + X & Y1 = WhoY + Y &
 		(math.abs(X1) + math.abs(Y1)) <= 5 & 
-		not(default::thing(X1, Y1, Kind, Name))
+		((Kind \== obstacle & not(default::thing(X1, Y1, Kind, Name))) |
+		 (Kind == obstacle & not(default::obstacle(X1, Y1))))
 	), L) & L = [] &
 	.findall(Name,
 	(
-		default::thing(X, Y, Kind, Name) &
+		(default::thing(X, Y, Kind, Name) | (default::obstacle(X, Y) & Kind = obstacle & Name = obstacle)) &
 		X1 = X - WhoX & Y1 = Y - WhoY &
 		(math.abs(X1) + math.abs(Y1)) <= 5 & 
 		not(.member(see(X1, Y1, Kind, Name), WhatItSees))
@@ -85,7 +86,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!send_information(Name)
 	: default::team(Team) & default::thing(MyX, MyY, entity, Team) & not(MyX == 0 & MyY == 0)
 <-
-	.findall(see(X, Y, Kind, Thing), default::thing(X, Y, Kind, Thing), EverythingSeen);
+	.findall(see(X, Y, Kind, Thing), (default::thing(X, Y, Kind, Thing) | (default::obstacle(X, Y) & Kind = obstacle & Thing = obstacle)), EverythingSeen);
 	.send(Name, tell, identification::agent_sees(see,EverythingSeen));
 	.
 	
@@ -329,8 +330,12 @@ i_met_new_agent(Iknow, IdList) :-
 +!check_all_agent_sees([]) 
 	: .all_names(Ags) & .my_name(Me)
 <- 
-	.findall(Ag, (identification::i_know(Ag, _, _) & not(identification::doubts_on(Ag))), Iknow);
+	.findall(Ag, (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y))), Iknow);
 	+merge([]);
+	.findall(pos(X, Y), (identification::doubts_on(X, Y)), DoubtsOn);
+	//.findall(Ag, (identification::i_know(Ag, _, _)), Identified);
+	//.print("Identified: ", Identified);
+	.print("Doubts on: ", DoubtsOn);
 	.print("Agents I know ",Iknow);
 	?identification::identified(IdList);
 	.print("Idlist ",IdList);
@@ -349,11 +354,12 @@ i_met_new_agent(Iknow, IdList) :-
 //		}
 //	}
 	.abolish(identification::i_know(_, _, _));
-	.abolish(identification::doubts_on(_));
+	.abolish(identification::doubts_on(_, _));
 	.
 +!check_all_agent_sees([Ag|Ags]) 
 	: agent_sees(see, EverythingSeen)[source(Ag)]
 <- 
+	.print("Agent ", Ag, " sees ", EverythingSeen);
 	!check_agent_sees(Ag, EverythingSeen);
 	!check_all_agent_sees(Ags);
 	.
@@ -364,7 +370,9 @@ i_met_new_agent(Iknow, IdList) :-
 	.
 
 +!check_agent_sees(Name, EverythingSeen)
-	: .findall(thing(X, Y, entity, Team), (default::thing(X, Y, entity, Team)), Things) & i_see_it(EverythingSeen, MyViewX, MyViewY) & identify(EverythingSeen, MyViewX, MyViewY)
+	: 
+	.findall(thing(X, Y, entity, Team), (default::thing(X, Y, entity, Team)), Things) & 
+	i_see_it(EverythingSeen, MyViewX, MyViewY) & identify(EverythingSeen, MyViewX, MyViewY)
 <- 
 	!update_known_agents(Name, MyViewX, MyViewY);
 	.
@@ -373,7 +381,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!update_known_agents(Name, MyViewX, MyViewY) : identification::i_know(Name1, MyViewX, MyViewY) & Name \== Name1
 <- 
 	.print("I am not sure who is ", Name, " and who ", Name1, ".. So I do not decide for now."); 
-	-identification::i_know(Name1, _, _);
-	-+identification::doubts_on(Name).
+	// -identification::i_know(Name1, _, _);
+	+identification::doubts_on(MyViewX, MyViewY).
 +!update_known_agents(Name, MyViewX, MyViewY) : true
 <- -identification::i_know(Name, _, _); +identification::i_know(Name, MyViewX, MyViewY).
