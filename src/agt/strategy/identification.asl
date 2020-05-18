@@ -103,11 +103,15 @@ i_met_new_agent(Iknow, IdList) :-
 +!add_identified_ags([Ag|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
+	.print(Ag);
 	?identification::merge(MergeOldList); 
 	-identification::merge(MergeOldList);
 	?identification::i_know(Ag,LocalX,LocalY);
 	+identification::merge([agent(Ag,LocalX,LocalY)|MergeOldList]);
-    +action::reasoning_about_belief(Ag);	
+	?identification::identified(OldList); // remove after merge is added back
+	-identification::identified(OldList); // remove after merge is added back
+	+identification::identified([Ag|OldList]); // remove after merge is added back
+//    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.
 	
@@ -199,6 +203,7 @@ i_met_new_agent(Iknow, IdList) :-
 	}
 	.
 
+@requestleader[atomic]
 +!request_leader(Ag,LocalX,LocalY,GlobalX,GlobalY,AgRequesting)[source(Source)]
 	: map::myMap(Leader)
 <-
@@ -326,21 +331,23 @@ i_met_new_agent(Iknow, IdList) :-
 <- 
 	.findall(Ag, (identification::i_know(Ag, _, _) & not(identification::doubts_on(Ag))), Iknow);
 	+merge([]);
+	.print("Agents I know ",Iknow);
 	?identification::identified(IdList);
+	.print("Idlist ",IdList);
 	!add_identified_ags(Iknow,IdList);
 	?merge(MergeList);
 	-merge(MergeList);
 	?map::myMap(Leader);
-	if (not .empty(MergeList)) {
-//		.wait(not action::move_sent);
-		getMyPos(MyX,MyY);
-		if (Me == Leader) {
-			!request_merge(MergeList,MyX,MyY);
-		}
-		else {
-			.send(Leader, achieve, identification::request_merge(MergeList,MyX,MyY));
-		}
-	}
+//	if (not .empty(MergeList)) {
+////		.wait(not action::move_sent);
+//		getMyPos(MyX,MyY);
+//		if (Me == Leader) {
+//			!request_merge(MergeList,MyX,MyY);
+//		}
+//		else {
+//			.send(Leader, achieve, identification::request_merge(MergeList,MyX,MyY));
+//		}
+//	}
 	.abolish(identification::i_know(_, _, _));
 	.abolish(identification::doubts_on(_));
 	.
@@ -365,7 +372,7 @@ i_met_new_agent(Iknow, IdList) :-
  	
 +!update_known_agents(Name, MyViewX, MyViewY) : identification::i_know(Name1, MyViewX, MyViewY) & Name \== Name1
 <- 
-//	.print("I am not sure who is ", Name, " and who ", Name1, ".. So I do not decide for now."); 
+	.print("I am not sure who is ", Name, " and who ", Name1, ".. So I do not decide for now."); 
 	-identification::i_know(Name1, _, _);
 	-+identification::doubts_on(Name).
 +!update_known_agents(Name, MyViewX, MyViewY) : true

@@ -41,10 +41,15 @@ public class TeamArtifact extends Artifact {
 	private Map<String, Set<Point>>  map8 	 	= new HashMap<String, Set<Point>>();
 	private Map<String, Set<Point>>  map9 	 	= new HashMap<String, Set<Point>>();
 	private Map<String, Set<Point>>  map10 	 	= new HashMap<String, Set<Point>>();
+	private Map<String, Set<Point>>  map11 	 	= new HashMap<String, Set<Point>>();
+	private Map<String, Set<Point>>  map12 	 	= new HashMap<String, Set<Point>>();
+	private Map<String, Set<Point>>  map13 	 	= new HashMap<String, Set<Point>>();
+	private Map<String, Set<Point>>  map14 	 	= new HashMap<String, Set<Point>>();
+	private Map<String, Set<Point>>  map15 	 	= new HashMap<String, Set<Point>>();
 	
 	private Map<String, Map<String, Set<Point>>> agentmaps = new HashMap<String, Map<String, Set<Point>>>();
 	
-	private int maxPlanners = 10;
+	private int maxPlanners = 15;
 	private int planners;
 	
 	private String firstToStop;
@@ -70,6 +75,11 @@ public class TeamArtifact extends Artifact {
 		agentmaps.put("agent8",map8);
 		agentmaps.put("agent9",map9);
 		agentmaps.put("agent10",map10);
+		agentmaps.put("agent11",map11);
+		agentmaps.put("agent12",map12);
+		agentmaps.put("agent13",map13);
+		agentmaps.put("agent14",map14);
+		agentmaps.put("agent15",map15);
 		planners = 0;
 		firstToStop = null;
 		goalAgent = null;
