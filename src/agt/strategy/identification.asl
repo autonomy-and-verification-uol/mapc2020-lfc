@@ -5,12 +5,13 @@ identify(WhatItSees, WhoX, WhoY) :-
 		.member(see(X, Y, Kind, Name), WhatItSees) &
 		X1 = WhoX + X & Y1 = WhoY + Y &
 		(math.abs(X1) + math.abs(Y1)) <= 5 & 
-		((Kind \== obstacle & not(default::thing(X1, Y1, Kind, Name))) |
-		 (Kind == obstacle & not(default::obstacle(X1, Y1))))
+		((Kind \== obstacle & Kind \== goal & not(default::thing(X1, Y1, Kind, Name))) |
+		 (Kind == obstacle & not(default::obstacle(X1, Y1))) |
+		 (Kind == goal & not(default::goal(X1, Y1))))
 	), L) & L = [] &
 	.findall(Name,
 	(
-		(default::thing(X, Y, Kind, Name) | (default::obstacle(X, Y) & Kind = obstacle & Name = obstacle)) &
+		(default::thing(X, Y, Kind, Name) | (default::obstacle(X, Y) & Kind = obstacle & Name = obstacle) | (default::goal(X, Y) & Kind = goal & Name = goal)) &
 		X1 = X - WhoX & Y1 = Y - WhoY &
 		(math.abs(X1) + math.abs(Y1)) <= 5 & 
 		not(.member(see(X1, Y1, Kind, Name), WhatItSees))
@@ -86,7 +87,11 @@ i_met_new_agent(Iknow, IdList) :-
 +!send_information(Name)
 	: default::team(Team) & default::thing(MyX, MyY, entity, Team) & not(MyX == 0 & MyY == 0)
 <-
-	.findall(see(X, Y, Kind, Thing), (default::thing(X, Y, Kind, Thing) | (default::obstacle(X, Y) & Kind = obstacle & Thing = obstacle)), EverythingSeen);
+	.findall(see(X, Y, Kind, Thing), (
+		default::thing(X, Y, Kind, Thing) | 
+		(default::obstacle(X, Y) & Kind = obstacle & Thing = obstacle) |
+		(default::goal(X, Y) & Kind = goal & Thing = goal)
+	), EverythingSeen);
 	.send(Name, tell, identification::agent_sees(see,EverythingSeen));
 	.
 	
@@ -359,7 +364,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!check_all_agent_sees([Ag|Ags]) 
 	: agent_sees(see, EverythingSeen)[source(Ag)]
 <- 
-//	.print("Agent ", Ag, " sees ", EverythingSeen);
+	//.print("Agent ", Ag, " sees ", EverythingSeen);
 	!check_agent_sees(Ag, EverythingSeen);
 	!check_all_agent_sees(Ags);
 	.
