@@ -89,6 +89,12 @@ public class TeamArtifact extends Artifact {
 	
 	private String firstToStop;
 	
+	private String cartographerY1;
+	private String cartographerY2;
+	
+	private String cartographerX1;
+	private String cartographerX2;
+	
 	private int pos;
 	private String goalAgent;
 	private Integer targetGoalX;
@@ -152,6 +158,10 @@ public class TeamArtifact extends Artifact {
 		agentmaps.put("agent50",map50);
 		planners = 0;
 		firstToStop = null;
+		cartographerY1 = null;
+		cartographerY2 = null;
+		cartographerX1 = null;
+		cartographerX2 = null;
 		goalAgent = null;
 		targetGoalX = null;
 		targetGoalY = null;
@@ -169,6 +179,26 @@ public class TeamArtifact extends Artifact {
 			flag.set(true);
 		}
 		logger.info("!!!! First to stop "+firstToStop);
+	}
+	
+	@OPERATION
+	void addCartographer(String agent1, String agent2, OpFeedbackParam<Integer> flag){
+		if(this.cartographerY1 == null) {
+			flag.set(1);
+			this.cartographerY1 = agent1;
+			this.cartographerY2 = agent2;
+			logger.info("!!!! Cartographers Y "+cartographerY1+" and "+cartographerY2);
+		}
+		else if (this.cartographerX1 == null) {
+			flag.set(2);
+			this.cartographerX1 = agent1;
+			this.cartographerX2 = agent2;
+			logger.info("!!!! Cartographers X "+cartographerX1+" and "+cartographerX2);
+		}
+		else {
+			flag.set(0);
+		}
+		
 	}
 	
 	@OPERATION
