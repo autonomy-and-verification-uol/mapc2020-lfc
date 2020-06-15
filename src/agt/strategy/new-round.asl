@@ -6,6 +6,6 @@
 	+map::myMap(Me);
 	+identification::count(0);
 	+common::clearing_things;
-//	!common::update_role_to(explorer);
+	!common::update_role_to(explorer);
 	.
 	

@@ -3,10 +3,10 @@
 { include("org-obedient.asl", org) }
 { include("action/actions.asl", action) }
 { include("strategy/identification.asl", identification) }
-//{ include("strategy/exploration.asl", exploration) }
+{ include("strategy/exploration.asl", exploration) }
 //{ include("strategy/task.asl", task) }
 //{ include("strategy/when_to_stop.asl", stop) }
-//{ include("strategy/stock.asl", retrieve) }
+{ include("strategy/stock.asl", retrieve) }
 //{ include("strategy/map.asl", map) }
 { include("strategy/common-plans.asl", common) }
 //{ include("strategy/planner.asl", planner) }
@@ -42,8 +42,8 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!clear_blocks;
 	!check_added_name;
 	-common::clearing_things;
-	!always_skip;
-//	!!exploration::explore([n,s,e,w]);
+//	!always_skip;
+	!!exploration::explore([n,s,e,w]);
 	.
 
 @check_added_name[atomic]
