@@ -4,6 +4,7 @@
 { include("action/actions.asl", action) }
 { include("strategy/identification.asl", identification) }
 { include("strategy/exploration.asl", exploration) }
+{ include("strategy/cartography.asl", carto) }
 //{ include("strategy/task.asl", task) }
 //{ include("strategy/when_to_stop.asl", stop) }
 { include("strategy/stock.asl", retrieve) }

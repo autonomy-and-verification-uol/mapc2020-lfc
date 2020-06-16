@@ -117,25 +117,10 @@ i_met_new_agent(Iknow, IdList) :-
 	?identification::identified(OldList); // remove after merge is added back
 	-identification::identified(OldList); // remove after merge is added back
 	+identification::identified([Ag|OldList]); // remove after merge is added back
-	!try_cartographer(Ag);
+	!carto::try_cartographer(Ag);
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.
-	
-+!try_cartographer(Ag2)
-	: (not carto::cartographerY(_,_) | not carto::cartographerX(_,_))  & .my_name(Ag1) & not carto::cartographerY(Ag2,_) & not carto::cartographerY(_,Ag2) & not carto::cartographerY(Ag1,_) & not carto::cartographerY(_,Ag1) & .all_names(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2) & Pos < PosOther
-<-
-	addCartographer(Ag1,Ag2,Flag);
-	if (Flag == 1) {
-		+carto::cartographerY(Ag1,Ag2);
-		.broadcast(tell, carto::cartographerY(Ag1,Ag2));
-	}
-	elif (Flag == 2) {
-		+carto::cartographerX(Ag1,Ag2);
-		.broadcast(tell, carto::cartographerX(Ag1,Ag2));
-	}
-	.
-+!try_cartographer(Ag2).
 	
 @removereasoning[atomic]
 +!remove_reasoning(AgRequested)[source(_)]
