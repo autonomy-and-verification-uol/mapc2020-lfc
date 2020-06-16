@@ -4,90 +4,105 @@ mas scenario {
 		join: agentart
 		focus: agentart.eis_art_agent1, team::agentart.team_artifact
 		goals: register("connectionA1")
+		roles: explorer in lfc
 
 	}
 	agent agent2: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent2, team::agentart.team_artifact
 		goals: register("connectionA2")
+		roles: explorer in lfc
 
 	}
 	agent agent3: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent3, team::agentart.team_artifact
 		goals: register("connectionA3")
+		roles: explorer in lfc
 
 	}
 	agent agent4: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent4, team::agentart.team_artifact
 		goals: register("connectionA4")
+		roles: explorer in lfc
 
 	}
 	agent agent5: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent5, team::agentart.team_artifact
 		goals: register("connectionA5")
+		roles: explorer in lfc
 
 	}
 	agent agent6: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent6, team::agentart.team_artifact
 		goals: register("connectionA6")
+		roles: explorer in lfc
 
 	}
 	agent agent7: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent7, team::agentart.team_artifact
 		goals: register("connectionA7")
+		roles: explorer in lfc
 
 	}
 	agent agent8: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent8, team::agentart.team_artifact
 		goals: register("connectionA8")
+		roles: explorer in lfc
 
 	}
 	agent agent9: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent9, team::agentart.team_artifact
 		goals: register("connectionA9")
+		roles: explorer in lfc
 
 	}
 	agent agent10: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent10, team::agentart.team_artifact
 		goals: register("connectionA10")
+		roles: explorer in lfc
 
 	}
 	agent agent11: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent11, team::agentart.team_artifact
 		goals: register("connectionA11")
+		roles: explorer in lfc
 
 	}
 	agent agent12: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent12, team::agentart.team_artifact
 		goals: register("connectionA12")
+		roles: explorer in lfc
 
 	}
 	agent agent13: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent13, team::agentart.team_artifact
 		goals: register("connectionA13")
+		roles: explorer in lfc
 
 	}
 	agent agent14: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent14, team::agentart.team_artifact
 		goals: register("connectionA14")
+		roles: explorer in lfc
 
 	}
 	agent agent15: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent15, team::agentart.team_artifact
 		goals: register("connectionA15")
+		roles: explorer in lfc
 
 	}
 	
@@ -111,9 +126,9 @@ mas scenario {
 		artifact team_artifact: env.TeamArtifact()
 	}
 	
-//	organisation org : org.xml{
-//		group g1 : team		
-//	}
+	organisation org : org.xml{
+		group lfc : team		
+	}
 
     asl-path: src/agt
               src/agt/inc

@@ -415,3 +415,19 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 //	}
 //	!action::Action;
 //	.
+
+
++!change_role(NewRole)
+	: .my_name(Me) & default::play(Me,OldRole,Group) & OldRole==NewRole
+<-
+	.print("I'm already ",NewRole);
+	.
+@change_role[atomic]
++!change_role(NewRole)
+	: .my_name(Me) & default::play(Me,OldRole,Group) & default::group(Group,team,GroupId)
+<-
+	.print("I was ",OldRole," becoming ",NewRole);
+	leaveRole(OldRole)[artifact_id(GroupId)];
+	adoptRole(NewRole)[artifact_id(GroupId)];
+	.wait(default::play(Me,NewRole,Group));
+	.

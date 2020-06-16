@@ -156,7 +156,7 @@ i_met_new_agent(Iknow, IdList) :-
 		-action::reasoning_about_belief(AgRequested);
 	}
 	!stop::new_dispenser_or_merge;
-	if(common::my_role(explorer) & not stop::first_to_stop(Me)){
+	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 		!stop::check_join_group;
 	}
 	.
@@ -171,7 +171,7 @@ i_met_new_agent(Iknow, IdList) :-
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
 	!stop::new_dispenser_or_merge;
-	if(common::my_role(explorer) & not stop::first_to_stop(Me)){
+	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 		!stop::check_join_group;
 	}
 	.
@@ -295,7 +295,7 @@ i_met_new_agent(Iknow, IdList) :-
 			!identification::remove_reasoning(AgRequested);
 		}
 		!stop::new_dispenser_or_merge;
-		if(common::my_role(explorer) & not stop::first_to_stop(Me)){
+		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 			!stop::check_join_group;
 		}
 		.print("Merge finished.");

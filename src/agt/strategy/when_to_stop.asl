@@ -14,7 +14,7 @@
 
 @stop1[atomic]
 +stop
-	: common::my_role(explorer) & not stop::first_to_stop(_) & .my_name(Me) // first to stop
+	: .my_name(Me) & default::play(Me,explorer,Group) & not stop::first_to_stop(_) // first to stop
 	& .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & map::myMap(Leader) //& not action::move_sent
 <-
 	getGoalClustersWithScouts(Leader, Clusters);
@@ -55,7 +55,7 @@
 	
 @stop2[atomic]
 +stop
-	: not stop::really_stop & common::my_role(explorer) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
+	: not stop::really_stop & .my_name(Me) & default::play(Me,explorer,Group) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
 <-
 	.print("ADD really stop belief");
 	+stop::really_stop;
@@ -189,7 +189,7 @@
 	.
 //@check_join_group[atomic]
 +!stop::check_join_group
-	: common::my_role(explorer) &
+	: .my_name(Me) & default::play(Me,explorer,Group) &
 	stop::first_to_stop(Ag) & // send a message to the one that stopped asking who the leader is, and you check if you have the same
 	map::myMap(Leader) & not stop::really_stop
 <-
