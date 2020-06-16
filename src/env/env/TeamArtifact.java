@@ -189,7 +189,7 @@ public class TeamArtifact extends Artifact {
 			this.cartographerY2 = agent2;
 			logger.info("!!!! Cartographers Y "+cartographerY1+" and "+cartographerY2);
 		}
-		else if (this.cartographerX1 == null) {
+		else if (this.cartographerX1 == null && this.cartographerY1 != agent1 && this.cartographerY1 != agent2 && this.cartographerY2 != agent1 && this.cartographerY2 != agent2) {
 			flag.set(2);
 			this.cartographerX1 = agent1;
 			this.cartographerX2 = agent2;

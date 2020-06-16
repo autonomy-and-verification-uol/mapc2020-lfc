@@ -416,13 +416,13 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 //	!action::Action;
 //	.
 
-
+@change_role1[atomic]
 +!change_role(NewRole)
 	: .my_name(Me) & default::play(Me,OldRole,Group) & OldRole==NewRole
 <-
 	.print("I'm already ",NewRole);
 	.
-@change_role[atomic]
+@change_role2[atomic]
 +!change_role(NewRole)
 	: .my_name(Me) & default::play(Me,OldRole,Group) & default::group(Group,team,GroupId)
 <-

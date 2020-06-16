@@ -197,9 +197,30 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!!always_skip;
 	.
     
-//+!always_move_north
-//	: true
-//<-
-//	!action::move(n);
-//	!!always_move_north;
-//	.
++!always_move_north
+	: true
+<-
+	!action::move(n);
+	!!always_move_north;
+	.
+	
++!always_move_south
+	: true
+<-
+	!action::move(s);
+	!!always_move_south;
+	.
+	
++!always_move_west
+	: true
+<-
+	!action::move(w);
+	!!always_move_west;
+	.
+	
++!always_move_east
+	: true
+<-
+	!action::move(e);
+	!!always_move_east;
+	.
