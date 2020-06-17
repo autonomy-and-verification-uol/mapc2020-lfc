@@ -269,7 +269,6 @@ public class EISArtifact extends Artifact implements AgentListener {
 //				}
 //				signalList.clear();
 //			}
-			
 			defineObsProperty(actionID.getFunctor(), (Object[]) actionID.getTermsArray());
 		}
 	}
