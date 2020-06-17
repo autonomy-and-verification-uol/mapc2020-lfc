@@ -1,7 +1,6 @@
 /bin
 /bin/
 backup/
-cache/
 graphs/
 graphsMapHelper/
 /perceptlog/
@@ -30,7 +29,7 @@ agent10_problem.pddl
 output.sas
 run.sh
 
-### Gradle ### 
+### Gradle ###
 .gradle
 /build/
 
