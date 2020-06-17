@@ -10,7 +10,7 @@
 { include("strategy/stock.asl", retrieve) }
 //{ include("strategy/map.asl", map) }
 { include("strategy/common-plans.asl", common) }
-//{ include("strategy/planner.asl", planner) }
+// { include("strategy/planner.asl", planner) }
 { include("strategy/new-round.asl", newround) }
 { include("strategy/end-round.asl", endround) }
 
@@ -34,6 +34,14 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	+common::added_name;
 	addServerName(Me,ServerMe);
 	.
+
+/*+default::actionID(0)
+	: .my_name(Me)
+<-
+	callPlanner(Flag);
+    !planner::try_call_planner(Flag);
+    getPlanAgentToGoal(agent1, -1, -3, Plan, 1);
+    .print(Plan).*/
 
 +default::actionID(_)
 	: not start
