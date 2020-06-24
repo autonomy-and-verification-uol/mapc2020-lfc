@@ -487,7 +487,7 @@ public class TeamArtifact extends Artifact {
 	void getDispensers(String name, OpFeedbackParam<Literal[]> dispensers){
 		List<Literal> things = new ArrayList<Literal>();
 		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
-			if (!entry.getKey().startsWith("goal_")) {
+			if (!entry.getKey().startsWith("goal_") && !entry.getKey().startsWith("taskboard")) {
 	//		    logger.info(name+"  :   "+entry.getKey() + " = " + entry.getValue());
 				Atom type = new Atom(entry.getKey());
 				for (Point p : entry.getValue()) {
@@ -503,6 +503,25 @@ public class TeamArtifact extends Artifact {
 		}
 		Literal[] arraythings = things.toArray(new Literal[things.size()]);
 		dispensers.set(arraythings);
+	}
+	
+	@OPERATION 
+	void getTaskboards(String name, OpFeedbackParam<Literal[]> taskboards){
+		List<Literal> things = new ArrayList<Literal>();
+		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
+			if (entry.getKey().startsWith("taskboard")) {
+				for (Point p : entry.getValue()) {
+					Literal literal = ASSyntax.createLiteral("taskboard");
+					NumberTerm x = new NumberTermImpl(p.x);
+					NumberTerm y = new NumberTermImpl(p.y);
+					literal.addTerm(x);
+					literal.addTerm(y);
+					things.add(literal);
+				}
+			}
+		}
+		Literal[] arraythings = things.toArray(new Literal[things.size()]);
+		taskboards.set(arraythings);
 	}
 	
 	@OPERATION 

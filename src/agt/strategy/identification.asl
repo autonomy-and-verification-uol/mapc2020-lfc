@@ -140,7 +140,7 @@ i_met_new_agent(Iknow, IdList) :-
 	if (AgRequesting == Me) {
 		-action::reasoning_about_belief(AgRequested);
 	}
-	!stop::new_dispenser_or_merge;
+	!stop::new_dispenser_or_taskboard_or_merge;
 	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 		!stop::check_join_group;
 	}
@@ -155,7 +155,7 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(AuxList,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-	!stop::new_dispenser_or_merge;
+	!stop::new_dispenser_or_taskboard_or_merge;
 	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 		!stop::check_join_group;
 	}
@@ -279,7 +279,7 @@ i_met_new_agent(Iknow, IdList) :-
 		if (S == "self") {
 			!identification::remove_reasoning(AgRequested);
 		}
-		!stop::new_dispenser_or_merge;
+		!stop::new_dispenser_or_taskboard_or_merge;
 		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 			!stop::check_join_group;
 		}
@@ -324,7 +324,7 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(NewListAux2,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-	!stop::new_dispenser_or_merge;
+	!stop::new_dispenser_or_taskboard_or_merge;
 	.
 @cancelmerge[atomic]
 +!identification::confirm_merge[source(Ag)]
