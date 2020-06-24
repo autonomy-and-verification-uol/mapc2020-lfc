@@ -265,10 +265,11 @@
 // 	callStop(Flag);
 // 	!try_call_stop(Flag);
  	!map::get_dispensers(Dispensers);
+ 	!map::get_taskboards(Taskboards);
 	!stop::update_blocks_count(Blocks);
 	!map::get_clusters(Clusters);
 	//.length(Clusters, NClusters);
-	!stop::conditional_stop(Blocks, Clusters, Dispensers, Stop);
+	!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, Stop);
 	!stop::update_stop(Stop);
 //	stopDone;
 	.
@@ -288,16 +289,17 @@
 	+retrieve::block_count(Type, 1);
 	!stop::update_blocks_count(Blocks).
 	
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, true) : 
++!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, true) : 
 	.member(cluster(_, GoalList), Clusters) &
 	.member(origin(Side, GoalX, GoalY), GoalList) & .member(Side, [n,s,w,e]) &
 	.length(Blocks, NBlocks) & 
+	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
 	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & (NKnownAgs + 1) >= 3 &//NBlocks & // enough agents to build the structure
 	.findall(Type, (.member(req(_, _, Type), Blocks) & not(.member(dispenser(Type, _, _), Dispensers))), []) // all the necessary types are known
 <- 
 	.print("I can stop exploring now..");
 	.
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, false). // : true <-  .print("I cannot stop exploring yet..").
++!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, false). // : true <-  .print("I cannot stop exploring yet..").
 
 @trigger2[atomic]
 +!stop::new_dispenser_or_taskboard_or_merge[source(_)] 
