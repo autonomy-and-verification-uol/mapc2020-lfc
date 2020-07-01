@@ -376,7 +376,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 //    	logger.info("Goal statement: " + goalStatement);
     	String code;
 		try {
-			code = generateCode("agent", goalX, goalY, null, clear);
+			code = generateCode("agent", goalX, goalY, clear);
 			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, null, 0, clear, code);
 	    	plan.set(convertToAgentPlan(returnedPlan));
 		} catch (NoValueException e) {
@@ -392,7 +392,7 @@ public class EISArtifact extends Artifact implements AgentListener {
     	String goalStatement = createGoalStatement("(at a " + goalCell + ")");
 //    	logger.info("Goal statement: " + goalStatement);
     	try {
-			String code = generateCode("agent", goalX, goalY, attachedBlockCell, clear);
+			String code = generateCode("agent", goalX, goalY, blockX, blockY, clear);
 			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear, code);
 	    	plan.set(convertToAgentPlan(returnedPlan));
 		} catch (NoValueException e) {
@@ -410,7 +410,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 //    	logger.info("Goal statement: " + goalStatement);
     	String code;
 		try {
-			code = generateCode("block", goalX, goalY, attachedBlockCell, clear);
+			code = generateCode("block", goalX, goalY, blockX, blockY, clear);
 			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear, code);
 	    	plan.set(convertToAgentPlan(returnedPlan));
 		} catch (NoValueException e) {
@@ -424,7 +424,7 @@ public class EISArtifact extends Artifact implements AgentListener {
     	return "\t(:goal " + actualGoal + ")";
     }
     
-    private String generateCode(String what, int goalX, int goalY, String attachedBlockCoordinates, int clear) throws NoValueException {
+    private String generateCode(String what, int goalX, int goalY, int blockX, int blockY, int clear) throws NoValueException {
     	List<List<Integer>> vision = new ArrayList<>();
     	for(int i = 0, nCells = 1; i < 11; i++, nCells += 2) {
     		vision.add(new ArrayList<>(Collections.nCopies(nCells, 0)));
@@ -443,7 +443,39 @@ public class EISArtifact extends Artifact implements AgentListener {
     		vision.get(5 + y).set(5 + x, 2);
     	}
     	
-    	String code = attachedBlockCoordinates == null ? "nb" : "wb";
+    	String code = "b" + blockX + blockY;
+    	code += (what.equals("agent") ? "ga" : "gb") + (goalX + "" + goalY + "-");
+    	code += clear == 1 ? "cl" : "ncl";
+    	for(int i = 0, nCells = 1; i < 11; i++) {
+    		for(int j = 0; j < nCells; j++) {
+    			code += vision.get(i).get(j);
+    		}
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+    	return code;
+    }
+    
+    private String generateCode(String what, int goalX, int goalY, int clear) throws NoValueException {
+    	List<List<Integer>> vision = new ArrayList<>();
+    	for(int i = 0, nCells = 1; i < 11; i++, nCells += 2) {
+    		vision.add(new ArrayList<>(Collections.nCopies(nCells, 0)));
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+    	
+    	for(Literal l : this.blockList) {
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+    		vision.get(5 + y).set(5 + x, 1);
+    	}
+    	for(Literal l : this.obstacleList) {
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+    		vision.get(5 + y).set(5 + x, 2);
+    	}
+    	
+    	String code = "nb";
     	code += (what.equals("agent") ? "ga" : "gb") + (goalX + "" + goalY + "-");
     	code += clear == 1 ? "cl" : "ncl";
     	for(int i = 0, nCells = 1; i < 11; i++) {
