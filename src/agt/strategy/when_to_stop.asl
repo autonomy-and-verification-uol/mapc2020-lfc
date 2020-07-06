@@ -265,10 +265,11 @@
 // 	callStop(Flag);
 // 	!try_call_stop(Flag);
  	!map::get_dispensers(Dispensers);
+ 	!map::get_taskboards(Taskboards);
 	!stop::update_blocks_count(Blocks);
 	!map::get_clusters(Clusters);
 	//.length(Clusters, NClusters);
-	!stop::conditional_stop(Blocks, Clusters, Dispensers, Stop);
+	!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, Stop);
 	!stop::update_stop(Stop);
 //	stopDone;
 	.
@@ -288,43 +289,45 @@
 	+retrieve::block_count(Type, 1);
 	!stop::update_blocks_count(Blocks).
 	
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, true) : 
++!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, true) : 
 	.member(cluster(_, GoalList), Clusters) &
 	.member(origin(Side, GoalX, GoalY), GoalList) & .member(Side, [n,s,w,e]) &
 	.length(Blocks, NBlocks) & 
+	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
 	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & (NKnownAgs + 1) >= 3 &//NBlocks & // enough agents to build the structure
 	.findall(Type, (.member(req(_, _, Type), Blocks) & not(.member(dispenser(Type, _, _), Dispensers))), []) // all the necessary types are known
 <- 
 	.print("I can stop exploring now..");
 	.
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, false). // : true <-  .print("I cannot stop exploring yet..").
++!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, false). // : true <-  .print("I cannot stop exploring yet..").
 
 @trigger2[atomic]
-+!stop::new_dispenser_or_merge[source(_)] 
++!stop::new_dispenser_or_taskboard_or_merge[source(_)] 
 	: not(stop::stop) & .findall(task(ID, Deadline, Reward, Blocks), default::task(ID, Deadline, Reward, Blocks), PreShuffleTasks) & not .empty(PreShuffleTasks)
 <-
 //	callStop(Flag);
 // 	!try_call_stop(Flag);
 	.shuffle(PreShuffleTasks,Tasks);
 	!map::get_dispensers(Dispensers);
-	!stop::check_active_tasks(Tasks, Dispensers, 5);
+	!map::get_taskboards(Taskboards);
+	!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 5);
 //	stopDone;
 	.
-+!stop::new_dispenser_or_merge[source(_)].
++!stop::new_dispenser_or_taskboard_or_merge[source(_)].
 
-+!stop::check_active_tasks([], Dispensers, Counter) : not(stop::stop).
-+!stop::check_active_tasks([], Dispensers, Counter) : stop::stop.
-+!stop::check_active_tasks(Tasks, Dispensers, 0) : not(stop::stop).
-+!stop::check_active_tasks(Tasks, Dispensers, 0) : stop::stop.
-+!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Counter) 
++!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : not(stop::stop).
++!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : stop::stop.
++!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 0) : not(stop::stop).
++!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 0) : stop::stop.
++!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Counter) 
 	: not(stop::stop) 
 <-
 	!map::get_clusters(Clusters);
-	!stop::conditional_stop(Blocks, Clusters, Dispensers, Stop);
+	!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, Stop);
 	!stop::update_stop(Stop);
 	if (not Stop) {
-		!stop::check_active_tasks(Tasks, Dispensers, Counter-1);
+		!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Counter-1);
 	}
 	.
-+!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Counter) : stop::stop.
++!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Counter) : stop::stop.
 

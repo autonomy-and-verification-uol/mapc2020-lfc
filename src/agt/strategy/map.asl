@@ -39,6 +39,26 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	.send(Leader, achieve, map::add_map(Type, MyX, MyY, X, Y, UniqueString));
 	.
 
+@perceivetaskboard[atomic]
++default::thing(X, Y, taskboard, _)
+	: true
+<-
+	getMyPos(MyX,MyY);
+	.print("Perceived taskboard at X ", X, " at Y ", Y);
+	!map::get_taskboards(Taskboards);
+	!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards);
+	.
+	
++!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards) : .member(taskboard(MyX+X, MyY+Y), Taskboards) <- true.
++!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards) 
+	: map::myMap(Leader) & default::step(S)
+<-
+	.concat(taskboard,MyX+X,MyY+Y,UniqueString);
+	+action::reasoning_about_belief(UniqueString);
+	.print("Sending to ",Leader, " to add a taskboard at X ",MyX+X," Y ",MyY+Y," at step ",S);
+	.send(Leader, achieve, map::add_map(taskboard, MyX, MyY, X, Y, UniqueString));
+	.
+
 @perceivegoal[atomic]
 +default::goal(X,Y)
 	: not map::evaluating_vertexes & not common::clearing_things
@@ -92,7 +112,7 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: .my_name(Me) & map::myMap(Me)
 <-
 	.term2string(Ag,S);
-	if(Type == goal){
+	if(Type == goal) {
 		updateGoalMap(Me, MyX+X, MyY+Y, InsertedInCluster, IsANewCluster);
 		if(IsANewCluster){
 			if(S \== "self"){
@@ -107,15 +127,30 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 			}	
 		}
 		//!retrieve::update_target;
-	} else{
+	} elif(Type == taskboard) {
+		!map::get_taskboards(Taskboards);
+		if (not .member(taskboard(_,_), Taskboards)) {
+			updateMap(Me, Type, MyX+X, MyY+Y);
+			?identification::identified(IdList);
+			for (.member(Ag,IdList)) {
+				.send(Ag, achieve, stop::new_taskboard_or_merge);
+			}
+			!stop::new_taskboard_or_merge;
+		}	
+		elif(not .member(taskboard(MyX+X,MyY+Y), Taskboards)){
+			updateMap(Me, Type, MyX+X, MyY+Y);
+		}
+		.print("@@@@@ Adding taskboard  at X ",MyX+X," Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Old list of taskboards ", Taskboards);
+	} else {
 		!map::get_dispensers(Dispensers);
 		if (not .member(dispenser(Type,_,_),Dispensers)) {
 			updateMap(Me, Type, MyX+X, MyY+Y);
 			?identification::identified(IdList);
 			for (.member(Ag,IdList)) {
-				.send(Ag, achieve, stop::new_dispenser_or_merge);
+				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
 			}
-			!stop::new_dispenser_or_merge;
+			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
 		elif(not .member(dispenser(Type,MyX+X,MyY+Y), Dispensers)){
 			updateMap(Me, Type, MyX+X, MyY+Y);
@@ -148,6 +183,12 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: map::myMap(Me)
 <-
 	getDispensers(Me, List);
+	.
+
++!get_taskboards(List)
+	: map::myMap(Me)
+<-
+	getTaskboards(Me, List);
 	.
 	
 +!get_goals(Cluster, List)
