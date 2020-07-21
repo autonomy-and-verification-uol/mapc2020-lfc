@@ -1,6 +1,7 @@
 # simple setup file for testing
 
-# move 11 12 A1
+#move 13 0 A1
+#move 14 4 A2
 
 stop    # stops further setup execution
 

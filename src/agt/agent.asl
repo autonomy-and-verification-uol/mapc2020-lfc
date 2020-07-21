@@ -7,7 +7,7 @@
 { include("strategy/cartography.asl", carto) }
 //{ include("strategy/task.asl", task) }
 //{ include("strategy/when_to_stop.asl", stop) }
-{ include("strategy/stock.asl", retrieve) }
+//{ include("strategy/stock.asl", retrieve) }
 //{ include("strategy/map.asl", map) }
 { include("strategy/common-plans.asl", common) }
 //{ include("strategy/planner.asl", planner) }
@@ -18,7 +18,7 @@ block_adjacent(X,Y,FinalX,FinalY,s) :- default::thing(0,1,block,_) & X = 0 & Y =
 block_adjacent(X,Y,FinalX,FinalY,n) :- default::thing(0,-1,block,_) & X = 0 & Y = -1 & FinalX = 0 & FinalY = -2.
 block_adjacent(X,Y,FinalX,FinalY,e) :- default::thing(1,0,block,_) & X = 1 & Y = 0 & FinalX = 2 & FinalY = 0.
 block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y = 0 & FinalX = -2 & FinalY = 0.
-	
+
 +!register(E)
 	: .my_name(Me)
 <- 
@@ -33,7 +33,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 <-
 	+common::added_name;
 	addServerName(Me,ServerMe);
-	.
+	.	
 
 +default::actionID(_)
 	: not start

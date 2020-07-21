@@ -103,11 +103,11 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 <-
 	+avoid(1);
 	.print("First avoid, no obstacles, direction ",Dir);
-	!retrieve::smart_move(Dir);
-//	!action::move(Dir);
+//	!retrieve::smart_move(Dir);
+	!action::move(Dir);
 	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(Dir);
-//		!action::move(Dir);
+//		!retrieve::smart_move(Dir);
+		!action::move(Dir);
 	}
 	!go_around(OldDir, Dir);
 	.
@@ -121,11 +121,11 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 <-
 	+avoid(1);
 	.print("First avoid, with obstacles");
-	!retrieve::smart_move(OldDir);
-//	!action::move(OldDir);
+//	!retrieve::smart_move(OldDir);
+	!action::move(OldDir);
 	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(OldDir);
-//		!action::move(OldDir);
+//		!retrieve::smart_move(OldDir);
+		!action::move(OldDir);
 	}
 	!go_around(OldDir, OldDir);
 	.
@@ -191,11 +191,11 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 <-
 	-avoid(Av);
 	+avoid(Av+1);
-	!retrieve::smart_move(OldDir);
-//	!action::move(OldDir);
+//	!retrieve::smart_move(OldDir);
+	!action::move(OldDir);
 	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(OldDir);
-//		!action::move(OldDir);
+//		!retrieve::smart_move(OldDir);
+		!action::move(OldDir);
 	}
 	!go_around(OldDir, Dir);
 	.
@@ -205,11 +205,11 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 <-
 	-avoid(3);
 	.print("@@@@@@@@@@ Finished go around no obstacle");
-	!retrieve::smart_move(NewDir);
-//	!action::move(NewDir);
+//	!retrieve::smart_move(NewDir);
+	!action::move(NewDir);
 	if (default::lastActionResult(failed_path)) {
 		!retrieve::smart_move(NewDir);
-//		!action::move(NewDir);
+		!action::move(NewDir);
 	}
 	.
 	

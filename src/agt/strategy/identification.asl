@@ -104,9 +104,9 @@ i_met_new_agent(Iknow, IdList) :-
 @addid1[atomic]
 +!add_identified_ags([],IdList) : true <- true.
 @addid2[atomic]
-+!add_identified_ags([Ag|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
 @addid3[atomic]
-+!add_identified_ags([Ag|Ags],IdList) 
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
 //	.print(Ag);
@@ -117,7 +117,7 @@ i_met_new_agent(Iknow, IdList) :-
 	?identification::identified(OldList); // remove after merge is added back
 	-identification::identified(OldList); // remove after merge is added back
 	+identification::identified([Ag|OldList]); // remove after merge is added back
-	!carto::try_cartographer(Ag);
+//	!carto::try_cartographer(Ag,LocalX,LocalY);
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.
@@ -336,7 +336,8 @@ i_met_new_agent(Iknow, IdList) :-
 +!check_all_agent_sees([]) 
 	: .all_names(Ags) & .my_name(Me)
 <- 
-	.findall(Ag, (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y))), Iknow);
+	.findall(ag(Distance,Ag), (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y)) & Distance = math.abs(X) + math.abs(Y)), Iknow);
+	.sort(Iknow,Iknowsorted);
 	+merge([]);
 	.findall(pos(X, Y), (identification::doubts_on(X, Y)), DoubtsOn);
 	//.findall(Ag, (identification::i_know(Ag, _, _)), Identified);
@@ -345,7 +346,7 @@ i_met_new_agent(Iknow, IdList) :-
 //	.print("Agents I know ",Iknow);
 	?identification::identified(IdList);
 //	.print("Idlist ",IdList);
-	!add_identified_ags(Iknow,IdList);
+	!add_identified_ags(Iknowsorted,IdList);
 	?merge(MergeList);
 	-merge(MergeList);
 	?map::myMap(Leader);
