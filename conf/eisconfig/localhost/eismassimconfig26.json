@@ -9,6 +9,6 @@
   "notifications": false,
   "queued": true,
   "entities": [
-    {"name": "connectionA26", "username": "A26", "password": "1", "print-iilang": false, "print-json": false}
+    {"name": "connectionA26", "username": "agentA26", "password": "1", "print-iilang": false, "print-json": false}
   ]
 }

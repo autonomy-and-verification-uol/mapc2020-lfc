@@ -23,7 +23,7 @@
   ],
 
   "teams" : {
-    "A" : {"prefix" : "", "password" : "1"},
+    "A" : {"prefix" : "agent", "password" : "1"},
     "B" : {"prefix" : "", "password" : "1"}
   }
 }
