@@ -1,7 +1,7 @@
 {
-    "setup" : "conf/setup/test1.txt",
+    "description" : "qualification round 1 (candidate) config. goal: complete 1 task.",
 
-    "steps" : 750,
+    "steps" : 300,
     "randomSeed" : 17,
     "randomFail" : 1,
     "entities" : {"standard" : 15},
@@ -14,8 +14,8 @@
     "attachLimit" : 10,
 
     "grid" : {
-      "height" : 60,
-      "width" : 100,
+      "height" : 70,
+      "width" : 70,
       "instructions": [
         ["cave", 0.45, 9, 5, 4]
       ],
@@ -29,9 +29,9 @@
     "dispensers" : [5, 10],
 
     "tasks" : {
-      "size" : [1, 4],
+      "size" : [2, 3],
       "duration" : [100, 200],
-      "probability" : 0.05,
+      "probability" : 0.1,
       "taskboards" : 3,
       "rewardDecay" : [1, 2],
       "lowerRewardLimit" : 10,
@@ -39,7 +39,7 @@
     },
 
     "events" : {
-      "chance" : 0,
+      "chance" : 15,
       "radius" : [3, 5],
       "warning" : 5,
       "create" : [-3, 1],
