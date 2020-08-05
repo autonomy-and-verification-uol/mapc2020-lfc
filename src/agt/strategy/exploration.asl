@@ -3,6 +3,11 @@ check_obstacle(s) :- default::obstacle(0,1) | default::obstacle(0,2) | default::
 check_obstacle(e) :- default::obstacle(1,0) | default::obstacle(2,0) | default::thing(1,0,block,_) | default::thing(2,0,block,_). //| default::obstacle(3,0) | default::obstacle(4,0) | default::obstacle(5,0).
 check_obstacle(w) :- default::obstacle(-1,0) | default::obstacle(-2,0) | default::thing(-1,0,block,_) | default::thing(-2,0,block,_). //| default::obstacle(-3,0) | default::obstacle(-4,0) | default::obstacle(-5,0).
 
+check_obstacle_clear(n) :- default::obstacle(0,-1) | default::thing(0,-1,block,_).
+check_obstacle_clear(s) :- default::obstacle(0,1) | default::thing(0,1,block,_).
+check_obstacle_clear(e) :- default::obstacle(1,0) | default::thing(1,0,block,_).
+check_obstacle_clear(w) :- default::obstacle(-1,0) | default::thing(-1,0,block,_).
+
 check_obstacle_special(n) :- default::obstacle(0,-1) | (default::thing(0, -1, Type, _) & Type \== dispenser & Type \== marker & not(retrieve::block(0, -1))).
 check_obstacle_special(s) :- default::obstacle(0,1)  | (default::thing(0, 1, Type, _) & Type \== dispenser & Type \== marker & not(retrieve::block(0, 1))).
 check_obstacle_special(e) :- default::obstacle(1,0)  | (default::thing(1, 0, Type, _) & Type \== dispenser & Type \== marker & not(retrieve::block(1, 0))).
@@ -138,7 +143,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!try_to_clear(Dir)
 <-
 	?get_clear_direction(Dir,X,Y);
-	if (not check_obstacle(Dir)) {
+	if (not check_obstacle_clear(Dir)) {
 		!action::move(Dir);
 	}
 	for(.range(I, 1, 3)){
@@ -182,7 +187,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 			}
 		}
 	}
-	if (not check_obstacle(Dir)) {
+	if (not check_obstacle_clear(Dir)) {
 		!action::move(Dir);
 		!!explore_until_obstacle(Dir);
 	}
@@ -209,14 +214,14 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 	.
 
 +!explore_until_obstacle(Dir)
-	: .my_name(Me) & default::play(Me,explorer,Group) & not check_obstacle(Dir) & not action::out_of_bounds(Dir)
+	: .my_name(Me) & default::play(Me,explorer,Group) & not check_obstacle_clear(Dir) & not action::out_of_bounds(Dir)
 <-
 	!action::move(Dir);
 	!!explore_until_obstacle(Dir);
 	.
 	
 +!explore_until_obstacle(Dir)
-	: .my_name(Me) & default::play(Me,explorer,Group) & check_obstacle(Dir) & default::energy(Energy) & Energy >= 240
+	: .my_name(Me) & default::play(Me,explorer,Group) & check_obstacle_clear(Dir) & default::energy(Energy) & Energy >= 240
 <-
 	!try_to_clear(Dir);
 	.

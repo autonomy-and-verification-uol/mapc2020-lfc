@@ -134,15 +134,32 @@
 	.
 	
 +!carto
-	: not cycle_complete & my_direction(D) & cells(C)
+	: not cycle_complete & my_direction(Dir) & exploration::check_obstacle_clear(Dir)
 <-
-	!action::move(D);
+	!try_to_clear(Dir);
+	!carto;
+	.
+	
++!carto
+	: not cycle_complete & my_direction(Dir) & cells(C)
+<-
+	!action::move(Dir);
 	?default::lastActionResult(Result);
 	if (Result == success) {
 		-cells(C);
 		+cells(C+1);
 	}
 	!carto;
+	.
+	
++!try_to_clear(Dir)
+<-
+	?exploration::get_clear_direction(Dir,X,Y);
+	for(.range(I, 1, 3)){
+		if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete) {
+			!action::clear(X,Y);
+		}
+	}
 	.
 
 @cycle[atomic]
@@ -152,3 +169,5 @@
 	-agent_to_identify(Ag);
 	.print("@@@@@@@@@@@@@@ CYCLE OK");
 	.
+	
+	
