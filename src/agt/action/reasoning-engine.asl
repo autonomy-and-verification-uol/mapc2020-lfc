@@ -37,7 +37,7 @@
 //	}
 	chosenAction(Id);
 	.wait({+default::actionID(_)});
-
+	!default::identification;
 	.wait(not action::reasoning_about_belief(_)); 
 	
 	-::access_token(IntentionId,Token);

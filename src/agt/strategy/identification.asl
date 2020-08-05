@@ -104,8 +104,10 @@ i_met_new_agent(Iknow, IdList) :-
 @addid1[atomic]
 +!add_identified_ags([],IdList) : true <- true.
 @addid2[atomic]
-+!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15  <- +carto::cycle_complete; !add_identified_ags(Ags,IdList).
 @addid3[atomic]
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
+@addid4[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
@@ -117,7 +119,7 @@ i_met_new_agent(Iknow, IdList) :-
 	?identification::identified(OldList); // remove after merge is added back
 	-identification::identified(OldList); // remove after merge is added back
 	+identification::identified([Ag|OldList]); // remove after merge is added back
-//	!carto::try_cartographer(Ag,LocalX,LocalY);
+	!carto::try_cartographer(Ag,LocalX,LocalY);
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.

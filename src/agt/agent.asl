@@ -33,19 +33,30 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 <-
 	+common::added_name;
 	addServerName(Me,ServerMe);
-	.	
+	.
+	
++step(S) <- .print(S).
 
 +default::actionID(_)
 	: not start
 <- 
 	+start;
-	.wait(1000);
+//	.wait(1000);
+	!identification;
 	!clear_blocks;
 	!check_added_name;
 	-common::clearing_things;
 //	!always_skip;
 	!!exploration::explore([n,s,e,w]);
 	.
+	
++!identification
+	: default::thing(X, Y, entity, Team) & not(X == 0 & Y == 0) & default::team(Team)
+<-
+	.wait({-action::reasoning_about_belief(identification)});
+//	.print("IDENTIFICATION");
+	.
++!identification. // <- .print("No agents in sight").
 
 @check_added_name[atomic]
 +!check_added_name
