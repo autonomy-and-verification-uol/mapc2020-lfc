@@ -104,7 +104,7 @@ i_met_new_agent(Iknow, IdList) :-
 @addid1[atomic]
 +!add_identified_ags([],IdList) : true <- true.
 @addid2[atomic]
-+!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15  <- +carto::cycle_complete; !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
 @addid3[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
 @addid4[atomic]

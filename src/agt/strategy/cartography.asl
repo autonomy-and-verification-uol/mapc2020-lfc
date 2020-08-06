@@ -92,8 +92,10 @@
 +!cartography(Ag,y,AgY)
 	: .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
-	+cells(0);
+	+cells(1);
 	+agent_to_identify(Ag);
+	+axis(y);
+	+distance_cells(math.abs(AgY)-1);
 	if (AgY > 0) {
 		+my_direction(n);
 	}
@@ -102,6 +104,7 @@
 	}
 	else {
 		if (Pos < PosOther)	{
+
 			+my_direction(n);
 		}
 		else {
@@ -114,8 +117,10 @@
 +!cartography(Ag,x,AgX)
 	: .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
-	+cells(0);
+	+cells(1);
 	+agent_to_identify(Ag);
+	+axis(x);
+	+distance_cells(math.abs(AgX)-1);
 	if (AgX > 0) {
 		+my_direction(w);
 	}
@@ -134,14 +139,14 @@
 	.
 	
 +!carto
-	: not cycle_complete & my_direction(Dir) & exploration::check_obstacle_clear(Dir)
+	: not cycle_complete(_,_) & my_direction(Dir) & exploration::check_obstacle_clear(Dir)
 <-
 	!try_to_clear(Dir);
 	!carto;
 	.
 	
 +!carto
-	: not cycle_complete & my_direction(Dir) & cells(C)
+	: not cycle_complete(_,_) & my_direction(Dir) & cells(C)
 <-
 	!action::move(Dir);
 	?default::lastActionResult(Result);
@@ -152,22 +157,37 @@
 	!carto;
 	.
 	
++!carto
+	: cycle_complete(VisionCellsX,VisionCellsY) & agent_to_identify(Ag) & cells(C) & my_direction(Dir) & .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
+<-
+	if (Pos < PosOther)	{
+		.wait(carto::other_cells(C2)[source(Ag)]);
+		?carto::axis(Axis);
+		?carto::distance_cells(ExtraCells);
+		?map::myMap(Leader);
+		if (Axis == x) {
+			.send(Leader, achieve, carto::calculate_map_size(Axis,C+C2+ExtraCells+VisionCellsX));
+		}
+		else {
+			.send(Leader, achieve, carto::calculate_map_size(Axis,C+C2+ExtraCells+VisionCellsY));
+		}
+	}
+	else {
+		.send(Ag, tell, carto::other_cells(C)[source(Ag)]);
+	}
+	.print("@@@@@@ Cartography finished.");
+	.abolish(carto::_[source(_)]);
+	!common::change_role(explorer);
+	.
+	
 +!try_to_clear(Dir)
 <-
 	?exploration::get_clear_direction(Dir,X,Y);
 	for(.range(I, 1, 3)){
-		if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete) {
+		if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete(_,_)) {
 			!action::clear(X,Y);
 		}
 	}
 	.
 
-@cycle[atomic]
-+cycle_complete
-	: agent_to_identify(Ag)
-<-
-	-agent_to_identify(Ag);
-	.print("@@@@@@@@@@@@@@ CYCLE OK");
-	.
-	
-	
++!calculate_map_size(Axis, Size) <- .print("Axis ",Axis," is of size ",Size).
