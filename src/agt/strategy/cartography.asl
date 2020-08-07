@@ -178,6 +178,7 @@
 	.print("@@@@@@ Cartography finished.");
 	.abolish(carto::_[source(_)]);
 	!common::change_role(explorer);
+	!!exploration::explore([n,s,e,w]);
 	.
 	
 +!try_to_clear(Dir)
@@ -190,4 +191,4 @@
 	}
 	.
 
-+!calculate_map_size(Axis, Size) <- .print("Axis ",Axis," is of size ",Size).
++!calculate_map_size(Axis, Size) <- .print("################# Axis ",Axis," is of size ",Size).
