@@ -37,9 +37,10 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	.
 
 +default::actionID(_)
-	: not start
+	: not start & energy(MaxEnergy) & EnergyThreshold = MaxEnergy * 40 / 100
 <- 
 	+start;
+	+energy_threshold(EnergyThreshold);
 //	.wait(1000);
 	!identification;
 	!clear_blocks;

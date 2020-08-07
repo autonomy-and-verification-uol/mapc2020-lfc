@@ -92,7 +92,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 	 .
 
 +!explore(Dirlist)
-	: (default::obstacle(0,1) | default::obstacle(0,2)) & (default::obstacle(0,-1) | default::obstacle(0,-2)) & (default::obstacle(1,0) | default::obstacle(2,0)) & (default::obstacle(-1,0) | default::obstacle(-2,0)) & .my_name(Me) & default::play(Me,explorer,Group) & .random(Number) & random_dir([n,s,e,w],4,Number,Dir) & default::energy(Energy) & Energy >= 240 // & default::vision(V) & common::find_empty_position(X,Y,1,V)
+	: (default::obstacle(0,1) | default::obstacle(0,2)) & (default::obstacle(0,-1) | default::obstacle(0,-2)) & (default::obstacle(1,0) | default::obstacle(2,0)) & (default::obstacle(-1,0) | default::obstacle(-2,0)) & .my_name(Me) & default::play(Me,explorer,Group) & .random(Number) & random_dir([n,s,e,w],4,Number,Dir) & default::energy(Energy) & default::energy_threshold(EnergyThreshold) & Energy >= EnergyThreshold // & default::vision(V) & common::find_empty_position(X,Y,1,V)
 <-
 	.print("@@@@@ No movement options available");
 	!action::skip;
@@ -109,7 +109,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 <-
 	?remove_opposite(FirstDir,OppDir);
 	?get_other_side(FirstDir,OtherDir1,OtherDir2);
-	if (check_obstacle(FirstDir) &  check_obstacle(OppDir) & (check_obstacle(OtherDir1) | check_obstacle(OtherDir2)) & default::energy(Energy) & default::energy(Energy) & Energy < 240) {
+	if (check_obstacle(FirstDir) &  check_obstacle(OppDir) & (check_obstacle(OtherDir1) | check_obstacle(OtherDir2)) & default::energy(Energy) & default::energy(Energy) & default::energy_threshold(EnergyThreshold) & Energy < EnergyThreshold) {
 		if (not check_obstacle(OtherDir1)) {
 			!explore_until_obstacle(OtherDir1);
 		}
@@ -221,7 +221,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 	.
 	
 +!explore_until_obstacle(Dir)
-	: .my_name(Me) & default::play(Me,explorer,Group) & check_obstacle_clear(Dir) & default::energy(Energy) & Energy >= 240
+	: .my_name(Me) & default::play(Me,explorer,Group) & check_obstacle_clear(Dir) & default::energy(Energy)  & default::energy_threshold(EnergyThreshold) & Energy >= EnergyThreshold
 <-
 	!try_to_clear(Dir);
 	.
