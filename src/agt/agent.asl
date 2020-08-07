@@ -52,7 +52,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 +!identification
 	: default::thing(X, Y, entity, Team) & not(X == 0 & Y == 0) & default::team(Team)
 <-
-	.wait({-action::reasoning_about_belief(identification)});
+	.wait(not action::reasoning_about_belief(identification));
 //	.print("IDENTIFICATION");
 	.
 +!identification. // <- .print("No agents in sight").

@@ -1,5 +1,7 @@
 {
     "description" : "qualification round 1 (candidate) config. goal: complete 1 task.",
+    
+    "setup" : "conf/setup/test1.txt",
 
     "steps" : 300,
     "randomSeed" : 17,
