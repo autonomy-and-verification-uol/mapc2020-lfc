@@ -190,6 +190,9 @@
 			!action::clear(X,Y);
 		}
 	}
+	if (default::lastActionResult(failed_resources)) {
+		!action::skip;
+	}
 	.
 
 +!calculate_map_size(Axis, Size) <- .print("################# Axis ",Axis," is of size ",Size).
