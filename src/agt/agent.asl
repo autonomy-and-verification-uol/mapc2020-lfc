@@ -25,6 +25,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!newround::new_round;
     .print("Registering...");
     register(E);
+    statusRequest;
 	.
 
 @name[atomic]

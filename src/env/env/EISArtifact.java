@@ -81,6 +81,12 @@ public class EISArtifact extends Artifact implements AgentListener {
 	}
 	
 	@OPERATION
+	void statusRequest() {
+		logger.info("STATE:");
+		
+	}
+	
+	@OPERATION
 	void register(String entity)  {
 		String agent = getCurrentOpAgentId().getAgentName();
 		logger = Logger.getLogger(EISArtifact.class.getName()+"_"+agent);

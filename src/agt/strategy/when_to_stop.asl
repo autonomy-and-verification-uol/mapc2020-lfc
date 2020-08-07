@@ -315,6 +315,18 @@
 	.
 +!stop::new_dispenser_or_taskboard_or_merge[source(_)].
 
+@trigger3[atomic]
++!stop::cartographer_conditional_stop[source(_)] 
+	: not(stop::stop) & .findall(task(ID, Deadline, Reward, Blocks), default::task(ID, Deadline, Reward, Blocks), PreShuffleTasks) & not .empty(PreShuffleTasks)
+<-
+	.shuffle(PreShuffleTasks,Tasks);
+	!map::get_dispensers(Dispensers);
+	!map::get_taskboards(Taskboards);
+	!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 5);
+	.
+	
+
+
 +!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : not(stop::stop).
 +!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : stop::stop.
 +!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 0) : not(stop::stop).
