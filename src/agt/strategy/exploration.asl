@@ -147,56 +147,25 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 		!action::move(Dir);
 	}
 	for(.range(I, 1, 3)){
-		if (default::step(0)) {
+		if (I == 1) {
 			!action::clear(X,Y);
 		}
-		elif ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
+		elif ((not default::lastAction(clear) | default::lastAction(clear)) & default::lastActionResult(success) & not default::lastActionResult(failed_random)) {
 			!action::clear(X,Y);
 		}
 	}
-	if (Dir == n) {
-		if (default::obstacle(X,Y-1) | default::obstacle(X,Y-2)) {
-			for(.range(I, 1, 3)){
-				if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
-					!action::clear(X,Y-2);
-				}
-			}
-		}
-	}
-	elif (Dir == s) {
-		if (default::obstacle(X,Y+1) | default::obstacle(X,Y+2)) {
-			for(.range(I, 1, 3)){
-				if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
-					!action::clear(X,Y+2);
-				}
-			}
-		}
-	}
-	elif (Dir == w) {
-		if (default::obstacle(X-1,Y) | default::obstacle(X-2,Y)) {
-			for(.range(I, 1, 3)){
-				if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
-					!action::clear(X-2,Y);
-				}
-			}
-		}
+	if (default::lastActionResult(failed_random)) {
+		!try_to_clear(Dir);
 	}
 	else {
-		if (default::obstacle(X+1,Y) | default::obstacle(X+2,Y)) {
-			for(.range(I, 1, 3)){
-				if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
-					!action::clear(X+2,Y);
-				}
-			}
+		if (not check_obstacle_clear(Dir)) {
+			!action::move(Dir);
+			!!explore_until_obstacle(Dir);
 		}
-	}
-	if (not check_obstacle_clear(Dir)) {
-		!action::move(Dir);
-		!!explore_until_obstacle(Dir);
-	}
-	else {
-		.delete(Dir,[n,s,e,w],DirList);
-		!!explore(DirList);
+		else {
+			.delete(Dir,[n,s,e,w],DirList);
+			!!explore(DirList);
+		}
 	}
 	.
 

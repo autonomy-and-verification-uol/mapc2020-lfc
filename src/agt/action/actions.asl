@@ -179,6 +179,7 @@
 -!clear(X,Y)[code(.fail(action(Action),result(failed_parameter)))] <- .print(X," and ",Y," are not valid integers.").
 -!clear(X,Y)[code(.fail(action(Action),result(failed_target)))] <- .print("Target location is not within the agent's vision or outside the grid.").
 -!clear(X,Y)[code(.fail(action(Action),result(failed_resources)))] <- .print("Energy is too low.").
+-!clear(X,Y)[code(.fail(action(Action),result(failed_random)))] <- .print("Failed random.").
 
 // ##### SKIP ACTION #####
 +!skip

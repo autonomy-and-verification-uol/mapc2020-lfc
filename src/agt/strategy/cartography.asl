@@ -232,15 +232,18 @@
 <-
 	?exploration::get_clear_direction(Dir,X,Y);
 	for(.range(I, 1, 3)){
-		if (default::step(0)) {
+		if (I == 1 & not carto::cycle_complete(_,_)) {
 			!action::clear(X,Y);
 		}
-		elif ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete(_,_)) {
+		elif ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success)) & not carto::cycle_complete(_,_) & not default::lastActionResult(failed_random)) {
 			!action::clear(X,Y);
 		}
 	}
 	if (default::lastActionResult(failed_resources)) {
 		!action::skip;
+	}
+	if (default::lastActionResult(failed_random)) {
+		!try_to_clear(Dir);
 	}
 	.
 
