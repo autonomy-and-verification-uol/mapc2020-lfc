@@ -106,8 +106,10 @@ i_met_new_agent(Iknow, IdList) :-
 @addid2[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
 @addid3[atomic]
-+!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & not carto::close_gap & identification::i_know(Ag,LocalX,LocalY) <- +carto::new_distance(LocalX,LocalY); !add_identified_ags(Ags,IdList).
 @addid4[atomic]
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
+@addid5[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 

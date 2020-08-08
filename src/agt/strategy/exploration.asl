@@ -147,7 +147,10 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 		!action::move(Dir);
 	}
 	for(.range(I, 1, 3)){
-		if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
+		if (default::step(0)) {
+			!action::clear(X,Y);
+		}
+		elif ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random))) {
 			!action::clear(X,Y);
 		}
 	}

@@ -42,6 +42,23 @@
 		Ag2MoveTo = s; 
 	}
 	.
+	
++!calculate_distance_solo(X,Y,Distance,NewMoveTo)
+<-
+	Distance = math.abs(X) + math.abs(Y);
+	if (X > 1) {
+		NewMoveTo = e;
+	}
+	elif (X < -1) {
+		NewMoveTo = w;
+	}
+	elif (Y > 1) {
+		NewMoveTo = s;
+	}
+	elif (Y < -1) {
+		NewMoveTo = n;
+	}
+	.
 
 @cartoY[atomic]
 +cartographerY(Ag1,Ag2,Distance,Ag1MoveTo,Ag2MoveTo,Ag2X,Ag2Y)
@@ -50,12 +67,20 @@
 	!common::change_role(cartographer);
 	if (Distance <= 3) {
 		if (Me == Ag1) {
+			+agent_to_identify(Ag2);
 			!!cartography(Ag2,y,Ag2Y);
 		} else {
+			+agent_to_identify(Ag1);
 			!!cartography(Ag1,y,-Ag2Y);
 		}
 	} else {
-		!!move_closer(Ag1,Ag2,Ag1MoveTo,Ag2MoveTo,y);
+		if (Me == Ag1) {
+			+agent_to_identify(Ag2);
+			!!move_closer(Ag2,Ag1MoveTo,y);
+		} else {
+			+agent_to_identify(Ag1);
+			!!move_closer(Ag1,Ag2MoveTo,y);
+		}
 	}
 	.	
 	
@@ -66,34 +91,55 @@
 	!common::change_role(cartographer);
 	if (Distance <= 3) {
 		if (Me == Ag1) {
+			+agent_to_identify(Ag2);
 			!!cartography(Ag2,x,Ag2X);
 		} else {
+			+agent_to_identify(Ag1);
 			!!cartography(Ag1,x,-Ag2X);
 		}
 	} else {
-		!!move_closer(Ag1,Ag2,Ag1MoveTo,Ag2MoveTo,x);
+		if (Me == Ag1) {
+			+agent_to_identify(Ag2);
+			!!move_closer(Ag2,Ag1MoveTo,x);
+		} else {
+			+agent_to_identify(Ag1);
+			!!move_closer(Ag1,Ag2MoveTo,x);
+		}
 	}
 	.
 
-+!move_closer(Ag1,Ag2,Ag1MoveTo,Ag2MoveTo,Axis)
-	: .my_name(Ag1)
++!move_closer(Ag,MoveTo,Axis)
+	: exploration::check_obstacle_clear(MoveTo)
 <-
-	!action::move(Ag1MoveTo);
-//	!cartography(Ag2,Axis);
+	!try_to_clear(MoveTo);
+	.abolish(carto::new_distance(_,_));
+	!move_closer(Ag,MoveTo,Axis);
+	.
+
++!move_closer(Ag,MoveTo,Axis)
+	: .my_name(Me)
+<-
+	!action::move(MoveTo);
+	.wait(carto::new_distance(X,Y));
+	-carto::new_distance(X,Y);
+	!calculate_distance_solo(X,Y,Distance,NewMoveTo);
+	if (Distance <= 3) {
+		+carto::close_gap;
+		if (Axis == x) {
+			!!cartography(Ag,x,X);
+		} else {
+			!!cartography(Ag,y,Y);
+		}
+	} else {
+		!!move_closer(Ag,NewMoveTo,Axis);
+	}
 	.
 	
-+!move_closer(Ag1,Ag2,Ag1MoveTo,Ag2MoveTo,Axis)
-	: .my_name(Ag2)
-<-
-	!action::move(Ag2MoveTo);
-//	!cartography(Ag1,Axis);
-	.
 	
 +!cartography(Ag,y,AgY)
 	: .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
 	+cells(1);
-	+agent_to_identify(Ag);
 	+axis(y);
 	+distance_cells(math.abs(AgY)-1);
 	if (AgY > 0) {
@@ -186,7 +232,10 @@
 <-
 	?exploration::get_clear_direction(Dir,X,Y);
 	for(.range(I, 1, 3)){
-		if ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete(_,_)) {
+		if (default::step(0)) {
+			!action::clear(X,Y);
+		}
+		elif ((not default::lastAction(clear) | default::lastAction(clear)) & (default::lastActionResult(success) | default::lastActionResult(failed_random)) & not cycle_complete(_,_)) {
 			!action::clear(X,Y);
 		}
 	}
