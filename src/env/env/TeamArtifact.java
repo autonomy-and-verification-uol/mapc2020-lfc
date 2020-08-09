@@ -443,7 +443,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void updateMap(String name, String type, int x, int y) {
 		Point p = new Point(x, y);
-		if(!type.startsWith("goal_")) {
+//		if(!type.startsWith("goal_")) {
 			if (!agentmaps.get(name).containsKey(type)) {
 				Set<Point> set = new HashSet<Point>();
 				set.add(p);
@@ -452,7 +452,7 @@ public class TeamArtifact extends Artifact {
 			else {
 				agentmaps.get(name).get(type).add(p);
 			}
-		}
+//		}
 	}
 	
 	private static class OriginPoint extends Point{
@@ -479,7 +479,7 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION 
-	void getMapSize(String name, OpFeedbackParam<Integer> size){
+	void getAllSize(String name, OpFeedbackParam<Integer> size){
 		size.set(agentmaps.get(name).values().stream().mapToInt(Set::size).sum());
 	}
 	
@@ -487,7 +487,7 @@ public class TeamArtifact extends Artifact {
 	void getDispensers(String name, OpFeedbackParam<Literal[]> dispensers){
 		List<Literal> things = new ArrayList<Literal>();
 		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
-			if (!entry.getKey().startsWith("goal_") && !entry.getKey().startsWith("taskboard")) {
+			if (!entry.getKey().startsWith("goal") && !entry.getKey().startsWith("taskboard")) {
 	//		    logger.info(name+"  :   "+entry.getKey() + " = " + entry.getValue());
 				Atom type = new Atom(entry.getKey());
 				for (Point p : entry.getValue()) {
@@ -522,6 +522,25 @@ public class TeamArtifact extends Artifact {
 		}
 		Literal[] arraythings = things.toArray(new Literal[things.size()]);
 		taskboards.set(arraythings);
+	}
+	
+	@OPERATION 
+	void getGoals(String name, OpFeedbackParam<Literal[]> goals){
+		List<Literal> things = new ArrayList<Literal>();
+		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
+			if (entry.getKey().startsWith("goal")) {
+				for (Point p : entry.getValue()) {
+					Literal literal = ASSyntax.createLiteral("goal");
+					NumberTerm x = new NumberTermImpl(p.x);
+					NumberTerm y = new NumberTermImpl(p.y);
+					literal.addTerm(x);
+					literal.addTerm(y);
+					things.add(literal);
+				}
+			}
+		}
+		Literal[] arraythings = things.toArray(new Literal[things.size()]);
+		goals.set(arraythings);
 	}
 	
 	@OPERATION 
@@ -605,26 +624,26 @@ public class TeamArtifact extends Artifact {
 		clusters.set(arraythings);
 	}
 	
-	@OPERATION 
-	void getGoals(String name, String cluster, OpFeedbackParam<Literal[]> goals){
-		List<Literal> things 		= new ArrayList<Literal>();
-		for(Point p : agentmaps.get(name).get(cluster)) {
-			Literal literal = null;
-			if(p instanceof OriginPoint) {
-				literal = ASSyntax.createLiteral("origin");
-				literal.addTerm(new Atom(((OriginPoint) p).evaluated));
-			} else {
-				literal = ASSyntax.createLiteral("goal");
-			}
-			NumberTerm x = new NumberTermImpl(p.x);
-			NumberTerm y = new NumberTermImpl(p.y);
-			literal.addTerm(x);
-			literal.addTerm(y);
-			things.add(literal);
-		}
-		Literal[] arraythings = things.toArray(new Literal[things.size()]);
-		goals.set(arraythings);
-	}
+//	@OPERATION 
+//	void getGoals(String name, String cluster, OpFeedbackParam<Literal[]> goals){
+//		List<Literal> things 		= new ArrayList<Literal>();
+//		for(Point p : agentmaps.get(name).get(cluster)) {
+//			Literal literal = null;
+//			if(p instanceof OriginPoint) {
+//				literal = ASSyntax.createLiteral("origin");
+//				literal.addTerm(new Atom(((OriginPoint) p).evaluated));
+//			} else {
+//				literal = ASSyntax.createLiteral("goal");
+//			}
+//			NumberTerm x = new NumberTermImpl(p.x);
+//			NumberTerm y = new NumberTermImpl(p.y);
+//			literal.addTerm(x);
+//			literal.addTerm(y);
+//			things.add(literal);
+//		}
+//		Literal[] arraythings = things.toArray(new Literal[things.size()]);
+//		goals.set(arraythings);
+//	}
 	
 	@OPERATION
 	void addAvailableAgent(String name, String type) {
