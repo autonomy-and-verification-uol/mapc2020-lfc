@@ -9,12 +9,23 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 +default::step(X)
 	: X \== 0 & X mod 25 = 0
 <-
+	!printall;
+
+	.
+	
++!printall
+<-
 	!get_dispensers(DList);
-	!get_clusters(GList);
-	!get_map_size(Size);
-	.print(DList);
-	.print(GList);
-	.print(Size);
+//	!get_clusters(GList);
+	!get_goals(GList);
+	!get_taskboards(TList);
+	!get_all_size(Size);
+	.print("!!!!!!!!!!!!!!!!!!!!!!");
+	.print("Dispensers: ",DList);
+	.print("Goals: ",GList);
+	.print("Taskboards: ",TList);
+	.print("Number of elements in my map: ",Size);
+	.print("!!!!!!!!!!!!!!!!!!!!!!");
 //	getMyPos(MyX,MyY);
 //	.print("My position ",MyX,", ",MyY);
 	.
@@ -24,7 +35,7 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: true
 <-
 	getMyPos(MyX,MyY);
-//	.print("Perceived dispenser of type ",Type," at X ",X," at Y ",Y);
+	.print("Perceived dispenser of type ",Type," at X ",X," at Y ",Y);
 	!map::get_dispensers(Dispensers);
 	!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, Dispensers);
 	.
@@ -61,101 +72,169 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 
 @perceivegoal[atomic]
 +default::goal(X,Y)
-	: not map::evaluating_vertexes & not common::clearing_things
+	: true
 <-
 	getMyPos(MyX,MyY);
-	!map::get_clusters(Clusters);
-	!map::update_goal_in_map(MyX, MyY, X, Y, Clusters);
+	.print("Perceived goal position at X ", X, " at Y ", Y);
+	!map::get_goals(Goals);
+	!map::update_goal_in_map(MyX, MyY, X, Y, Goals);
 	.
-
-+!map::update_goal_in_map(MyX, MyY, X, Y, Clusters) : .member(cluster(_, GoalList), Clusters) & (.member(goal(MyX+X, MyY+Y), GoalList) | .member(origin(_, MyX+X, MyY+Y), GoalList)) <- true.
-+!map::update_goal_in_map(MyX, MyY, X, Y, Clusters) 
-	: map::myMap(Leader)
+	
++!map::update_goal_in_map(MyX, MyY, X, Y, Goals) : .member(goal(MyX+X, MyY+Y), Goals) <- true.
++!map::update_goal_in_map(MyX, MyY, X, Y, Goals) 
+	: map::myMap(Leader) & default::step(S)
 <-
 	.concat(goal,MyX+X,MyY+Y,UniqueString);
 	+action::reasoning_about_belief(UniqueString);
+	.print("Sending to ",Leader, " to add a goal at X ",MyX+X," Y ",MyY+Y," at step ",S);
 	.send(Leader, achieve, map::add_map(goal, MyX, MyY, X, Y, UniqueString));
 	.
 
+//@perceivegoal[atomic]
+//+default::goal(X,Y)
+//	: not map::evaluating_vertexes & not common::clearing_things
+//<-
+//	getMyPos(MyX,MyY);
+//	!map::get_clusters(Clusters);
+//	!map::update_goal_in_map(MyX, MyY, X, Y, Clusters);
+//	.
+
+//+!map::update_goal_in_map(MyX, MyY, X, Y, Clusters) : .member(cluster(_, GoalList), Clusters) & (.member(goal(MyX+X, MyY+Y), GoalList) | .member(origin(_, MyX+X, MyY+Y), GoalList)) <- true.
+//+!map::update_goal_in_map(MyX, MyY, X, Y, Clusters) 
+//	: map::myMap(Leader)
+//<-
+//	.concat(goal,MyX+X,MyY+Y,UniqueString);
+//	+action::reasoning_about_belief(UniqueString);
+//	.send(Leader, achieve, map::add_map(goal, MyX, MyY, X, Y, UniqueString));
+//	.
+
 	
-+!map::conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)] :
-	map::myMap(Leader) & common::my_role(goal_evaluator) &
-	map::evaluating_positions(Pos) & .my_name(Me) & .all_names(AllAgents) & .nth(Nth,AllAgents,Me) & .nth(Nth1,AllAgents,Ag)
-<-
-//	.wait(not action::move_sent);
-	getMyPos(MyX, MyY);
-	.print(conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)], ", Pos: ", Pos, " Goal: ", GoalX, " ", GoalY);
-	if((.member(origin(_, MyX+GoalX, MyY+GoalY), Pos) | .member(start(MyX+GoalX, MyY+GoalY), Pos)) & 
-		Nth1 < Nth
-	) {
-		!common::go_back_to_previous_role;
-		if(common::my_role(retriever)){
-			!!retrieve::move_to_goal;
-		} elif(default::play(Me,explorer,Group)){
-			!!exploration::explore([n,s,w,e]);
-		}
-	}
-	.
-+!map::conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)] : true <- .print(conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)]).
+//+!map::conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)] :
+//	map::myMap(Leader) & common::my_role(goal_evaluator) &
+//	map::evaluating_positions(Pos) & .my_name(Me) & .all_names(AllAgents) & .nth(Nth,AllAgents,Me) & .nth(Nth1,AllAgents,Ag)
+//<-
+////	.wait(not action::move_sent);
+//	getMyPos(MyX, MyY);
+//	.print(conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)], ", Pos: ", Pos, " Goal: ", GoalX, " ", GoalY);
+//	if((.member(origin(_, MyX+GoalX, MyY+GoalY), Pos) | .member(start(MyX+GoalX, MyY+GoalY), Pos)) & 
+//		Nth1 < Nth
+//	) {
+//		!common::go_back_to_previous_role;
+//		if(common::my_role(retriever)){
+//			!!retrieve::move_to_goal;
+//		} elif(default::play(Me,explorer,Group)){
+//			!!exploration::explore([n,s,w,e]);
+//		}
+//	}
+//	.
+//+!map::conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)] : true <- .print(conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)]).
 	
-+!map::move_random(Steps) :
-	not default::lastActionResult(success)
-<-
-	for(.range(_, 1, Steps) & .random(R) & .nth(math.floor(R*3.99), [n,s,w,e], Dir)){
-		!retrieve::smart_move(Dir);
-	}
-	.
-+!map::move_random(_).
+//+!map::move_random(Steps) :
+//	not default::lastActionResult(success)
+//<-
+//	for(.range(_, 1, Steps) & .random(R) & .nth(math.floor(R*3.99), [n,s,w,e], Dir)){
+//		!retrieve::smart_move(Dir);
+//	}
+//	.
+//+!map::move_random(_).
+
+//	if(Type == goal) {
+//		updateGoalMap(Me, MyX+X, MyY+Y, InsertedInCluster, IsANewCluster);
+//		if(IsANewCluster){
+//			if(S \== "self"){
+//				.send(Ag, askOne, map::available_to_evaluate(Res, X, Y), map::available_to_evaluate(Res, _, _));
+//				.print("@@@@@@@@@@@@@@@@@@@ RES: ", Res);
+//				if(Res == 1){
+//					.send(Ag, achieve, map::evaluate(X, Y));
+//				}
+//			} elif(not common::my_role(goal_evaluator)){
+//				.send(Ag, achieve, map::evaluate(X, Y));
+//				//!map::evaluate(X, Y);
+//			}	
+//		}
+//		//!retrieve::update_target;
 
 @addmap1[atomic]
 +!add_map(Type, MyX, MyY, X, Y, UniqueString)[source(Ag)]
 	: .my_name(Me) & map::myMap(Me)
 <-
 	.term2string(Ag,S);
-	if(Type == goal) {
-		updateGoalMap(Me, MyX+X, MyY+Y, InsertedInCluster, IsANewCluster);
-		if(IsANewCluster){
-			if(S \== "self"){
-				.send(Ag, askOne, map::available_to_evaluate(Res, X, Y), map::available_to_evaluate(Res, _, _));
-				.print("@@@@@@@@@@@@@@@@@@@ RES: ", Res);
-				if(Res == 1){
-					.send(Ag, achieve, map::evaluate(X, Y));
-				}
-			} elif(not common::my_role(goal_evaluator)){
-				.send(Ag, achieve, map::evaluate(X, Y));
-				//!map::evaluate(X, Y);
-			}	
+	if (map::size(x, SizeX) & map::size(y, SizeY)) {
+		if (MyX+X < 0) {
+			UpdatedX = (MyX+X) mod SizeX + SizeX;
+		} else {
+			UpdatedX = (MyX+X) mod SizeX;
 		}
-		//!retrieve::update_target;
+		if (MyY+Y < 0) {
+			UpdatedY = (MyY+Y) mod SizeY + SizeY;
+		} else {
+			UpdatedY = (MyY+Y) mod SizeY;
+		}
+	}
+	elif (map::size(x, Size)) {
+		if (MyX+X < 0) {
+			UpdatedX = (MyX+X) mod Size + Size;
+		} else {
+			UpdatedX = (MyX+X) mod Size;
+		}
+		UpdatedY = MyY+Y;
+	}
+	elif (map::size(y, Size)) {
+		UpdatedX = MyX+X;
+		if (MyY+Y < 0) {
+			UpdatedY = (MyY+Y) mod Size + Size;
+		} else {
+			UpdatedY = (MyY+Y) mod Size;
+		}
+	}
+	else {
+		UpdatedX = MyX+X;
+		UpdatedY = MyY+Y;
+	}
+	if(Type == goal) {
+		!map::get_goals(Goals);
+		if (not .member(goal(_,_), Goals)) {
+			updateMap(Me, Type, UpdatedX, UpdatedY);
+			?identification::identified(IdList);
+//			for (.member(Ag,IdList)) {
+//				.send(Ag, achieve, stop::new_taskboard_or_merge);
+//			}
+//			!stop::new_taskboard_or_merge;
+		}	
+		elif(not .member(goal(UpdatedX,UpdatedY), Goals)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
+		}
+		.print("@@@@@ Adding goal  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
+		.print("@@@@@ Old list of goals ", Goals);
 	} elif(Type == taskboard) {
 		!map::get_taskboards(Taskboards);
 		if (not .member(taskboard(_,_), Taskboards)) {
-			updateMap(Me, Type, MyX+X, MyY+Y);
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
-			for (.member(Ag,IdList)) {
-				.send(Ag, achieve, stop::new_taskboard_or_merge);
-			}
-			!stop::new_taskboard_or_merge;
+//			for (.member(Ag,IdList)) {
+//				.send(Ag, achieve, stop::new_taskboard_or_merge);
+//			}
+//			!stop::new_taskboard_or_merge;
 		}	
-		elif(not .member(taskboard(MyX+X,MyY+Y), Taskboards)){
-			updateMap(Me, Type, MyX+X, MyY+Y);
+		elif(not .member(taskboard(UpdatedX,UpdatedY), Taskboards)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding taskboard  at X ",MyX+X," Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Adding taskboard  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
 		.print("@@@@@ Old list of taskboards ", Taskboards);
 	} else {
 		!map::get_dispensers(Dispensers);
 		if (not .member(dispenser(Type,_,_),Dispensers)) {
-			updateMap(Me, Type, MyX+X, MyY+Y);
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
-			for (.member(Ag,IdList)) {
-				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
-			}
-			!stop::new_dispenser_or_taskboard_or_merge;
+//			for (.member(Ag,IdList)) {
+//				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
+//			}
+//			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
-		elif(not .member(dispenser(Type,MyX+X,MyY+Y), Dispensers)){
-			updateMap(Me, Type, MyX+X, MyY+Y);
+		elif(not .member(dispenser(Type,UpdatedX,UpdatedY), Dispensers)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",MyX+X," Dispenser Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",UpdatedX," Dispenser Y ",UpdatedY," Agent that requested ",Ag);
 		.print("@@@@@ Old list of dispensers ",Dispensers);
 	}
 	if (S == "self") {
@@ -177,8 +256,6 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	}
 	.
 
-
-
 +!get_dispensers(List)
 	: map::myMap(Me)
 <-
@@ -191,10 +268,10 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	getTaskboards(Me, List);
 	.
 	
-+!get_goals(Cluster, List)
++!get_goals(List)
 	: map::myMap(Me)
 <-
-	getGoals(Me, Cluster, List);
+	getGoals(Me, List);
 	.
 	
 +!get_clusters(List)
@@ -203,9 +280,23 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	getGoalClusters(Me, List);
 	.
 	
-+!get_map_size(Size)
++!get_all_size(Size)
 	: map::myMap(Me)
 <-
-	getMapSize(Me, Size);
+	getAllSize(Me, Size);
+	.
+	
+@map_size[atomic]
++map::size(Axis, Size)
+	: .my_name(Me) & map::myMap(Me)
+<- 
+	.print("################# Axis ",Axis," is of size ",Size);
+	updateLocations(Me, Axis, Size);
+	!printall;
+	.
+@map_size2[atomic]
++map::size(Axis, Size)
+<- 
+	.print("################# Axis ",Axis," is of size ",Size);
 	.
 	

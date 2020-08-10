@@ -1,7 +1,9 @@
 # simple setup file for testing
 
-#move 13 0 A1
-#move 14 4 A2
+#move 9 9 agentA1
+#move 9 14 agentA2
+#terrain 30 31 obstacle
+#terrain 30 34 obstacle
 
 stop    # stops further setup execution
 

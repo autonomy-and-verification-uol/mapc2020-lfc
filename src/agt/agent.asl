@@ -8,7 +8,7 @@
 //{ include("strategy/task.asl", task) }
 //{ include("strategy/when_to_stop.asl", stop) }
 //{ include("strategy/stock.asl", retrieve) }
-//{ include("strategy/map.asl", map) }
+{ include("strategy/map.asl", map) }
 { include("strategy/common-plans.asl", common) }
 //{ include("strategy/planner.asl", planner) }
 { include("strategy/new-round.asl", newround) }
@@ -34,6 +34,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!newround::new_round;
     .print("Registering...");
     register(E);
+    statusRequest;
 	.
 
 +default::currentTeamSize(N) : default::current_number_of_agents(N) <- true.
@@ -70,9 +71,10 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	.
 
 +default::actionID(_)
-	: not start
+	: not start & energy(MaxEnergy) & EnergyThreshold = MaxEnergy * 40 / 100
 <- 
 	+start;
+	+energy_threshold(EnergyThreshold);
 //	.wait(1000);
 	!identification;
 	!clear_blocks;
@@ -85,7 +87,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 +!identification
 	: default::thing(X, Y, entity, Team) & not(X == 0 & Y == 0) & default::team(Team)
 <-
-	.wait({-action::reasoning_about_belief(identification)});
+	.wait(not action::reasoning_about_belief(identification));
 //	.print("IDENTIFICATION");
 	.
 +!identification. // <- .print("No agents in sight").

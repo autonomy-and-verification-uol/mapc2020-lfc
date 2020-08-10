@@ -210,7 +210,6 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 //	!retrieve::smart_move(NewDir);
 	!action::move(NewDir);
 	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
-		!retrieve::smart_move(NewDir);
 		!action::move(NewDir);
 	}
 	.

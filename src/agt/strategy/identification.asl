@@ -42,7 +42,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @thing[atomic]
 +default::thing(X, Y, entity, Team)
-	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) & identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
+	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) //& identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
 <-
 	+action::reasoning_about_belief(identification);
 //	.print("I see another agent of my team at ", X, ",", Y);
@@ -106,8 +106,10 @@ i_met_new_agent(Iknow, IdList) :-
 @addid2[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
 @addid3[atomic]
-+!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & not carto::close_gap & identification::i_know(Ag,LocalX,LocalY) <- +carto::new_distance(LocalX,LocalY); !add_identified_ags(Ags,IdList).
 @addid4[atomic]
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
+@addid5[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
