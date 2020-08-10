@@ -9,6 +9,12 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 +default::step(X)
 	: X \== 0 & X mod 25 = 0
 <-
+	!printall;
+
+	.
+	
++!printall
+<-
 	!get_dispensers(DList);
 //	!get_clusters(GList);
 	!get_goals(GList);
@@ -153,50 +159,82 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: .my_name(Me) & map::myMap(Me)
 <-
 	.term2string(Ag,S);
+	if (map::size(x, SizeX) & map::size(y, SizeY)) {
+		if (MyX+X < 0) {
+			UpdatedX = (MyX+X) mod SizeX + SizeX;
+		} else {
+			UpdatedX = (MyX+X) mod SizeX;
+		}
+		if (MyY+Y < 0) {
+			UpdatedY = (MyY+Y) mod SizeY + SizeY;
+		} else {
+			UpdatedY = (MyY+Y) mod SizeY;
+		}
+	}
+	elif (map::size(x, Size)) {
+		if (MyX+X < 0) {
+			UpdatedX = (MyX+X) mod Size + Size;
+		} else {
+			UpdatedX = (MyX+X) mod Size;
+		}
+		UpdatedY = MyY+Y;
+	}
+	elif (map::size(y, Size)) {
+		UpdatedX = MyX+X;
+		if (MyY+Y < 0) {
+			UpdatedY = (MyY+Y) mod Size + Size;
+		} else {
+			UpdatedY = (MyY+Y) mod Size;
+		}
+	}
+	else {
+		UpdatedX = MyX+X;
+		UpdatedY = MyY+Y;
+	}
 	if(Type == goal) {
 		!map::get_goals(Goals);
 		if (not .member(goal(_,_), Goals)) {
-			updateMap(Me, Type, MyX+X, MyY+Y);
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
 //			for (.member(Ag,IdList)) {
 //				.send(Ag, achieve, stop::new_taskboard_or_merge);
 //			}
 //			!stop::new_taskboard_or_merge;
 		}	
-		elif(not .member(goal(MyX+X,MyY+Y), Goals)){
-			updateMap(Me, Type, MyX+X, MyY+Y);
+		elif(not .member(goal(UpdatedX,UpdatedY), Goals)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding goal  at X ",MyX+X," Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Adding goal  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
 		.print("@@@@@ Old list of goals ", Goals);
 	} elif(Type == taskboard) {
 		!map::get_taskboards(Taskboards);
 		if (not .member(taskboard(_,_), Taskboards)) {
-			updateMap(Me, Type, MyX+X, MyY+Y);
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
 //			for (.member(Ag,IdList)) {
 //				.send(Ag, achieve, stop::new_taskboard_or_merge);
 //			}
 //			!stop::new_taskboard_or_merge;
 		}	
-		elif(not .member(taskboard(MyX+X,MyY+Y), Taskboards)){
-			updateMap(Me, Type, MyX+X, MyY+Y);
+		elif(not .member(taskboard(UpdatedX,UpdatedY), Taskboards)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding taskboard  at X ",MyX+X," Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Adding taskboard  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
 		.print("@@@@@ Old list of taskboards ", Taskboards);
 	} else {
 		!map::get_dispensers(Dispensers);
 		if (not .member(dispenser(Type,_,_),Dispensers)) {
-			updateMap(Me, Type, MyX+X, MyY+Y);
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
 //			for (.member(Ag,IdList)) {
 //				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
 //			}
 //			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
-		elif(not .member(dispenser(Type,MyX+X,MyY+Y), Dispensers)){
-			updateMap(Me, Type, MyX+X, MyY+Y);
+		elif(not .member(dispenser(Type,UpdatedX,UpdatedY), Dispensers)){
+			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",MyX+X," Dispenser Y ",MyY+Y," Agent that requested ",Ag);
+		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",UpdatedX," Dispenser Y ",UpdatedY," Agent that requested ",Ag);
 		.print("@@@@@ Old list of dispensers ",Dispensers);
 	}
 	if (S == "self") {
@@ -217,8 +255,6 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		.send(Ag, achieve, identification::remove_reasoning(UniqueString));
 	}
 	.
-
-
 
 +!get_dispensers(List)
 	: map::myMap(Me)
@@ -248,5 +284,19 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: map::myMap(Me)
 <-
 	getAllSize(Me, Size);
+	.
+	
+@map_size[atomic]
++map::size(Axis, Size)
+	: .my_name(Me) & map::myMap(Me)
+<- 
+	.print("################# Axis ",Axis," is of size ",Size);
+	updateLocations(Me, Axis, Size);
+	!printall;
+	.
+@map_size2[atomic]
++map::size(Axis, Size)
+<- 
+	.print("################# Axis ",Axis," is of size ",Size);
 	.
 	

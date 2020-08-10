@@ -212,10 +212,14 @@
 		?carto::distance_cells(ExtraCells);
 		?map::myMap(Leader);
 		if (Axis == x) {
-			.send(Leader, achieve, carto::calculate_map_size(Axis,C+C2+ExtraCells+VisionCellsX));
+			+map::size(Axis, C+C2+ExtraCells+VisionCellsX);
+			setSizeX(C+C2+ExtraCells+VisionCellsX);
+			.broadcast(tell, map::size(Axis, C+C2+ExtraCells+VisionCellsX));
 		}
 		else {
-			.send(Leader, achieve, carto::calculate_map_size(Axis,C+C2+ExtraCells+VisionCellsY));
+			+map::size(Axis, C+C2+ExtraCells+VisionCellsY);
+			setSizeY(C+C2+ExtraCells+VisionCellsY);
+			.broadcast(tell, map::size(Axis, C+C2+ExtraCells+VisionCellsY));
 		}
 	}
 	else {
@@ -225,7 +229,7 @@
 	.abolish(carto::_[source(_)]);
 	!common::change_role(explorer);
 	!!stop::cartographer_conditional_stop;
-	!!exploration::explore([n,s,e,w]);
+	!!exploration::explore([n]);
 	.
 	
 +!try_to_clear(Dir)
@@ -247,4 +251,19 @@
 	}
 	.
 
-+!calculate_map_size(Axis, Size) <- .print("################# Axis ",Axis," is of size ",Size).
+@map_size[atomic]
++!calculate_map_size(Axis, Size) 
+	: .my_name(Me) & map::myMap(Me)
+<- 
+	.print("################# Axis ",Axis," is of size ",Size);
+	+map::size(Axis, Size);
+	updateLocations(Me, Axis, Size);
+	.broadcast(tell, map::size(Axis, Size));
+	.
+@map_size2[atomic]
++!calculate_map_size(Axis, Size) 
+	: map::myMap(Leader)
+<- 
+	.send(Leader, achieve, carto::calculate_map_size(Axis, Size));
+	.
+	

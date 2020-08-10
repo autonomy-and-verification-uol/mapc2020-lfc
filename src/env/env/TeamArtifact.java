@@ -455,6 +455,35 @@ public class TeamArtifact extends Artifact {
 //		}
 	}
 	
+	@OPERATION
+	void updateLocations(String name, String axis, int size) {
+		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
+			for (Point p : entry.getValue()) {
+				int x;
+				int y;
+				if (axis.equals("x")) {
+					if (p.x % size < 0) {
+						x = p.x % size + size;
+					} else {
+						x = p.x % size;
+					}
+					y = p.y;
+				} else {
+					x = p.x;
+					if (p.y % size < 0) {
+						y = p.y % size + size;
+					} else {
+						y = p.y % size;
+					}
+				}
+				Point pnew = new Point(x, y);
+				Set<Point> set = new HashSet<Point>();
+				set.add(pnew);
+				entry.setValue(set);
+			}
+		}
+	}
+	
 	private static class OriginPoint extends Point{
 		private String evaluated = "boh";
 		private List<Point> scouts = new ArrayList<>();
