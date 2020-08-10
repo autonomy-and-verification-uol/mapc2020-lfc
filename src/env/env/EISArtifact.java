@@ -135,6 +135,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 			if (ei != null) {
 				try {
 //					if (ei.getAllPercepts(agent).get(agentToEntity.get(agent))) {
+					//Collection<Percept> perc = ei.getAllPercepts("statusConnection").get(agentToEntity.get("statusConnection"));
 						Collection<Percept> percepts = ei.getAllPercepts(agent).get(agentToEntity.get(agent));
 						if (!percepts.isEmpty()) {
 //							startTime = System.nanoTime();
