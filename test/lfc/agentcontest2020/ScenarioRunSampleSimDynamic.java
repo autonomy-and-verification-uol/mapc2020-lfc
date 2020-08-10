@@ -13,7 +13,7 @@ import jason.JasonException;
 import massim.Server;
 
 
-public class ScenarioRunSampleQualificationRound1 {
+public class ScenarioRunSampleSimDynamic {
 	
 	@Before
 	public void cleanUpFolders() throws IOException {
@@ -21,7 +21,7 @@ public class ScenarioRunSampleQualificationRound1 {
 		File currentDir = new File("");
 		String path = currentDir.getAbsolutePath();	
 				
-		ScenarioRunSampleQualificationRound1 deletefiles = new ScenarioRunSampleQualificationRound1();
+		ScenarioRunSampleSimDynamic deletefiles = new ScenarioRunSampleSimDynamic();
 		deletefiles.delete(5, path + "/logs");
 		deletefiles.delete(4, path + "/log");
 		deletefiles.delete(5, path + "/replays");	
@@ -51,7 +51,7 @@ public class ScenarioRunSampleQualificationRound1 {
 			public void run() {
 				try {
 					
-					Server.main(new String[] {"-conf", "conf/SampleQualification1.json", "--monitor"});				
+					Server.main(new String[] {"-conf", "conf/SampleConfigSimDynamic.json", "--monitor"});				
 					
 				} catch (Exception e) {
 					e.printStackTrace();

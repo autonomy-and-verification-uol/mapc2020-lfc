@@ -1,0 +1,74 @@
+mas scenario {
+		
+	agent agent1: agent.asl {
+		join: agentart
+		focus: agentart.eis_art_agent1, team::agentart.team_artifact
+		goals: register("connectionA1", "statusConnection")
+		roles: explorer in lfc
+	}
+	
+	workspace agentart {
+		artifact eis_art_agent1: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig1.json")
+		artifact eis_art_agent2: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig2.json")
+		artifact eis_art_agent3: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig3.json") 
+		artifact eis_art_agent4: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig4.json")
+		artifact eis_art_agent5: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig5.json")
+		artifact eis_art_agent6: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig6.json")
+		artifact eis_art_agent7: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig7.json")
+		artifact eis_art_agent8: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig8.json")
+		artifact eis_art_agent9: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig9.json")
+		artifact eis_art_agent10: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig10.json")
+		artifact eis_art_agent11: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig11.json")
+		artifact eis_art_agent12: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig12.json")
+		artifact eis_art_agent13: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig13.json")
+		artifact eis_art_agent14: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig14.json")
+		artifact eis_art_agent15: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig15.json")
+		artifact eis_art_agent16: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig16.json")
+		artifact eis_art_agent17: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig17.json")
+		artifact eis_art_agent18: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig18.json") 
+		artifact eis_art_agent19: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig19.json")
+		artifact eis_art_agent20: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig20.json")
+		artifact eis_art_agent21: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig21.json")
+		artifact eis_art_agent22: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig22.json")
+		artifact eis_art_agent23: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig23.json")
+		artifact eis_art_agent24: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig24.json")
+		artifact eis_art_agent25: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig25.json")
+		artifact eis_art_agent26: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig26.json")
+		artifact eis_art_agent27: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig27.json")
+		artifact eis_art_agent28: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig28.json")
+		artifact eis_art_agent29: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig29.json")
+		artifact eis_art_agent30: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig30.json")
+		artifact eis_art_agent31: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig31.json")
+		artifact eis_art_agent32: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig32.json")
+		artifact eis_art_agent33: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig33.json")
+		artifact eis_art_agent34: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig34.json")
+		artifact eis_art_agent35: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig35.json")
+		artifact eis_art_agent36: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig36.json")
+		artifact eis_art_agent37: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig37.json")
+		artifact eis_art_agent38: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig38.json")
+		artifact eis_art_agent39: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig39.json")
+		artifact eis_art_agent40: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig40.json")
+		artifact eis_art_agent41: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig41.json")
+		artifact eis_art_agent42: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig42.json")
+		artifact eis_art_agent43: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig43.json")
+		artifact eis_art_agent44: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig44.json")
+		artifact eis_art_agent45: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig45.json")
+		artifact eis_art_agent46: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig46.json")
+		artifact eis_art_agent47: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig47.json")
+		artifact eis_art_agent48: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig48.json")
+		artifact eis_art_agent49: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig49.json")
+		artifact eis_art_agent50: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig50.json")
+		
+		artifact team_artifact: env.TeamArtifact()
+	}
+	
+	organisation org : org.xml{
+		group lfc : team		
+	}
+
+    asl-path: src/agt
+              src/agt/inc
+	
+	platform: cartago("infrastructure")
+
+}

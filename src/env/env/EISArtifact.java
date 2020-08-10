@@ -40,7 +40,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 	private Logger logger = Logger.getLogger(EISArtifact.class.getName());
 
 	private Map<String, AgentId> agentIds;
-	private Map<String, String> agentToEntity;
+	private Map<String, Set<String>> agentToEntity;
 	private List<Literal> start = new ArrayList<Literal>();
 	private List<Literal> percs = new ArrayList<Literal>();
 //	private List<Literal> signalList = new ArrayList<Literal>();
@@ -56,7 +56,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 	
 	public EISArtifact() {
 		agentIds      = new ConcurrentHashMap<String, AgentId>();
-		agentToEntity = new ConcurrentHashMap<String, String>();
+		agentToEntity = new ConcurrentHashMap<String, Set<String>>();
 	}
 	
 	protected void init(String config) throws IOException, InterruptedException {
@@ -83,20 +83,28 @@ public class EISArtifact extends Artifact implements AgentListener {
 	@OPERATION
 	void register(String entity)  {
 		String agent = getCurrentOpAgentId().getAgentName();
-		logger = Logger.getLogger(EISArtifact.class.getName()+"_"+agent);
-		logger.info("Registering " + agent + " to entity " + entity);
 		try {
-			ei.registerAgent(agent);
+			if(!ei.getAgents().contains(agent)) {
+				logger = Logger.getLogger(EISArtifact.class.getName()+"_"+agent);
+				logger.info("Registering " + agent + " to entity " + entity);
+				ei.registerAgent(agent);
+				ei.attachAgentListener(agent, this);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ei.attachAgentListener(agent, this);
 		try {
 			ei.associateEntity(agent, entity);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		agentToEntity.put(agent, entity);
+		if(agentToEntity.containsKey(agent)) {
+			agentToEntity.get(agent).add(entity);
+		} else {
+			Set<String> set = new HashSet<String>();
+			set.add(entity);
+			agentToEntity.put(agent, set);
+		}
 		agentIds.put(agent, getCurrentOpAgentId());
         if (ei != null) {
 	        receiving = true;
@@ -127,28 +135,30 @@ public class EISArtifact extends Artifact implements AgentListener {
 		Collection<Percept> previousPercepts = new ArrayList<Percept>();
 		
 		//		await_time(1000);
-		while(!ei.isEntityConnected(agentToEntity.get(agent)))
-			await_time(100);
-		
+		for(String e : agentToEntity.get(agent)) {
+			while(!ei.isEntityConnected(e))
+				await_time(100);
+		}
 		while (receiving) {
 			await_time(100);
 			if (ei != null) {
 				try {
 //					if (ei.getAllPercepts(agent).get(agentToEntity.get(agent))) {
-					//Collection<Percept> perc = ei.getAllPercepts("statusConnection").get(agentToEntity.get("statusConnection"));
-						Collection<Percept> percepts = ei.getAllPercepts(agent).get(agentToEntity.get(agent));
+					for(String entity : agentToEntity.get(agent)) {
+						Collection<Percept> percepts = ei.getAllPercepts(agent).get(entity);
 						if (!percepts.isEmpty()) {
-//							startTime = System.nanoTime();
-//							logger.info("***"+percepts);
+	//							startTime = System.nanoTime();
+	//							logger.info("***"+percepts);
 		//					if (agent.equals("vehicle1")) { logger.info("***"+percepts); }
 							int currentStep = getCurrentStep(percepts);
-							if (lastStep != currentStep) { // only updates if it is a new step
+							if (entity.equals("statusConnection") || lastStep != currentStep) { // only updates if it is a new step
 								lastStep = currentStep;
 								//logger.info("Agent "+agent);
 								updatePerception(agent, previousPercepts, percepts);
 								previousPercepts = percepts;
 							}
 						}
+					}
 //					}
 				} catch (PerceiveException | NoEnvironmentException e) {
 					e.printStackTrace();
@@ -223,6 +233,9 @@ public class EISArtifact extends Artifact implements AgentListener {
 						else if (percept.getName().equals("lastAction")) { lastAction = literal; }
 						else if (percept.getName().equals("lastActionParams")) { lastActionParams = literal; }
 						else if (percept.getName().equals("actionID")) { actionID = literal; }
+						else if (percept.getName().equals("currentTeamSize")) { 
+							defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
+						}
 						else {
 							percs.add(literal); 
 						}
@@ -332,6 +345,10 @@ public class EISArtifact extends Artifact implements AgentListener {
 		"lastActionParams",
 		"energy",
 		"disabled",
+		"teams",
+		"teamSizes",
+		"currentSim",
+		"currentTeamSize"
 //		"timestamp",
 //		"deadline",
 	}));

@@ -14,12 +14,16 @@
     "waitBetweenSimulations" : 5000
   },
 
+  "manual-mode" : [
+    ["A", "B"]
+  ],
+
   "match" : [
-    "$(sim/sim-q1.json)",
-    "$(sim/sim-q2.json)"
+    "$(sim/sim-dynamic.json)"
   ],
 
   "teams" : {
-    "A" : {"prefix" : "agent", "password" : "1"}
+    "A" : {"prefix" : "agent", "password" : "1"},
+    "B" : {"prefix" : "", "password" : "1"}
   }
 }
