@@ -49,17 +49,23 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 		.print("Create agent ", Ag, " with artifact ", EISArtifact);
 		.send(Ag, achieve, default::focus_artifact(agentart,local,EISArtifact,default));
 		.send(Ag, achieve, default::focus_artifact(agentart,local,team_artifact,team));
-		.send(Ag, achieve, default::focus_artifact(org,local,lfc,default));
+		.send(Ag, achieve, default::join_org(org,local,lfc,default));
 		.send(Ag, achieve, default::focus_artifact(org,local,org,default));
 		.concat("connectionA", I, ConnectionEntity);
 		.send(Ag, achieve, default::register(ConnectionEntity));
+		//.send(Ag, achieve, default::initial_role(explorer));
 	};
 	+default::current_number_of_agents(N);
 	.
-+!default::focus_artifact(W,H,A,NS)[source(Ag)]
++!default::focus_artifact(W,H,A,NS)
 	: true
 <-
 	!jcm::focus_env_art(art_env(W,H,A,NS), 5);
+	.
++!default::join_org(W,H,A,NS)
+	: true
+<-
+	!jcm::initial_roles(role(W,H,A,explorer),5)
 	.
 
 @name[atomic]

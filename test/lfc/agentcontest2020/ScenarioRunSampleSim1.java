@@ -60,7 +60,7 @@ public class ScenarioRunSampleSim1 {
 		}).start();
 
 		try {			
-			JaCaMoLauncher.main(new String[] {"lfc-mapc2020-15.jcm"});
+			JaCaMoLauncher.main(new String[] {"lfc-mapc2020-dynamic.jcm"});
 		} catch (JasonException e) {
 			System.out.println("Exception: "+e.getMessage());
 			e.printStackTrace();
