@@ -168,10 +168,10 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		if (not .member(goal(_,_), Goals)) {
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
-//			for (.member(Ag,IdList)) {
-//				.send(Ag, achieve, stop::new_taskboard_or_merge);
-//			}
-//			!stop::new_taskboard_or_merge;
+			for (.member(Ag,IdList)) {
+				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
+			}
+			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
 		elif(not .member(goal(UpdatedX,UpdatedY), Goals)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
@@ -183,10 +183,10 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		if (not .member(taskboard(_,_), Taskboards)) {
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
-//			for (.member(Ag,IdList)) {
-//				.send(Ag, achieve, stop::new_taskboard_or_merge);
-//			}
-//			!stop::new_taskboard_or_merge;
+			for (.member(Ag,IdList)) {
+				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
+			}
+			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
 		elif(not .member(taskboard(UpdatedX,UpdatedY), Taskboards)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
@@ -198,10 +198,10 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		if (not .member(dispenser(Type,_,_),Dispensers)) {
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 			?identification::identified(IdList);
-//			for (.member(Ag,IdList)) {
-//				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
-//			}
-//			!stop::new_dispenser_or_taskboard_or_merge;
+			for (.member(Ag,IdList)) {
+				.send(Ag, achieve, stop::new_dispenser_or_taskboard_or_merge);
+			}
+			!stop::new_dispenser_or_taskboard_or_merge;
 		}	
 		elif(not .member(dispenser(Type,UpdatedX,UpdatedY), Dispensers)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
