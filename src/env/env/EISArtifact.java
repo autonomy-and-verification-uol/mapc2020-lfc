@@ -301,24 +301,24 @@ public class EISArtifact extends Artifact implements AgentListener {
 	
 	@OPERATION 
 	void getMyPos(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
-		if (sizeX != 0) {
-			if (mypos.x % sizeX < 0) {
-				x.set(mypos.x % sizeX + sizeX);
-			} else {
-				x.set(mypos.x % sizeX);
-			}
-		} else {
+//		if (sizeX != 0) {
+//			if (mypos.x % sizeX < 0) {
+//				x.set(mypos.x % sizeX + sizeX);
+//			} else {
+//				x.set(mypos.x % sizeX);
+//			}
+//		} else {
 			x.set(mypos.x);
-		}
-		if (sizeY != 0) {
-			if (mypos.y % sizeY < 0) {
-				y.set(mypos.y % sizeY + sizeY);
-			} else {
-				y.set(mypos.y % sizeY);
-			}
-		} else {
+//		}
+//		if (sizeY != 0) {
+//			if (mypos.y % sizeY < 0) {
+//				y.set(mypos.y % sizeY + sizeY);
+//			} else {
+//				y.set(mypos.y % sizeY);
+//			}
+//		} else {
 			y.set(mypos.y);
-		}
+//		}
 	}
 	
 	@OPERATION 

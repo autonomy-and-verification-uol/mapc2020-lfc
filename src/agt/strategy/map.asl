@@ -35,18 +35,19 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: true
 <-
 	getMyPos(MyX,MyY);
-	.print("Perceived dispenser of type ",Type," at X ",X," at Y ",Y);
+//	.print("Perceived dispenser of type ",Type," at X ",X," at Y ",Y);
 	!map::get_dispensers(Dispensers);
-	!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, Dispensers);
+	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
+	!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, UpdatedX, UpdatedY, Dispensers);
 	.
 
-+!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, Dispensers) : .member(dispenser(Type, MyX+X, MyY+Y), Dispensers) <- true.
-+!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, Dispensers) 
++!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, UpdatedX, UpdatedY, Dispensers) : .member(dispenser(Type, UpdatedX, UpdatedY), Dispensers) <- true.
++!map::update_dispenser_in_map(Type, MyX, MyY, X, Y, UpdatedX, UpdatedY, Dispensers) 
 	: map::myMap(Leader) & default::step(S)
 <-
 	.concat(dispenser,Type,MyX+X,MyY+Y,UniqueString);
 	+action::reasoning_about_belief(UniqueString);
-	.print("Sending to ",Leader, " to add a dispenser at X ",MyX+X," Y ",MyY+Y," at step ",S);
+//	.print("Sending to ",Leader, " to add a dispenser at X ",MyX+X," Y ",MyY+Y," at step ",S);
 	.send(Leader, achieve, map::add_map(Type, MyX, MyY, X, Y, UniqueString));
 	.
 
@@ -55,18 +56,19 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: true
 <-
 	getMyPos(MyX,MyY);
-	.print("Perceived taskboard at X ", X, " at Y ", Y);
+//	.print("Perceived taskboard at X ", X, " at Y ", Y);
 	!map::get_taskboards(Taskboards);
-	!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards);
+	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
+	!map::update_taskboard_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Taskboards);
 	.
 	
-+!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards) : .member(taskboard(MyX+X, MyY+Y), Taskboards) <- true.
-+!map::update_taskboard_in_map(MyX, MyY, X, Y, Taskboards) 
++!map::update_taskboard_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Taskboards) : .member(taskboard(UpdatedX, UpdatedY), Taskboards) <- true.
++!map::update_taskboard_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Taskboards) 
 	: map::myMap(Leader) & default::step(S)
 <-
 	.concat(taskboard,MyX+X,MyY+Y,UniqueString);
 	+action::reasoning_about_belief(UniqueString);
-	.print("Sending to ",Leader, " to add a taskboard at X ",MyX+X," Y ",MyY+Y," at step ",S);
+//	.print("Sending to ",Leader, " to add a taskboard at X ",MyX+X," Y ",MyY+Y," at step ",S);
 	.send(Leader, achieve, map::add_map(taskboard, MyX, MyY, X, Y, UniqueString));
 	.
 
@@ -75,18 +77,19 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: true
 <-
 	getMyPos(MyX,MyY);
-	.print("Perceived goal position at X ", X, " at Y ", Y);
+//	.print("Perceived goal position at X ", X, " at Y ", Y);
 	!map::get_goals(Goals);
-	!map::update_goal_in_map(MyX, MyY, X, Y, Goals);
+	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
+	!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals);
 	.
 	
-+!map::update_goal_in_map(MyX, MyY, X, Y, Goals) : .member(goal(MyX+X, MyY+Y), Goals) <- true.
-+!map::update_goal_in_map(MyX, MyY, X, Y, Goals) 
++!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals) : .member(goal(UpdatedX, UpdatedY), Goals) <- true.
++!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals) 
 	: map::myMap(Leader) & default::step(S)
 <-
 	.concat(goal,MyX+X,MyY+Y,UniqueString);
 	+action::reasoning_about_belief(UniqueString);
-	.print("Sending to ",Leader, " to add a goal at X ",MyX+X," Y ",MyY+Y," at step ",S);
+//	.print("Sending to ",Leader, " to add a goal at X ",MyX+X," Y ",MyY+Y," at step ",S);
 	.send(Leader, achieve, map::add_map(goal, MyX, MyY, X, Y, UniqueString));
 	.
 
@@ -159,38 +162,7 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: .my_name(Me) & map::myMap(Me)
 <-
 	.term2string(Ag,S);
-	if (map::size(x, SizeX) & map::size(y, SizeY)) {
-		if (MyX+X < 0) {
-			UpdatedX = (MyX+X) mod SizeX + SizeX;
-		} else {
-			UpdatedX = (MyX+X) mod SizeX;
-		}
-		if (MyY+Y < 0) {
-			UpdatedY = (MyY+Y) mod SizeY + SizeY;
-		} else {
-			UpdatedY = (MyY+Y) mod SizeY;
-		}
-	}
-	elif (map::size(x, Size)) {
-		if (MyX+X < 0) {
-			UpdatedX = (MyX+X) mod Size + Size;
-		} else {
-			UpdatedX = (MyX+X) mod Size;
-		}
-		UpdatedY = MyY+Y;
-	}
-	elif (map::size(y, Size)) {
-		UpdatedX = MyX+X;
-		if (MyY+Y < 0) {
-			UpdatedY = (MyY+Y) mod Size + Size;
-		} else {
-			UpdatedY = (MyY+Y) mod Size;
-		}
-	}
-	else {
-		UpdatedX = MyX+X;
-		UpdatedY = MyY+Y;
-	}
+	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
 	if(Type == goal) {
 		!map::get_goals(Goals);
 		if (not .member(goal(_,_), Goals)) {
@@ -204,8 +176,8 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		elif(not .member(goal(UpdatedX,UpdatedY), Goals)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding goal  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
-		.print("@@@@@ Old list of goals ", Goals);
+//		.print("@@@@@ Adding goal  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
+//		.print("@@@@@ Old list of goals ", Goals);
 	} elif(Type == taskboard) {
 		!map::get_taskboards(Taskboards);
 		if (not .member(taskboard(_,_), Taskboards)) {
@@ -219,8 +191,8 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		elif(not .member(taskboard(UpdatedX,UpdatedY), Taskboards)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding taskboard  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
-		.print("@@@@@ Old list of taskboards ", Taskboards);
+//		.print("@@@@@ Adding taskboard  at X ",UpdatedX," Y ",UpdatedY," Agent that requested ",Ag);
+//		.print("@@@@@ Old list of taskboards ", Taskboards);
 	} else {
 		!map::get_dispensers(Dispensers);
 		if (not .member(dispenser(Type,_,_),Dispensers)) {
@@ -234,8 +206,8 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		elif(not .member(dispenser(Type,UpdatedX,UpdatedY), Dispensers)){
 			updateMap(Me, Type, UpdatedX, UpdatedY);
 		}
-		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",UpdatedX," Dispenser Y ",UpdatedY," Agent that requested ",Ag);
-		.print("@@@@@ Old list of dispensers ",Dispensers);
+//		.print("@@@@@ Adding dispenser type ",Type," Dispenser X ",UpdatedX," Dispenser Y ",UpdatedY," Agent that requested ",Ag);
+//		.print("@@@@@ Old list of dispensers ",Dispensers);
 	}
 	if (S == "self") {
 		!identification::remove_reasoning(UniqueString);
@@ -284,6 +256,42 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	: map::myMap(Me)
 <-
 	getAllSize(Me, Size);
+	.
+	
++!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY)
+<-
+	if (map::size(x, SizeX) & map::size(y, SizeY)) {
+		if (MyX+X < 0) {
+			UpdatedX = ((MyX+X) mod SizeX) + SizeX;
+		} else {
+			UpdatedX = (MyX+X) mod SizeX;
+		}
+		if (MyY+Y < 0) {
+			UpdatedY = ((MyY+Y) mod SizeY) + SizeY;
+		} else {
+			UpdatedY = (MyY+Y) mod SizeY;
+		}
+	}
+	elif (map::size(x, Size)) {
+		if (MyX+X < 0) {
+			UpdatedX = ((MyX+X) mod Size) + Size;
+		} else {
+			UpdatedX = (MyX+X) mod Size;
+		}
+		UpdatedY = MyY+Y;
+	}
+	elif (map::size(y, Size)) {
+		UpdatedX = MyX+X;
+		if (MyY+Y < 0) {
+			UpdatedY = ((MyY+Y) mod Size) + Size;
+		} else {
+			UpdatedY = (MyY+Y) mod Size;
+		}
+	}
+	else {
+		UpdatedX = MyX+X;
+		UpdatedY = MyY+Y;
+	}
 	.
 	
 @map_size[atomic]
