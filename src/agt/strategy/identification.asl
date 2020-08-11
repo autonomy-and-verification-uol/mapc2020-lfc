@@ -104,7 +104,7 @@ i_met_new_agent(Iknow, IdList) :-
 @addid1[atomic]
 +!add_identified_ags([],IdList) : true <- true.
 @addid2[atomic]
-+!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 15 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 5 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
 @addid3[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & not carto::close_gap & identification::i_know(Ag,LocalX,LocalY) <- +carto::new_distance(LocalX,LocalY); !add_identified_ags(Ags,IdList).
 @addid4[atomic]
@@ -144,10 +144,10 @@ i_met_new_agent(Iknow, IdList) :-
 	if (AgRequesting == Me) {
 		-action::reasoning_about_belief(AgRequested);
 	}
-	!stop::new_dispenser_or_taskboard_or_merge;
-	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-		!stop::check_join_group;
-	}
+//	!stop::new_dispenser_or_taskboard_or_merge;
+//	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+//		!stop::check_join_group;
+//	}
 	.
 @updateidother[atomic]
 +!update_identified(List,NewOriginX,NewOriginY)[source(Ag)]
@@ -159,10 +159,10 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(AuxList,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-	!stop::new_dispenser_or_taskboard_or_merge;
-	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-		!stop::check_join_group;
-	}
+//	!stop::new_dispenser_or_taskboard_or_merge;
+//	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+//		!stop::check_join_group;
+//	}
 	.
 	
 @updatepos[atomic]
@@ -283,10 +283,10 @@ i_met_new_agent(Iknow, IdList) :-
 		if (S == "self") {
 			!identification::remove_reasoning(AgRequested);
 		}
-		!stop::new_dispenser_or_taskboard_or_merge;
-		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-			!stop::check_join_group;
-		}
+//		!stop::new_dispenser_or_taskboard_or_merge;
+//		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+//			!stop::check_join_group;
+//		}
 		.print("Merge finished.");
 	}
 	else {
@@ -328,7 +328,7 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(NewListAux2,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-	!stop::new_dispenser_or_taskboard_or_merge;
+//	!stop::new_dispenser_or_taskboard_or_merge;
 	.
 @cancelmerge[atomic]
 +!identification::confirm_merge[source(Ag)]
