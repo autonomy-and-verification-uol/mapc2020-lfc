@@ -228,9 +228,10 @@
 	.print("@@@@@@ Cartography finished.");
 	.abolish(carto::_[source(_)]);
 	!common::change_role(explorer);
-//	!!stop::cartographer_conditional_stop;
-	!!exploration::explore([n,s,e,w]);
-	
+	!stop::new_dispenser_or_taskboard_or_merge;
+	if (not stop::stop) {
+		!!exploration::explore([n,s,e,w]);
+	}
 	.
 	
 +!try_to_clear(Dir)

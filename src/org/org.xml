@@ -5,23 +5,21 @@
 	<role-definitions>
 	 <role id="explorer" />
 	 <role id="cartographer" />
-	 <role id="taskboard" />
-	 <role id="task" />
+	 <role id="deliverer" />
+	 <role id="origin" />
+	 <role id="retriever" />
 	 <role id="arsehole" />
 	</role-definitions>
 	
 	<group-specification id="lfc">
 	 <subgroups>
-	 	<group-specification id="manufactory">
-	 		<roles>
-	 		  <role id="taskboard" min="1" max="1"/>
-			  <role id="task" />			  
-			 </roles>
-	 	</group-specification>
 	 	<group-specification id="team">
 	 		<roles>
 			  <role id="explorer" />
 			  <role id="cartographer" />
+	 		  <role id="deliverer" max="1"/>
+	 		  <role id="origin" max="1"/>
+			  <role id="retriever" />
 			  <role id="arsehole" />
 			 </roles>
 	 	</group-specification>

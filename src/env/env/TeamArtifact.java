@@ -89,6 +89,8 @@ public class TeamArtifact extends Artifact {
 	
 	private String firstToStop;
 	
+	private int deliverer = -1;
+	
 	private String cartographerY1;
 	private String cartographerY2;
 	
@@ -220,7 +222,13 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void joinRetrievers(OpFeedbackParam<String> flag){
+		if (this.deliverer == -1) {
+			flag.set("deliverer");
+			this.deliverer = 1; 
+		}
+		else {
 			flag.set("retriever");
+		}
 	}
 	
 	
