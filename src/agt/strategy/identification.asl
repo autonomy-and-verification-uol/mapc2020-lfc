@@ -144,10 +144,10 @@ i_met_new_agent(Iknow, IdList) :-
 	if (AgRequesting == Me) {
 		-action::reasoning_about_belief(AgRequested);
 	}
-//	!stop::new_dispenser_or_taskboard_or_merge;
-//	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-//		!stop::check_join_group;
-//	}
+	!stop::new_dispenser_or_taskboard_or_merge;
+	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+		!stop::check_join_group;
+	}
 	.
 @updateidother[atomic]
 +!update_identified(List,NewOriginX,NewOriginY)[source(Ag)]
@@ -159,10 +159,10 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(AuxList,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-//	!stop::new_dispenser_or_taskboard_or_merge;
-//	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-//		!stop::check_join_group;
-//	}
+	!stop::new_dispenser_or_taskboard_or_merge;
+	if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+		!stop::check_join_group;
+	}
 	.
 	
 @updatepos[atomic]
@@ -218,13 +218,10 @@ i_met_new_agent(Iknow, IdList) :-
 +!request_leader(Ag,LocalX,LocalY,GlobalX,GlobalY,AgRequesting)[source(Source)]
 	: map::myMap(Leader)
 <-
-//	.wait(not action::move_sent);
 	getMyPos(OtherX,OtherY);
 	!map::calculate_updated_pos(OtherX,OtherY,0,0,UpdatedX,UpdatedY);
 	.print(Source," requested leader to merge with ",Ag);
 	?identification::identified(StopRequestList);
-	//!map::get_dispensers(DispList);
-	//getGoalClustersWithScouts(Leader, Clusters);
 	.send(Source, achieve, identification::reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,UpdatedX,UpdatedY,Ag,AgRequesting,StopRequestList));
 	.
 
@@ -297,10 +294,10 @@ i_met_new_agent(Iknow, IdList) :-
 		if (S == "self") {
 			!identification::remove_reasoning(AgRequested);
 		}
-//		!stop::new_dispenser_or_taskboard_or_merge;
-//		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
-//			!stop::check_join_group;
-//		}
+		!stop::new_dispenser_or_taskboard_or_merge;
+		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
+			!stop::check_join_group;
+		}
 		.print("Merge finished.");
 	}
 	else {
@@ -343,7 +340,7 @@ i_met_new_agent(Iknow, IdList) :-
 	.union(NewListAux2,[Ag],NewList);
 	+identification::identified(NewList);
 	!update_pos(Ag,NewOriginX,NewOriginY);
-//	!stop::new_dispenser_or_taskboard_or_merge;
+	!stop::new_dispenser_or_taskboard_or_merge;
 	.
 @cancelmerge[atomic]
 +!identification::confirm_merge[source(Ag)]

@@ -44,6 +44,7 @@
 			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 			!closest_goal(GoalX, GoalY, UpdatedX, UpdatedY, 99999, Goals, 0, 0);
 			.print("@@@@@@@@@@@@@@ Closest goal X ",GoalX," Y ",GoalY);
+			!map::printall;
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GoalX, GoalY);
@@ -117,44 +118,6 @@
 //	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 
-+!stop::explore_as_explorer :
-	true
-<-
-	!common::update_role_to(explorer);
-	!!exploration::explore([n,s,e,w]);
-	.
-
-//@first_to_stop1[atomic]
-//+stop::first_to_stop(Ag)[source(_)] :
-//	common::my_role(retriever) & .my_name(Me) & stop::first_to_stop(Me) &
-//	.all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag) & PosOther < Pos
-//<-
-//	.print("Removing retriever");
-////	removeRetriever;
-//	//-retrieve::retriever;
-//	-stop::stop;
-//	-stop::first_to_stop(Me);
-//	!action::forget_old_action;
-//	.print("Adding explorer");
-//	//+exploration::explorer;
-//	!!stop::explore_as_explorer;
-//	.
-//@first_to_stop2[atomic]
-//+stop::first_to_stop(Ag1)[source(_)] :
-//	stop::first_to_stop(Ag2)[source(_)] & Ag1 \== Ag2 &
-//	.all_names(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
-//<-
-//	if(Pos < PosOther){
-//		-stop::first_to_stop(Ag2)[source(_)];
-//		-stop::first_to_stop(Ag1)[source(_)];
-//		+stop::first_to_stop(Ag1)[source(_)];
-//	} else{
-//		-stop::first_to_stop(Ag1)[source(_)];
-//		-stop::first_to_stop(Ag2)[source(_)];
-//		+stop::first_to_stop(Ag2)[source(_)];
-//	}
-//	.
-	
 //@check_join_group[atomic]
 +!stop::check_join_group
 	: .my_name(Me) & default::play(Me,explorer,Group) &
@@ -165,65 +128,25 @@
 	.print("Leader: ", Leader, " Leader1: ", Leader1);
 	if(Leader == Leader1){
 		joinRetrievers(Flag);
-//		-exploration::explorer;
-//		-exploration::special(_);
-//		-common::avoid(_);
-//		-common::escape;
-//		+retrieve::retriever;
-//		!action::forget_old_action;
-		if (Flag == "stocker") {
-			//.print("Removing explorer");
-			//-exploration::explorer;
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::retrieve_block_as_stocker;
-			//!common::update_role_to(stocker);
-			//!retrieve::retrieve_block;
-		}
-		elif (Flag == "helper") {
-			//.print("Removing explorer");
-			//-exploration::explorer;
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-//			.wait(not action::move_sent);
-			!!stop::retrieve_block_as_helper;
-			/*getMyPos(MyX, MyY);
-			!common::update_role_to(helper);
-			//+retrieve::retriever;
-			//+task::helper;
-			+retrieve::moving_to_origin;
-			getTargetGoal(_, GoalX, GoalY, _);
-			TargetX = GoalX+1 - MyX;
-			TargetY = GoalY - MyY;
-			!!planner::generate_goal(TargetX, TargetY);*/
-//			!!retrieve::move_to_goal;
-		}
-		else {
-			.print("Removing explorer");
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::retrieve_block_as_retriever;
-			//!common::update_role_to(retriever);
-			//!retrieve::retrieve_block;
-		}
-	//		!!retrieve::retrieve_block;
+			if (Flag == "deliverer") {
+				.print("Removing explorer");
+				-exploration::special(_);
+				-common::avoid(_);
+				-common::escape;
+				!action::forget_old_action;
+				!!stop::become_deliverer;
+			}
+			else {
+				.print("Removing explorer");
+				-exploration::special(_);
+				-common::avoid(_);
+				-common::escape;
+				!action::forget_old_action;
+				!!stop::become_retriever;
+			}
 	}
 	.
 +!stop::check_join_group : true <- .print("I cannot join the stop group yet").
-
-//+!try_call_stop(true).
-//+!try_call_stop(false)
-//<-
-//	!action::skip;
-//	callStop(Flag);
-//	!try_call_stop(Flag);
-//	.
 
 // trigger for new task addition 
 @trigger1[atomic]
