@@ -1,7 +1,7 @@
 {
     "description" : "qualification round 2 (candidate) config. goal: complete 1 task.",
 
-    "steps" : 100,
+    "steps" : 50,
     "randomSeed" : 19,
     "randomFail" : 1,
     "entities" : {"standard" : 30},
