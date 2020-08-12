@@ -97,8 +97,9 @@ public class TeamArtifact extends Artifact {
 	private String cartographerX1;
 	private String cartographerX2;
 	
-	private int pos;
 	private String goalAgent;
+	private Integer targetTaskX;
+	private Integer targetTaskY;
 	private Integer targetGoalX;
 	private Integer targetGoalY;
 	private String goalSide;
@@ -165,10 +166,11 @@ public class TeamArtifact extends Artifact {
 		cartographerX1 = null;
 		cartographerX2 = null;
 		goalAgent = null;
+		targetTaskX = null;
+		targetTaskY = null;
 		targetGoalX = null;
 		targetGoalY = null;
 		goalSide = null;
-		pos  = 10;
 	}
 	
 	@OPERATION
@@ -233,35 +235,44 @@ public class TeamArtifact extends Artifact {
 	
 	
 	@OPERATION
-	void getTargetGoal(OpFeedbackParam<String> agent, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y, OpFeedbackParam<String> side){
-		if(goalAgent == null) {
-			return;
-		}
-		agent.set(goalAgent);
+	void getTargetGoal(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
 		x.set(targetGoalX);
 		y.set(targetGoalY);
-		side.set(goalSide);
 	}
 	
 	@OPERATION
-	void setTargetGoal(int pos, String agent, int x, int y, String side){
-		if(pos <= this.pos) {
-			this.goalAgent = agent;
-			this.targetGoalX = x;
-			this.targetGoalY = y;
-			this.pos = pos;
-			this.goalSide = side;
-		}
+	void getTargetTaskboard(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		x.set(targetTaskX);
+		y.set(targetTaskY);
 	}
 	
 	@OPERATION
-	void setTargetGoal(int pos, String agent, int x, int y){
-		if(pos <= this.pos) {
-			this.goalAgent = agent;
-			this.targetGoalX = x;
-			this.targetGoalY = y;
-			this.pos = pos;
+	void setTargets(int taskx, int tasky, int goalx, int goaly){
+		this.targetTaskX = taskx;
+		this.targetTaskY = tasky;
+		this.targetGoalX = goalx;
+		this.targetGoalY = goaly;
+		this.retrieversAvailablePositions.clear();
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add north line of the rectangle
+			Point p = new Point(i, tasky-4);
+			this.retrieversAvailablePositions.add(p);
 		}
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add south line of the rectangle
+			Point p = new Point(i, tasky+8);
+			this.retrieversAvailablePositions.add(p);
+		}
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
+			Point p = new Point(i, taskx-9);
+			this.retrieversAvailablePositions.add(p);
+		}
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add east line of the rectangle
+			Point p = new Point(i, taskx+9);
+			this.retrieversAvailablePositions.add(p);
+		}
+//		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
+//		for(Point p: this.retrieversAvailablePositions) {
+//			logger.info("@@@@ position("+p.x+","+p.y+")");
+//		}
 	}
 	
 	

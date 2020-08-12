@@ -16,6 +16,10 @@
 +!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1) : Res = math.abs(MyX - GX) + math.abs(MyY - GY) &  Res < ResAux <- !closest_goal(GoalX, GoalY, MyX, MyY, Res, Goals, GX, GY).
 +!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1)  <- !closest_goal(GoalX, GoalY, MyX, MyY, ResAux, Goals, GX1, GY1).
 
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [], TBX, TBY) <- TaskbX = TBX; TaskbY = TBY.
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [taskboard(TBX,TBY)|Taskboards], TBX1, TBY1) : Res = math.abs(MyX - TBX) + math.abs(MyY - TBY) &  Res < ResAux <- !closest_taskboard(TaskbX, TaskbY, MyX, MyY, Res, Taskboards, TBX, TBY).
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [taskboard(TBX,TBY)|Taskboards], TBX1, TBY1)  <- !closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, Taskboards, TBX1, TBY1).
+
 @stop1[atomic]
 +stop
 	: .my_name(Me) & default::play(Me,explorer,Group) & not stop::first_to_stop(_) // first to stop
@@ -40,11 +44,15 @@
 //			setTargetGoal(Pos, Me, GoalX, GoalY, Side);
 //			initRetrieverAvailablePos(Leader);
 			!map::get_goals(Goals);
+			!map::get_taskboards(Taskboards);
 			getMyPos(MyX,MyY);
 			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-			!closest_goal(GoalX, GoalY, UpdatedX, UpdatedY, 99999, Goals, 0, 0);
+			!closest_taskboard(TaskbX, TaskbY, UpdatedX, UpdatedY, 99999, Taskboards, 0, 0);
+			.print("@@@@@@@@@@@@@@ Closest taskboard to the goal  X ",TaskbX," Y ",TaskbY);
+			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
 			.print("@@@@@@@@@@@@@@ Closest goal X ",GoalX," Y ",GoalY);
 			!map::printall;
+			setTargets(TaskbX, TaskbY, GoalX, GoalY);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GoalX, GoalY);
