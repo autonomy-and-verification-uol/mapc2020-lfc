@@ -108,11 +108,12 @@
 	!common::change_role(deliverer);
 	getTargetTaskboard(TaskbX,TaskbY);
 	.print("@@@@ Closest taskboard X = ",TaskbX," Y = ",TaskbY);
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	TargetX = TaskbX+1 - UpdatedX;
+	TargetY = TaskbY - UpdatedY;
+	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
 	!default::always_skip;
-//	getTargetGoal(_, GoalX, GoalY, _);
-//	getMyPos(MyX, MyY);
-//	TargetX = GoalX+1 - MyX;
-//	TargetY = GoalY - MyY;
 //	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 	
@@ -121,10 +122,12 @@
 <-
 	!common::change_role(origin);
 	+retrieve::moving_to_origin;
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	TargetX = GoalX - UpdatedX;
+	TargetY = GoalY - UpdatedY;
+	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
 	!default::always_skip;
-//	getMyPos(MyX, MyY);
-//	TargetX = GoalX - MyX;
-//	TargetY = GoalY - MyY;
 //	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 
