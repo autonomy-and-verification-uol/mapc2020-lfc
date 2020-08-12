@@ -37,6 +37,8 @@ import massim.eismassim.EnvironmentInterface;
 
 public class EISArtifact extends Artifact implements AgentListener {
 
+	private static volatile boolean everyoneReady = false;
+	
 	private Logger logger = Logger.getLogger(EISArtifact.class.getName());
 
 	private Map<String, AgentId> agentIds;
@@ -53,10 +55,11 @@ public class EISArtifact extends Artifact implements AgentListener {
 	private EnvironmentInterface ei = null;
 	private boolean receiving;
 	private int lastStep = -1;
-	private int lastCurrentTeamSize = -1;
 	
 	private int sizeX = 0;
 	private int sizeY = 0;
+
+	private boolean firstTime = true;
 	
 	public EISArtifact() {
 		agentIds      = new ConcurrentHashMap<String, AgentId>();
@@ -114,6 +117,25 @@ public class EISArtifact extends Artifact implements AgentListener {
         }
 	}
 	
+	@OPERATION
+	void unregister()  {
+		String agent = getCurrentOpAgentId().getAgentName();
+		logger = Logger.getLogger(EISArtifact.class.getName()+"_"+agent);
+		logger.info("Unregistering " + agent);
+		try {
+			ei.unregisterAgent(agent);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		ei.detachAgentListener(agent, this);
+		receiving = false;
+	}
+	
+	@OPERATION
+	void everyoneReady(boolean ready) {
+		EISArtifact.everyoneReady = ready;
+	}
+	
 	
 	@OPERATION
 	void action(String action) throws NoValueException {
@@ -149,11 +171,25 @@ public class EISArtifact extends Artifact implements AgentListener {
 				try {
 					Collection<Percept> percepts = ei.getAllPercepts(agent).get(agentToEntity.get(agent));
 					if (!percepts.isEmpty()) {
-						int currentStep = getCurrentStep(percepts);
-						if (lastStep != currentStep) { // only updates if it is a new step
-							lastStep = currentStep;
-							updatePerception(agent, previousPercepts, percepts);
-							previousPercepts = percepts;
+						if(agent.equals("agent0") && firstTime ) {
+//							for(Percept p : percepts) {
+//								logger.info(p.toString());
+//							}
+							for(Percept p : percepts) {
+								if(p.getName().equals("teamSizes")) {
+									Literal literal = Translator.perceptToLiteral(p);
+									defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
+									break;
+								}
+							}
+							firstTime = false;
+						} else if(everyoneReady){
+							int currentStep = getCurrentStep(percepts);
+							if (lastStep != currentStep) { // only updates if it is a new step
+								lastStep = currentStep;
+								updatePerception(agent, previousPercepts, percepts);
+								previousPercepts = percepts;
+							}
 						}
 					}
 				} catch (PerceiveException | NoEnvironmentException e) {
@@ -196,24 +232,24 @@ public class EISArtifact extends Artifact implements AgentListener {
 		}*/
 	}
 
-	private void updateCurrentTeamSize(Collection<Percept> percepts) throws JasonException {
-		for(Percept p : percepts) {
-			if(p.getName().equals("currentTeamSize")) {
-				int currentTeamSize = new Integer(p.getParameters().get(0).toString());
-				if(lastCurrentTeamSize != currentTeamSize) {
-					Literal literal = Translator.perceptToLiteral(p);
-					try{				
-						removeObsPropertyByTemplate(p.getName(), (Object[]) literal.getTermsArray());
-					}
-					catch (Exception e) {
-						logger.info("error removing old perception "+literal+" "+e.getMessage());
-					}
-					defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
-					lastCurrentTeamSize = currentTeamSize;
-				}
-			}
-		}
-	}
+//	private void updateTeamSizes(Collection<Percept> percepts) throws JasonException {
+//		for(Percept p : percepts) {
+//			if(p.getName().equals("teamSizes")) {
+//				//int currentTeamSizes = new Integer(p.getParameters().get(0).toString());
+//				//if(lastTeamSize != currentTeamSizes) {
+//				Literal literal = Translator.perceptToLiteral(p);
+//				try{				
+//					removeObsPropertyByTemplate(p.getName(), (Object[]) literal.getTermsArray());
+//				}
+//				catch (Exception e) {
+//					logger.info("error removing old perception "+literal+" "+e.getMessage());
+//				}
+//				defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
+//					//lastTeamSize = currentTeamSizes;
+//				//}
+//			}
+//		}
+//	}
 	
 	private int getCurrentStep(Collection<Percept> percepts) throws JasonException  {
 		obstacleList.clear();
@@ -284,9 +320,9 @@ public class EISArtifact extends Artifact implements AgentListener {
 						else if (percept.getName().equals("actionID")) { 
 							actionID = literal; 
 						}
-						else if (percept.getName().equals("currentTeamSize")) { 
-							defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
-						}
+//						else if (percept.getName().equals("currentTeamSize")) { 
+//							defineObsProperty(literal.getFunctor(), (Object[]) literal.getTermsArray());
+//						}
 						else {
 							percs.add(literal); 
 						}

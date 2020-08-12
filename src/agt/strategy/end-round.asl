@@ -51,6 +51,8 @@
 <-
 	if (Me == agent1) { 
 		clearTeam; 
+		//.print("TELL AGENT0");
+    	.send(agent0, achieve, default::create_team);
 		.broadcast(tell, endround::wait_change_round);		
 	}
 	else {

@@ -35,6 +35,11 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
     .print("Registering...");
     register(E);
 	.
++!unregister
+	: true
+<-
+	unregister;
+	.
 
 +!default::focus_artifact(W,H,A,NS)
 	: true
