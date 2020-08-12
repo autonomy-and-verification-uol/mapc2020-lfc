@@ -3,7 +3,7 @@ mas scenario {
 	agent agent1: agent.asl {
 		join: agentart
 		focus: agentart.eis_art_agent1, team::agentart.team_artifact
-		goals: register("connectionA1")
+		goals: register("connectionA1", "statusConnection")
 		roles: explorer in lfc
 
 	}

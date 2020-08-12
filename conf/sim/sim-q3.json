@@ -2,9 +2,9 @@
     "description" : "qualification round 2 (candidate) config. goal: complete 1 task.",
 
     "steps" : 100,
-    "randomSeed" : 19,
+    "randomSeed" : 20,
     "randomFail" : 1,
-    "entities" : {"standard" : 30},
+    "entities" : {"standard" : 50},
     "clusterBounds" : [3,10],
 
     "clearSteps" : 3,

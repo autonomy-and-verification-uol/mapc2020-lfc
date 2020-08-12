@@ -19,14 +19,14 @@ block_adjacent(X,Y,FinalX,FinalY,n) :- default::thing(0,-1,block,_) & X = 0 & Y 
 block_adjacent(X,Y,FinalX,FinalY,e) :- default::thing(1,0,block,_) & X = 1 & Y = 0 & FinalX = 2 & FinalY = 0.
 block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y = 0 & FinalX = -2 & FinalY = 0.
 
-+!register(E1, E2)
-	: .my_name(Me)
-<- 
-	!newround::new_round;
-    .print("Registering...");
-    register(E1);
-    register(E2);
-	.
+//+!register(E1, E2)
+//	: .my_name(Me)
+//<- 
+//	!newround::new_round;
+//    .print("Registering...");
+//    register(E1);
+//    register(E2);
+//	.
 
 +!register(E)
 	: .my_name(Me)
@@ -34,29 +34,8 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!newround::new_round;
     .print("Registering...");
     register(E);
-    statusRequest;
 	.
 
-+default::currentTeamSize(N) : default::current_number_of_agents(N) <- true.
-+default::currentTeamSize(N)
-	: .my_name(agent1)
-<- 
-	.print("Team size: ", N);
-	for(.range(I, 2, N-1)){
-		.concat("agent", I, Ag);
-		.create_agent(Ag, "./agent.asl");
-		.concat("eis_art_agent", I, EISArtifact);	
-		.print("Create agent ", Ag, " with artifact ", EISArtifact);
-		.send(Ag, achieve, default::focus_artifact(agentart,local,EISArtifact,default));
-		.send(Ag, achieve, default::focus_artifact(agentart,local,team_artifact,team));
-		.send(Ag, achieve, default::join_org(org,local,lfc,default));
-		.send(Ag, achieve, default::focus_artifact(org,local,org,default));
-		.concat("connectionA", I, ConnectionEntity);
-		.send(Ag, achieve, default::register(ConnectionEntity));
-		//.send(Ag, achieve, default::initial_role(explorer));
-	};
-	+default::current_number_of_agents(N);
-	.
 +!default::focus_artifact(W,H,A,NS)
 	: true
 <-

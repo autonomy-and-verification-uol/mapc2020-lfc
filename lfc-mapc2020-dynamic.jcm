@@ -1,13 +1,13 @@
 mas scenario {
 		
-	agent agent1: agent.asl {
+	agent agent0: agent0.asl {
 		join: agentart
-		focus: agentart.eis_art_agent1, team::agentart.team_artifact
-		goals: register("connectionA1", "statusConnection")
-		roles: explorer in lfc
+		focus: agentart.eis_art_agent0
+		goals: register("statusConnection")
 	}
 	
 	workspace agentart {
+		artifact eis_art_agent0: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig0.json")
 		artifact eis_art_agent1: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig1.json")
 		artifact eis_art_agent2: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig2.json")
 		artifact eis_art_agent3: env.EISArtifact("conf/eisconfig/localhost/eismassimconfig3.json") 

@@ -15,7 +15,7 @@
 @stop1[atomic]
 +stop
 	: .my_name(Me) & default::play(Me,explorer,Group) & not stop::first_to_stop(_) // first to stop
-	& .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & map::myMap(Leader) //& not action::move_sent
+	& common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & map::myMap(Leader) //& not action::move_sent
 <-
 	getGoalClustersWithScouts(Leader, Clusters);
 	//!stop::choose_the_biggest_cluster(Clusters, cluster(ClusterId, GoalList));
@@ -160,7 +160,7 @@
 @first_to_stop1[atomic]
 +stop::first_to_stop(Ag)[source(_)] :
 	common::my_role(retriever) & .my_name(Me) & stop::first_to_stop(Me) &
-	.all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag) & PosOther < Pos
+	common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag) & PosOther < Pos
 <-
 	.print("Removing retriever");
 //	removeRetriever;
@@ -175,7 +175,7 @@
 @first_to_stop2[atomic]
 +stop::first_to_stop(Ag1)[source(_)] :
 	stop::first_to_stop(Ag2)[source(_)] & Ag1 \== Ag2 &
-	.all_names(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
+	common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
 <-
 	if(Pos < PosOther){
 		-stop::first_to_stop(Ag2)[source(_)];

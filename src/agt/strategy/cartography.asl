@@ -1,5 +1,5 @@
 +!try_cartographer(Ag2,Ag2X,Ag2Y)
-	: (not cartographerY(_,_) | not cartographerX(_,_))  & .my_name(Ag1) & not cartographerY(Ag2,_) & not cartographerY(_,Ag2) & not cartographerY(Ag1,_) & not cartographerY(_,Ag1) & .all_names(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
+	: (not cartographerY(_,_) | not cartographerX(_,_))  & .my_name(Ag1) & not cartographerY(Ag2,_) & not cartographerY(_,Ag2) & not cartographerY(Ag1,_) & not cartographerY(_,Ag1) & common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
 <-
 	if (Pos < PosOther) {
 		addCartographer(Ag1,Ag2,Flag);
@@ -137,7 +137,7 @@
 	
 	
 +!cartography(Ag,y,AgY)
-	: .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
+	: .my_name(Me) & common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
 	+cells(1);
 	+axis(y);
@@ -161,7 +161,7 @@
 	.
 
 +!cartography(Ag,x,AgX)
-	: .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
+	: .my_name(Me) & common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
 	+cells(1);
 	+agent_to_identify(Ag);
@@ -204,7 +204,7 @@
 	.
 	
 +!carto
-	: cycle_complete(VisionCellsX,VisionCellsY) & agent_to_identify(Ag) & cells(C) & my_direction(Dir) & .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
+	: cycle_complete(VisionCellsX,VisionCellsY) & agent_to_identify(Ag) & cells(C) & my_direction(Dir) & .my_name(Me) & common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
 	if (Pos < PosOther)	{
 		.wait(carto::other_cells(C2)[source(Ag)]);

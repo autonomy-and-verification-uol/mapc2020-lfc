@@ -111,7 +111,7 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	
 //+!map::conditional_stop_evaluating(Leader, GoalX, GoalY)[source(Ag)] :
 //	map::myMap(Leader) & common::my_role(goal_evaluator) &
-//	map::evaluating_positions(Pos) & .my_name(Me) & .all_names(AllAgents) & .nth(Nth,AllAgents,Me) & .nth(Nth1,AllAgents,Ag)
+//	map::evaluating_positions(Pos) & .my_name(Me) & common::all_names_new(AllAgents) & .nth(Nth,AllAgents,Me) & .nth(Nth1,AllAgents,Ag)
 //<-
 ////	.wait(not action::move_sent);
 //	getMyPos(MyX, MyY);

@@ -8,7 +8,7 @@
   "times": false,
   "notifications": false,
   "queued": true,
-  "entities": [
-    {"name": "connectionA1", "username": "agentA1", "password": "1", "print-iilang": false, "print-json": false}
-  ]
+    "status-entity": {
+    "name": "statusConnection"
+  }
 }

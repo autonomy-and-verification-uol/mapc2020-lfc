@@ -1,3 +1,13 @@
+common::all_names_new(AllAgents) :-
+	.all_names(AllAgents1) &
+	remove_from_list(AllAgents1, agent0, AllAgents).
+remove_from_list([], _, []).
+remove_from_list([H|L], H, L1) :-
+	remove_from_list(L, H, L1).
+remove_from_list([H|L], H1, [H|L1]) :-
+	H \== H1 & 
+	remove_from_list(L, H1, L1).
+
 relative_right(n,e) :- true.
 relative_right(s,w) :- true.
 relative_right(e,s) :- true.

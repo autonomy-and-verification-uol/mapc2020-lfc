@@ -42,7 +42,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @thing[atomic]
 +default::thing(X, Y, entity, Team)
-	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) //& identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
+	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) //& identification::identified(List) & common::all_names_new(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
 <-
 	+action::reasoning_about_belief(identification);
 //	.print("I see another agent of my team at ", X, ",", Y);
@@ -52,7 +52,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @agentseesfinal[atomic]
 +agent_sees(_,_)[source(Name)] 
-	: .all_names(Ags) & .length(Ags,NumberAgents) & count(NumberAgents-2)
+	: common::all_names_new(Ags) & .length(Ags,NumberAgents) & count(NumberAgents-2)
 <-
 	.print("I AM HERE!");
 	-count(_);
@@ -167,7 +167,7 @@ i_met_new_agent(Iknow, IdList) :-
 	
 @updatepos[atomic]
 +!update_pos(MapOther,OriginX,OriginY)
-	: map::myMap(Map) & .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me)
+	: map::myMap(Map) & .my_name(Me) & common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me)
 <-
 	-map::myMap(Map);
 	+map::myMap(MapOther);
@@ -229,7 +229,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @replyleaderme[atomic]
 +!reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,OtherX,OtherY,AgRequested,AgRequesting,StopRequestList)[source(Source)]
-	: .my_name(Me) & map::myMap(Me) & ((stop::first_to_stop(Stop) & (Stop == Me | (identification::identified(StopIdList) & .member(Stop, StopIdList)))) | ((not stop::first_to_stop(Stop1) | (stop::first_to_stop(Stop2) & not Stop2 == Source & not .member(Stop, StopRequestList))) & (.all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Leader) & Pos < PosOther)))
+	: .my_name(Me) & map::myMap(Me) & ((stop::first_to_stop(Stop) & (Stop == Me | (identification::identified(StopIdList) & .member(Stop, StopIdList)))) | ((not stop::first_to_stop(Stop1) | (stop::first_to_stop(Stop2) & not Stop2 == Source & not .member(Stop, StopRequestList))) & (common::all_names_new(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Leader) & Pos < PosOther)))
 <-
 	.print(" Starting merge request from  ",AgRequesting," to merge with ",AgRequested," and their leader is ",Leader);
 	.send(Leader, achieve, identification::confirm_merge);
@@ -338,7 +338,7 @@ i_met_new_agent(Iknow, IdList) :-
 	.
 
 +!check_all_agent_sees([]) 
-	: .all_names(Ags) & .my_name(Me)
+	: common::all_names_new(Ags) & .my_name(Me)
 <- 
 	.findall(ag(Distance,Ag), (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y)) & Distance = math.abs(X) + math.abs(Y)), Iknow);
 	.sort(Iknow,Iknowsorted);

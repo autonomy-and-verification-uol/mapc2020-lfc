@@ -16,7 +16,8 @@
 
   "match" : [
     "$(sim/sim-q1.json)",
-    "$(sim/sim-q2.json)"
+    "$(sim/sim-q2.json)",
+    "$(sim/sim-q3.json)"
   ],
 
   "teams" : {
