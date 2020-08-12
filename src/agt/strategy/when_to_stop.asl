@@ -48,9 +48,9 @@
 			getMyPos(MyX,MyY);
 			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 			!closest_taskboard(TaskbX, TaskbY, UpdatedX, UpdatedY, 99999, Taskboards, 0, 0);
-			.print("@@@@@@@@@@@@@@ Closest taskboard to the goal  X ",TaskbX," Y ",TaskbY);
+			.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
 			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
-			.print("@@@@@@@@@@@@@@ Closest goal X ",GoalX," Y ",GoalY);
+			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 			!map::printall;
 			setTargets(TaskbX, TaskbY, GoalX, GoalY);
 			.broadcast(tell, stop::first_to_stop(Me));
@@ -106,6 +106,8 @@
 	true
 <-
 	!common::change_role(deliverer);
+	getTargetTaskboard(TaskbX,TaskbY);
+	.print("@@@@ Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	!default::always_skip;
 //	getTargetGoal(_, GoalX, GoalY, _);
 //	getMyPos(MyX, MyY);
@@ -185,6 +187,7 @@
 	!stop::update_blocks_count(Blocks).
 	
 +!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, true) : 
+	map::size(x, _) & map::size(y, _) &
 	.length(Goals, NGoals) & NGoals >= 1 &
 //	.length(Blocks, NBlocks) & 
 	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
