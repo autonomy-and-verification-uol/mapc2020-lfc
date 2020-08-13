@@ -145,7 +145,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!!retrieve::retrieve_block;
 	.
 +!task_failed
-	: common::my_role(origin) & committed(Id,CommitListSort)
+	: .my_name(Me) & default::play(Me,origin,Group) & committed(Id,CommitListSort)
 <-
 	.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ===============");
 	+no_skip;

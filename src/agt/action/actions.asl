@@ -183,7 +183,7 @@
 
 // ##### SKIP ACTION #####
 +!skip
-	: ((default::thing(0,0,marker,clear) | default::thing(0,0,marker,ci)) | (retrieve::block(X,Y) & (default::thing(X,Y,marker,clear) | default::thing(X,Y,marker,ci)))) & not common::escape & common::my_role(origin)
+	: ((default::thing(0,0,marker,clear) | default::thing(0,0,marker,ci)) | (retrieve::block(X,Y) & (default::thing(X,Y,marker,clear) | default::thing(X,Y,marker,ci)))) & not common::escape & .my_name(Me) & default::play(Me,origin,Group)
 <-
 	?common::safe_origin_pos(X,Y);
 	if (X \== 0 & Y \== 0 & retrieve::block(_,_)) {

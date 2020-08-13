@@ -34,14 +34,24 @@
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: common::my_role(origin)
+	: .my_name(Me) & default::play(Me,origin,Group)
 <- 
  	if (default::goal(0,0)) {
-		-retrieve::moving_to_origin;
 		+task::origin;
 		!!default::always_skip;
 	}
 	elif (default::goal(X,Y)) {
+		!generate_goal(X, Y, Aux);
+	}
+	.
++!generate_goal(0, 0, Aux) 
+	: .my_name(Me) & default::play(Me,deliverer,Group)
+<- 
+ 	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
+		+task::deliverer;
+		!!default::always_skip;
+	}
+	elif (default::thing(X, Y, taskboard, _)) {
 		!generate_goal(X, Y, Aux);
 	}
 	.

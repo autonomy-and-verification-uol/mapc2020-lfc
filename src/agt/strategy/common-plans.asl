@@ -398,7 +398,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: not default::lastAction(rotate) & retrieve::block(X,Y) & not default::thing(X,Y,block,_)
 <-
 	-retrieve::block(X,Y);
-	if (common::my_role(origin)) {
+	if (.my_name(Me) & default::play(Me,origin,Group)) {
 //		+danger;
 	}
 	.

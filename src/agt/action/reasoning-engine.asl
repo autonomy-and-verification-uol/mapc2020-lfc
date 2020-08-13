@@ -63,7 +63,7 @@
 	elif (Result == failed_status) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
-			if (common::my_role(origin)) {
+			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AHAHAHA");
 //				+task::danger;
 			}
@@ -76,7 +76,7 @@
 	elif (Result == failed_status & LastAction == clear & default::energy(Energy) & Energy >= 30) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
-			if (common::my_role(origin)) {
+			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				+task::danger;
 			}
 			else {

@@ -113,21 +113,18 @@
 	TargetX = TaskbX+1 - UpdatedX;
 	TargetY = TaskbY - UpdatedY;
 	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
-	!default::always_skip;
-//	!!planner::generate_goal(TargetX, TargetY, notblock);
+	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 	
 +!stop::become_origin(GoalX, GoalY) :
 	true
 <-
 	!common::change_role(origin);
-	+retrieve::moving_to_origin;
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	TargetX = GoalX - UpdatedX;
 	TargetY = GoalY - UpdatedY;
 	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
-//	!default::always_skip;
 	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 
