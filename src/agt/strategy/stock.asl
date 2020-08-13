@@ -188,88 +188,85 @@ most_needed_type(Dispensers, AgList, Type) :-
 		scout(Side, X-RangeW, Y),
 		scout(Side, X-RangeW, Y-RangeN)
 	] */	
-+!retrieve::generate_square_positions_around_origin(origin(X, Y), Side, RangeN, RangeS, RangeW, RangeE,
-	L) : 
-	true
-<-
-	-retrieve::scouts_aux(_);
-	+retrieve::scouts_aux([]);
-	for(.range(H, 0, RangeE, 3)){
-		if(retrieve::scouts_aux(Scouts)){
-			.concat(Scouts, [scout(Side, X+H, Y-RangeN)], Scouts1);
-			-+retrieve::scouts_aux(Scouts1);
-		}
-	}
-	for(.range(V, -RangeN+3, RangeS, 3)){
-		if(retrieve::scouts_aux(Scouts)){
-			.concat(Scouts, [scout(Side, X+RangeE, Y+V)], Scouts1);
-			-+retrieve::scouts_aux(Scouts1);
-		}
-	}		
-	for(.range(H, RangeE-3, -RangeW, -3)){
-		if(retrieve::scouts_aux(Scouts)){
-			.concat(Scouts, [scout(Side, X+H, Y+RangeS)], Scouts1);
-			-+retrieve::scouts_aux(Scouts1);
-		}
-	}
-	for(.range(V, RangeS-3, -RangeN, -3)){
-		if(retrieve::scouts_aux(Scouts)){
-			.concat(Scouts, [scout(Side, X-RangeW, Y+V)], Scouts1);
-			-+retrieve::scouts_aux(Scouts1);
-		}
-	}
-	for(.range(H, -RangeW+3, 0, 3)){
-		if(H<0 & retrieve::scouts_aux(Scouts)){
-			.concat(Scouts, [scout(Side, X+H, Y-RangeN)], Scouts1);
-			-+retrieve::scouts_aux(Scouts1);
-		}
-	}
-	if(retrieve::scouts_aux(Scouts)){
-		L = Scouts;
-	}	
-	.
-+!retrieve::generate_helpers_position(origin(X, Y), n, 
-	[
-		pos(X, Y-5),
-		pos(X-2, Y-5),
-		pos(X-4, Y-5),
-		pos(X+2, Y-5),
-		pos(X+4, Y-5)
-	], pos(X, Y-5)).
-+!retrieve::generate_helpers_position(origin(X, Y), s, 
-	[
-		pos(X, Y+5),
-		pos(X-2, Y+5),
-		pos(X-4, Y+5),
-		pos(X+2, Y+5),
-		pos(X+4, Y+5)
-	], pos(X, Y+5)).
-+!retrieve::generate_helpers_position(origin(X, Y), w, 
-	[
-		pos(X-5, Y),
-		pos(X-5, Y-4),
-		pos(X-7, Y),
-		pos(X-9, Y),
-		pos(X-5, Y+4)
-	], pos(X-5, Y)).
-+!retrieve::generate_helpers_position(origin(X, Y), e, 
-	[
-		pos(X+5, Y),
-		pos(X+5, Y-4),
-		pos(X+7, Y),
-		pos(X+9, Y),
-		pos(X+5, Y+4)
-	], pos(X+5, Y)).
+//+!retrieve::generate_square_positions_around_origin(origin(X, Y), Side, RangeN, RangeS, RangeW, RangeE,
+//	L) : 
+//	true
+//<-
+//	-retrieve::scouts_aux(_);
+//	+retrieve::scouts_aux([]);
+//	for(.range(H, 0, RangeE, 3)){
+//		if(retrieve::scouts_aux(Scouts)){
+//			.concat(Scouts, [scout(Side, X+H, Y-RangeN)], Scouts1);
+//			-+retrieve::scouts_aux(Scouts1);
+//		}
+//	}
+//	for(.range(V, -RangeN+3, RangeS, 3)){
+//		if(retrieve::scouts_aux(Scouts)){
+//			.concat(Scouts, [scout(Side, X+RangeE, Y+V)], Scouts1);
+//			-+retrieve::scouts_aux(Scouts1);
+//		}
+//	}		
+//	for(.range(H, RangeE-3, -RangeW, -3)){
+//		if(retrieve::scouts_aux(Scouts)){
+//			.concat(Scouts, [scout(Side, X+H, Y+RangeS)], Scouts1);
+//			-+retrieve::scouts_aux(Scouts1);
+//		}
+//	}
+//	for(.range(V, RangeS-3, -RangeN, -3)){
+//		if(retrieve::scouts_aux(Scouts)){
+//			.concat(Scouts, [scout(Side, X-RangeW, Y+V)], Scouts1);
+//			-+retrieve::scouts_aux(Scouts1);
+//		}
+//	}
+//	for(.range(H, -RangeW+3, 0, 3)){
+//		if(H<0 & retrieve::scouts_aux(Scouts)){
+//			.concat(Scouts, [scout(Side, X+H, Y-RangeN)], Scouts1);
+//			-+retrieve::scouts_aux(Scouts1);
+//		}
+//	}
+//	if(retrieve::scouts_aux(Scouts)){
+//		L = Scouts;
+//	}	
+//	.
+//+!retrieve::generate_helpers_position(origin(X, Y), n, 
+//	[
+//		pos(X, Y-5),
+//		pos(X-2, Y-5),
+//		pos(X-4, Y-5),
+//		pos(X+2, Y-5),
+//		pos(X+4, Y-5)
+//	], pos(X, Y-5)).
+//+!retrieve::generate_helpers_position(origin(X, Y), s, 
+//	[
+//		pos(X, Y+5),
+//		pos(X-2, Y+5),
+//		pos(X-4, Y+5),
+//		pos(X+2, Y+5),
+//		pos(X+4, Y+5)
+//	], pos(X, Y+5)).
+//+!retrieve::generate_helpers_position(origin(X, Y), w, 
+//	[
+//		pos(X-5, Y),
+//		pos(X-5, Y-4),
+//		pos(X-7, Y),
+//		pos(X-9, Y),
+//		pos(X-5, Y+4)
+//	], pos(X-5, Y)).
+//+!retrieve::generate_helpers_position(origin(X, Y), e, 
+//	[
+//		pos(X+5, Y),
+//		pos(X+5, Y-4),
+//		pos(X+7, Y),
+//		pos(X+9, Y),
+//		pos(X+5, Y+4)
+//	], pos(X+5, Y)).
 
 +!retrieve::retrieve_block 
-	: default::step(Step1) & map::myMap(Leader)
+	: true
 <-
 //	.wait(not action::move_sent);
 	callPlanner(Flag);
 	!planner::try_call_planner(Flag);
-	getMyPos(MyX, MyY);
-	?default::step(Step2);
-	.print(" Step1 ",Step1," Step2 ",Step2);
 	!retrieve::decide_block_type_flat(Type); 
 	.print("I decided to get block type: ", Type);
 	if (retrieve::minus_one(DispX,DispY)) {
@@ -280,19 +277,19 @@ most_needed_type(Dispensers, AgList, Type) :-
 		!retrieve::get_nearest_dispenser(Type, dispenser(Type, X, Y));
 	}
 	.print("The nearest dispenser is: ", dispenser(Type, X, Y));
-	.print("Target added: ", X, " ", Y);
-	.print("My pos: ", MyX, " ", MyY);
-	TargetX = X - MyX;
-	TargetY = Y - MyY;
-	
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	TargetX = X - UpdatedX;
+	TargetY = Y - UpdatedY;
+//	.print("My pos: ", UpdatedX, " ", UpdatedY);
 	if(TargetX < 0){
 		.print("Relative target: ", TargetX + 1, " ", TargetY);
 		+collect_block(-1,0);
-		!!planner::generate_goal(TargetX + 1, TargetY, block);
+		!!planner::generate_goal(TargetX + 1, TargetY, notblock);
 	} else {
 		.print("Relative target: ", TargetX - 1, " ", TargetY);
 		+collect_block(1,0);
-		!!planner::generate_goal(TargetX - 1, TargetY, block);
+		!!planner::generate_goal(TargetX - 1, TargetY, notblock);
 	}
 	.
 
@@ -379,13 +376,13 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::get_nearest_dispenser(Type, Dispenser) : 
 	true
 <-
-	!map::get_dispensers(Dispensers); .print("Dispensers: ", Dispensers);
+	!map::get_dispensers(Dispensers); 
+//	.print("Dispensers: ", Dispensers);
 	!retrieve::get_nearest_dispenser_aux1(Dispensers, Type, Dispenser).
 +!retrieve::get_nearest_dispenser_aux1(Dispensers, Type, dispenser(Type, X, Y)) :
 	true
 <-
-	//getMyPos(MyX,MyY);
-	getTargetGoal(_, MyX, MyY, _);
+	getTargetGoal(MyX,MyY);
 	.findall(dispenser(Type, X, Y, Distance), (.member(dispenser(Type, X, Y), Dispensers) & (Distance = math.abs(MyX - X) + math.abs(MyY - Y))), DispensersDist);
 	!retrieve::get_nearest_dispenser_aux2(DispensersDist, dispenser(Type, X, Y, _)).
 +!retrieve::get_nearest_dispenser_aux2([], dispenser(_, _, _, 100000000000)) : true <- true.

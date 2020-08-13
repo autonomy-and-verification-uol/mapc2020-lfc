@@ -98,8 +98,7 @@
 	true
 <-
 	!common::change_role(retriever);
-	!default::always_skip;
-//	!retrieve::retrieve_block;
+	!retrieve::retrieve_block;
 	.
 	
 +!stop::become_deliverer :
@@ -107,13 +106,18 @@
 <-
 	!common::change_role(deliverer);
 	getTargetTaskboard(TaskbX,TaskbY);
-	.print("@@@@ Closest taskboard X = ",TaskbX," Y = ",TaskbY);
+//	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	TargetX = TaskbX+1 - UpdatedX;
+	TargetX = TaskbX - UpdatedX;
 	TargetY = TaskbY - UpdatedY;
-	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
-	!!planner::generate_goal(TargetX, TargetY, notblock);
+	if(TargetX < 0){
+//		.print("Relative target: ", TargetX + 1, " ", TargetY);
+		!!planner::generate_goal(TargetX + 1, TargetY, notblock);
+	} else {
+//		.print("Relative target: ", TargetX - 1, " ", TargetY);
+		!!planner::generate_goal(TargetX - 1, TargetY, notblock);
+	}
 	.
 	
 +!stop::become_origin(GoalX, GoalY) :
@@ -124,7 +128,7 @@
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	TargetX = GoalX - UpdatedX;
 	TargetY = GoalY - UpdatedY;
-	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
+//	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
 	!!planner::generate_goal(TargetX, TargetY, notblock);
 	.
 
