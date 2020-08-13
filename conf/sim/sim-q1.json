@@ -4,7 +4,7 @@
     "setup" : "conf/setup/test1.txt",
 
     "steps" : 300,
-    "randomSeed" : 17,
+    "randomSeed" : 16,
     "randomFail" : 1,
     "entities" : {"standard" : 15},
     "clusterBounds" : [1,3],
@@ -22,7 +22,7 @@
         ["cave", 0.45, 9, 5, 4]
       ],
       "goals": {
-        "number" : 3,
+        "number" : 15,
         "size" : [1,2]
       }
     },
@@ -34,14 +34,14 @@
       "size" : [2, 3],
       "duration" : [100, 200],
       "probability" : 0.1,
-      "taskboards" : 3,
+      "taskboards" : 15,
       "rewardDecay" : [1, 2],
       "lowerRewardLimit" : 10,
       "distanceToTaskboards" : 8
     },
 
     "events" : {
-      "chance" : 15,
+      "chance" : 0,
       "radius" : [3, 5],
       "warning" : 5,
       "create" : [-3, 1],

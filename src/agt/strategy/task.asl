@@ -342,7 +342,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("X ",X);
 	.print("Y ",Y);
 	?map::size(x, SizeX);
-	?map::size(Y, SizeY);
+	?map::size(y, SizeY);
 	Aux1X = X - UpdatedX;
 	Aux1Y = Y - UpdatedY;
 	if (Aux1X < 0) {

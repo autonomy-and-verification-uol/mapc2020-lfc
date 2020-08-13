@@ -274,10 +274,10 @@ public class TeamArtifact extends Artifact {
 			Point p = new Point(i, goaly+8);
 			this.retrieversAvailablePositions.add(p);
 		}
-		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
-		for(Point p: this.retrieversAvailablePositions) {
-			logger.info("@@@@ position("+p.x+","+p.y+")");
-		}
+//		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
+//		for(Point p: this.retrieversAvailablePositions) {
+//			logger.info("@@@@ position("+p.x+","+p.y+")");
+//		}
 	}
 	
 	
