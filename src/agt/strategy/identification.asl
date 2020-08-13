@@ -180,14 +180,13 @@ i_met_new_agent(Iknow, IdList) :-
 //		-retrieve::target(TargetX, TargetY);
 //		+retrieve::target(TargetX+OriginX,TargetY+OriginY);
 //	}
-//	if(Map \== MapOther){
-//		getTargetGoal(GoalAgent, GoalX, GoalY, _);
-//		.term2string(Me, Me1);
-//		if(GoalAgent == Me1){
-//			setTargetGoal(Pos, Me, OriginX+GoalX, OriginY+GoalY);
-//			updateRetrieverAvailablePos(OriginX, OriginY);
-//		}
-//	}
+	if(Map \== MapOther){
+		getTargetGoal(GoalAgent, GoalX, GoalY);
+		.term2string(Me, Me1);
+		if(GoalAgent == Me1){
+			updateTargets(OriginX, OriginY);
+		}
+	}
 	.
 
 //@updatepos2

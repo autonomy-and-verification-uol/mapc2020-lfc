@@ -354,7 +354,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 <-
 	.random(X);
 	Xnorm = X * Tot;
-	.print("BlocksRange: ", BlocksRange);
+//	.print("BlocksRange: ", BlocksRange);
 	!retrieve::pick_block_aux(Xnorm, BlocksRange, Block).
 +!retrieve::pick_block_aux(X, [block_range(Type, Min, Max)|BlocksRange], Type) : 
 	X >= Min & X < Max
@@ -382,7 +382,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::get_nearest_dispenser_aux1(Dispensers, Type, dispenser(Type, X, Y)) :
 	true
 <-
-	getTargetGoal(MyX,MyY);
+	getTargetGoal(_,MyX,MyY);
 	.findall(dispenser(Type, X, Y, Distance), (.member(dispenser(Type, X, Y), Dispensers) & (Distance = math.abs(MyX - X) + math.abs(MyY - Y))), DispensersDist);
 	!retrieve::get_nearest_dispenser_aux2(DispensersDist, dispenser(Type, X, Y, _)).
 +!retrieve::get_nearest_dispenser_aux2([], dispenser(_, _, _, 100000000000)) : true <- true.
@@ -429,7 +429,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 			if (not default::attached(DispX,DispY) & default::team(Team) & not (DispX-1 \== 0 & default::thing(DispX-1,DispY,entity,Team))  & not (DispX+1 \== 0 & default::thing(DispX+1,DispY,entity,Team))  & not (DispY-1 \== 0 & default::thing(DispX,DispY-1,entity,Team))  & not (DispY+1 \== 0 & default::thing(DispX,DispY+1,entity,Team)) ) {
 				!action::attach(Direction);
 				if(default::lastActionResult(success) & retrieve::block(DispX, DispY)){
-					.print("here6");
+//					.print("here6");
 					+retrieve::attach_completed;
 				}
 			}
@@ -467,62 +467,39 @@ most_needed_type(Dispensers, AgList, Type) :-
 		}
 		else {
 			!action::request(Direction);
-			.print("here1");
+//			.print("here1");
 			if(default::lastActionResult(failed_target)){
 				.fail;
 			}
-			.print("here2");
+//			.print("here2");
 			while(not default::lastActionResult(success)){
-				.print("here3");
+//				.print("here3");
 				!action::request(Direction);
 			}
-			.print("here4");
+//			.print("here4");
 			!action::attach(Direction);
-			.print("here5");
+//			.print("here5");
 			if(default::lastActionResult(success) & retrieve::block(DispX, DispY)){
-				.print("here6");
+//				.print("here6");
 				+retrieve::attach_completed;
 			}
 		}
 
 	}
 	-retrieve::fetching_block.
-/*
-@update_target[atomic]
-+!retrieve::update_target :
-	.my_name(Me) & map::myMap(Leader)
-<- 
-	getTargetGoal(Ag, _, _);
-	if(.ground(Ag)){
-		!map::get_clusters(Clusters);
-		!stop::choose_the_biggest_cluster(Clusters, cluster(ClusterId, GoalList));
-		.member(origin(GoalX, GoalY), GoalList);
-		setTargetGoal(0, Me, GoalX, GoalY);
-		.broadcast(achieve, retrieve::update_target_aux(Leader));
-	}
-	.
-@update_target1[atomic]
-+!retrieve::update_target_aux(Leader)[source(Ag)] :
-	map::myMap(Leader) & .my_name(Me) & Me \== Ag
-<-
-	getTargetGoal(_, GoalX, GoalY);
-	-+retrieve::target(GoalX, GoalY);
-	.
-@update_target2[atomic]
-+!retrieve::update_target_aux(_)[source(Ag)].
-*/
 
 +!get_block
 <-
 	-collect_block(_,_);
 	!retrieve::create_and_attach_block;
 	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	getRetrieverAvailablePos(TargetXGlobal, TargetYGlobal);
-	TargetX = TargetXGlobal - MyX;
-	TargetY = TargetYGlobal - MyY;
-	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
-	.print("Agent position: ", MyX, MyY);
-	.print("Chosen Relative Goal position: ", TargetX, TargetY);
+	TargetX = TargetXGlobal - UpdatedX;
+	TargetY = TargetYGlobal - UpdatedY;
+//	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
+//	.print("Agent position: ", MyX, MyY);
+	.print("Chosen Relative target position: ", TargetX, TargetY);
 	+getting_to_position;
 	!planner::generate_goal(TargetX, TargetY, notblock);
 	.

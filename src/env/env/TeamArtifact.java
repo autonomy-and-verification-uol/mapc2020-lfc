@@ -97,12 +97,14 @@ public class TeamArtifact extends Artifact {
 	private String cartographerX1;
 	private String cartographerX2;
 	
+	private int sizeX = 0;
+	private int sizeY = 0;
+	
 	private String goalAgent;
 	private Integer targetTaskX;
 	private Integer targetTaskY;
 	private Integer targetGoalX;
 	private Integer targetGoalY;
-	private String goalSide;
 	private List<Point> retrieversAvailablePositions = new ArrayList<>();
 	
 	private static List<Pair<String, String>> ourBlocks = new ArrayList<>();
@@ -170,7 +172,8 @@ public class TeamArtifact extends Artifact {
 		targetTaskY = null;
 		targetGoalX = null;
 		targetGoalY = null;
-		goalSide = null;
+		sizeX = 0;
+		sizeY = 0;
 	}
 	
 	@OPERATION
@@ -235,7 +238,8 @@ public class TeamArtifact extends Artifact {
 	
 	
 	@OPERATION
-	void getTargetGoal(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+	void getTargetGoal(OpFeedbackParam<String> name, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		name.set(goalAgent);
 		x.set(targetGoalX);
 		y.set(targetGoalY);
 	}
@@ -247,7 +251,8 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION
-	void setTargets(int taskx, int tasky, int goalx, int goaly){
+	void setTargets(String name, int taskx, int tasky, int goalx, int goaly){
+		this.goalAgent = name;
 		this.targetTaskX = taskx;
 		this.targetTaskY = tasky;
 		this.targetGoalX = goalx;
@@ -277,10 +282,108 @@ public class TeamArtifact extends Artifact {
 	
 	
 	@OPERATION
-	void updateRetrieverAvailablePos(int x, int y) {
-		for(Point p: this.retrieversAvailablePositions) {
-			p.x += x;
-			p.y += y;
+	void updateTargets(int x, int y) {
+		if (sizeX != 0 && sizeY != 0) {
+			List<Point> retaux = new ArrayList<>();
+			if (targetTaskX + x < 0) {
+				targetTaskX = ((targetTaskX + x) % sizeX) + sizeX;
+			} else {
+				targetTaskX = (targetTaskX + x) % sizeX;
+			}
+			if (targetTaskY + y < 0) {
+				targetTaskY = ((targetTaskY + y) % sizeY) + sizeY;
+			} else {
+				targetTaskY = (targetTaskY + y) % sizeY;
+			}
+			if (targetGoalX + x < 0) {
+				targetGoalX = ((targetGoalX + x) % sizeX) + sizeX;
+			} else {
+				targetGoalX = (targetGoalX + x) % sizeX;
+			}
+			if (targetGoalY + y < 0) {
+				targetGoalY = ((targetGoalY + y) % sizeY) + sizeY;
+			} else {
+				targetGoalY = (targetGoalY + y) % sizeY;
+			}
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		}
+		else if (sizeX != 0) {
+			List<Point> retaux = new ArrayList<>();
+			if (targetTaskX + x < 0) {
+				targetTaskX = ((targetTaskX + x) % sizeX) + sizeX;
+			} else {
+				targetTaskX = (targetTaskX + x) % sizeX;
+			}
+			targetTaskY += y;
+			if (targetGoalX + x < 0) {
+				targetGoalX = ((targetGoalX + x) % sizeX) + sizeX;
+			} else {
+				targetGoalX = (targetGoalX + x) % sizeX;
+			}
+			targetGoalY += y;
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				pnew.y += y;
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		}
+		else if (sizeY != 0) {
+			List<Point> retaux = new ArrayList<>();
+			targetTaskX += x;
+			if (targetTaskY + y < 0) {
+				targetTaskY = ((targetTaskY + y) % sizeY) + sizeY;
+			} else {
+				targetTaskY = (targetTaskY + y) % sizeY;
+			}
+			targetGoalX += x;
+			if (targetGoalY + y < 0) {
+				targetGoalY = ((targetGoalY + y) % sizeY) + sizeY;
+			} else {
+				targetGoalY = (targetGoalY + y) % sizeY;
+			}
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				pnew.x += x;
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		} else {
+			this.targetTaskX += x;
+			this.targetTaskY += y;
+			this.targetGoalX += x;
+			this.targetGoalY += y;
+			for(Point p: this.retrieversAvailablePositions) {
+				p.x += x;
+				p.y += y;
+			}
 		}
 	}
 	
@@ -309,10 +412,10 @@ public class TeamArtifact extends Artifact {
 		
 	@OPERATION
 	void getRetrieverAvailablePos(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
-		logger.info("Available retriever positions: ");
-		for(Point p : this.retrieversAvailablePositions) {
-			logger.info("( "+ p.x + ", " + p.y + " )");
-		}
+//		logger.info("Available retriever positions: ");
+//		for(Point p : this.retrieversAvailablePositions) {
+//			logger.info("( "+ p.x + ", " + p.y + " )");
+//		}
 		if(!this.retrieversAvailablePositions.isEmpty()) {
 			x.set(this.retrieversAvailablePositions.get(0).x);
 			y.set(this.retrieversAvailablePositions.get(0).y);
@@ -322,7 +425,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void addRetrieverAvailablePos(int x, int y) {
-		logger.info("(" + x + ", " + y + ") is now a retriever available position");
+//		logger.info("(" + x + ", " + y + ") is now a retriever available position");
 		this.retrieversAvailablePositions.add(new Point(x, y));
 	}
 	
@@ -334,6 +437,16 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void getServerName(String agent, OpFeedbackParam<String> agentServer){
 		agentServer.set(agentNames.get(agent));
+	}
+	
+	@OPERATION 
+	void setSizeX(int x){
+		sizeX = x;
+	}
+	
+	@OPERATION 
+	void setSizeY(int y){
+		sizeY = y;
 	}
 	
 	@OPERATION

@@ -52,7 +52,7 @@
 			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
 			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 			!map::printall;
-			setTargets(TaskbX, TaskbY, GoalX, GoalY);
+			setTargets(Me, TaskbX, TaskbY, GoalX, GoalY);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GoalX, GoalY);

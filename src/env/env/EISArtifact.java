@@ -54,9 +54,6 @@ public class EISArtifact extends Artifact implements AgentListener {
 	private boolean receiving;
 	private int lastStep = -1;
 	
-	private int sizeX = 0;
-	private int sizeY = 0;
-	
 	public EISArtifact() {
 		agentIds      = new ConcurrentHashMap<String, AgentId>();
 		agentToEntity = new ConcurrentHashMap<String, String>();
@@ -319,16 +316,6 @@ public class EISArtifact extends Artifact implements AgentListener {
 //		} else {
 			y.set(mypos.y);
 //		}
-	}
-	
-	@OPERATION 
-	void setSizeX(int x){
-		sizeX = x;
-	}
-	
-	@OPERATION 
-	void setSizeY(int y){
-		sizeY = y;
 	}
 	
 	@OPERATION 

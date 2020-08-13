@@ -2,8 +2,7 @@
 	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::collect_block(_,_)
 <- 
 	.print("Time to collect a block!");
-	!!default::always_skip;
-//	!!retrieve::get_block;
+	!!retrieve::get_block;
 	.
 	
 +!generate_goal(0, 0, Aux) 
