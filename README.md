@@ -21,13 +21,13 @@ Copy https://github.com/autonomy-and-verification-uol/mapc2020-lfc.git and paste
 
 Proceed until the "select a wizard to use for importing projects" screen, then pick Import existing Eclipse projects and click next and then finish.
 
-<!--### Planner
+### Planner
 
 We used the Fast Downward (http://www.fast-downward.org/) planner. It should be possible to use another planner, as long as it supports the same subset of PDDL that FD does, but remember to modify the file `planner/run2.sh` accordingly with the command to run the new planner.
 
 After installing FD (http://www.fast-downward.org/ObtainingAndRunningFastDownward), make sure the planner is working by itself by running it with a simple domain and problem file.
 
-Finally, in the Eclipse project, navigate to `planner/run2.sh` and change the beginning of line 5 `/home/angelo/git/planner/./fast-downward.py` to the path where your `fast-downward.py` is installed.-->
+Finally, in the Eclipse project, navigate to `planner/run2.sh` and change the beginning of line 5 `/home/angelo/git/planner/./fast-downward.py` to the path where your `fast-downward.py` is installed.
 
 ## How to run
 We used JUnit to run both the server and our JaCaMo code at the same time.
