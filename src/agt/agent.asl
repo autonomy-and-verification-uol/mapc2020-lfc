@@ -5,7 +5,7 @@
 { include("strategy/identification.asl", identification) }
 { include("strategy/exploration.asl", exploration) }
 { include("strategy/cartography.asl", carto) }
-//{ include("strategy/task.asl", task) }
+{ include("strategy/task.asl", task) }
 { include("strategy/when_to_stop.asl", stop) }
 { include("strategy/stock.asl", retrieve) }
 { include("strategy/map.asl", map) }
@@ -141,14 +141,15 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	
 @always_skip[atomic]
 +!always_skip :
-	common::my_role(retriever) &
+	.my_name(Me) & default::play(Me,retriever,Group) &
 	not retrieve::block(X, Y) & .my_name(Me)
 <-
 	getAvailableMeType(Me, Type);
 	removeAvailableAgent(Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
-	addRetrieverAvailablePos(MyX,MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	addRetrieverAvailablePos(UpdatedX,UpdatedY);
 	!!retrieve::retrieve_block;
 	.
 +!always_skip 
