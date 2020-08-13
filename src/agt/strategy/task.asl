@@ -341,8 +341,40 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("MyY ",UpdatedY);
 	.print("X ",X);
 	.print("Y ",Y);
-	NewTargetX = X - UpdatedX;
-	NewTargetY = Y - UpdatedY;
+	?map::size(x, SizeX);
+	?map::size(Y, SizeY);
+	Aux1X = X - UpdatedX;
+	Aux1Y = Y - UpdatedY;
+	if (Aux1X < 0) {
+		Aux2X = Aux1X + SizeX;
+	}
+	elif (Aux1X > 0) {
+		Aux2X = Aux1X - SizeX;
+	}
+	else {
+		Aux2X = Aux1X;
+	}
+	if (Aux1Y < 0) {
+		Aux2Y = Aux1Y + SizeY;
+	}
+	elif (Aux1Y > 0) {
+		Aux2Y = Aux1Y - SizeY;
+	}
+	else {
+		Aux2Y = Aux1Y;
+	}
+	if (math.abs(Aux1X) < math.abs(Aux2X)) {
+		NewTargetX = Aux1X;
+	}
+	else {
+		NewTargetX = Aux2X;
+	}
+	if (math.abs(Aux1Y) < math.abs(Aux2Y)) {
+		NewTargetY = Aux1Y;
+	}
+	else {
+		NewTargetY = Aux2Y;
+	}
 	.print("NewTargetX ",NewTargetX);
 	.print("NewTargetY ",NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
@@ -381,14 +413,46 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	addRetrieverAvailablePos(UpdatedX,UpdatedY);
-//	.print("MyXNew ",MyXNew);
-//	.print("MyYNew ",MyYNew);
-//	.print("X ",X);
-//	.print("Y ",Y);
-	NewTargetX = X - UpdatedX;
-	NewTargetY = Y - UpdatedY;
-//	.print("NewTargetX ",NewTargetX);
-//	.print("NewTargetY ",NewTargetY);
+	.print("MyX ",UpdatedX);
+	.print("MyY ",UpdatedY);
+	.print("X ",X);
+	.print("Y ",Y);
+	?map::size(x, SizeX);
+	?map::size(y, SizeY);
+	Aux1X = X - UpdatedX;
+	Aux1Y = Y - UpdatedY;
+	if (Aux1X < 0) {
+		Aux2X = Aux1X + SizeX;
+	}
+	elif (Aux1X > 0) {
+		Aux2X = Aux1X - SizeX;
+	}
+	else {
+		Aux2X = Aux1X;
+	}
+	if (Aux1Y < 0) {
+		Aux2Y = Aux1Y + SizeY;
+	}
+	elif (Aux1Y > 0) {
+		Aux2Y = Aux1Y - SizeY;
+	}
+	else {
+		Aux2Y = Aux1Y;
+	}
+	if (math.abs(Aux1X) < math.abs(Aux2X)) {
+		NewTargetX = Aux1X;
+	}
+	else {
+		NewTargetX = Aux2X;
+	}
+	if (math.abs(Aux1Y) < math.abs(Aux2Y)) {
+		NewTargetY = Aux1Y;
+	}
+	else {
+		NewTargetY = Aux2Y;
+	}
+	.print("NewTargetX ",NewTargetX);
+	.print("NewTargetY ",NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	getMyPos(MyXNew,MyYNew);
 //	if (not danger2) {
