@@ -239,18 +239,18 @@ i_met_new_agent(Iknow, IdList) :-
 		NewOriginY = (UpdatedY) - OtherY;
 //		!map::calculate_updated_pos(NewOriginXAux,NewOriginYAux,0,0,NewOriginX,NewOriginY);
 		for (.member(dispenser(Type,DX,DY),DispList)) {
-//			.print("Adding new dispenser at  X ",NewOriginX+DX," Y ",NewOriginY+DY);
 			!map::calculate_updated_pos(NewOriginX,NewOriginY,DX,DY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new dispenser at  X ",NewMapPositionX," Y ",NewMapPositionY);
 			updateMap(Me,Type,NewMapPositionX,NewMapPositionY);
 		}
 		for (.member(taskboard(TX,TY),TaskBList)) {
-//			.print("Adding new taskboard at  X ",NewOriginX+TX," Y ",NewOriginY+TY);
 			!map::calculate_updated_pos(NewOriginX,NewOriginY,TX,TY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new taskboard at  X ",NewMapPositionX," Y ",NewMapPositionY);
 			updateMap(Me,taskboard,NewMapPositionX,NewMapPositionY);
 		}
 		for (.member(goal(GX,GY),GList)) {
-//			.print("Adding new goal at  X ",NewOriginX+GX," Y ",NewOriginY+GY);
 			!map::calculate_updated_pos(NewOriginX,NewOriginY,GX,GY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new goal at  X ",NewMapPositionX," Y ",NewMapPositionY);
 			updateMap(Me,goal,NewMapPositionX,NewMapPositionY);
 		}
 //		for(.member(cluster(ClusterId, GoalList),ClusterGoalList)){

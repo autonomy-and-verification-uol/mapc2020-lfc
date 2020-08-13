@@ -476,6 +476,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void updateLocations(String name, String axis, int size) {
+		Map<String, Set<Point>>  mapaux 	 	= new HashMap<String, Set<Point>>();
 		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
 			for (Point p : entry.getValue()) {
 				int x;
@@ -496,11 +497,18 @@ public class TeamArtifact extends Artifact {
 					}
 				}
 				Point pnew = new Point(x, y);
-				Set<Point> set = new HashSet<Point>();
-				set.add(pnew);
-				entry.setValue(set);
+				if (!mapaux.containsKey(entry.getKey())) {
+					Set<Point> set = new HashSet<Point>();
+					set.add(pnew);
+					mapaux.put(entry.getKey(), set);
+				}
+				else {
+					mapaux.get(entry.getKey()).add(pnew);
+				}
 			}
 		}
+		agentmaps.get(name).clear();
+		agentmaps.get(name).putAll(mapaux);
 	}
 	
 	private static class OriginPoint extends Point{
