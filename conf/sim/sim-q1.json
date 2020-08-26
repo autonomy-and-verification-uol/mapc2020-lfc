@@ -34,14 +34,14 @@
       "size" : [2, 3],
       "duration" : [100, 200],
       "probability" : 0.1,
-      "taskboards" : 15,
+      "taskboards" : 3,
       "rewardDecay" : [1, 2],
       "lowerRewardLimit" : 10,
       "distanceToTaskboards" : 8
     },
 
     "events" : {
-      "chance" : 0,
+      "chance" : 15,
       "radius" : [3, 5],
       "warning" : 5,
       "create" : [-3, 1],
