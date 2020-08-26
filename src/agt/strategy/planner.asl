@@ -46,10 +46,11 @@
 	}
 	.
 +!generate_goal(0, 0, Aux) 
-	: .my_name(Me) & default::play(Me,deliverer,Group)
+	: .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
 <- 
  	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
 		+task::deliverer;
+		.send(Ag, tell, task::deliverer_in_position);
 		!!default::always_skip;
 	}
 	elif (default::thing(X, Y, taskboard, _)) {

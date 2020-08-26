@@ -34,7 +34,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 
 @task[atomic]
 +default::task(Id, Deadline, Reward, ReqList)
-	: task::origin & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
+	: task::origin & task::deliver_in_position[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
 <-
 	.print("@@@@@@@@@@@@@@@@@@ ", Id, "  ",Deadline);
 	getAvailableAgent(AgList);
@@ -55,6 +55,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		getMyPos(MyX, MyY);
 		!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 		?default::play(Ag,deliverer,Group);
+		-task::deliver_in_position[source(_)];
 		.send(Ag, achieve, task::accept_and_deliver(Id,UpdatedX,UpdatedY-1));
 		!!perform_task_origin;
 	}
