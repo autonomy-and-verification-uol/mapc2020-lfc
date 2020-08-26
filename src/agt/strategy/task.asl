@@ -62,7 +62,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!accept_and_deliver(Task,X,Y)
-	: true
+	: default::play(Ag,origin,Group)
 <-
 	!action::forget_old_action(default,always_skip);
 	!action::accept(Task);
@@ -71,6 +71,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	NewTargetX = X - UpdatedX;
 	NewTargetY = Y - UpdatedY;
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+	.send(Ag, tell, task::deliverer_in_position);
 	!!default::always_skip;
 	.
 	
@@ -125,8 +126,9 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 
 +!perform_task_origin_next
-	: committed(Id,CommitListSort) & ready_submit(0)
+	: committed(Id,CommitListSort) & ready_submit(0) & task::deliver_in_position[source(_)]
 <-
+	-task::deliver_in_position[source(_)];
 	!action::detach(s);
 	!try_to_move;
 	?default::play(Ag,deliverer,Group);
@@ -140,6 +142,13 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	
 //	-committed(Id,CommitListSort);
 	!default::always_skip;
+	.
+	
++!perform_task_origin_next
+	: committed(Id,CommitListSort) & ready_submit(0) & not task::deliver_in_position[source(_)]
+<-
+	!action::skip;
+	!perform_task_origin_next;
 	.
 	
 +!try_to_move

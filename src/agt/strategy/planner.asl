@@ -46,7 +46,7 @@
 	}
 	.
 +!generate_goal(0, 0, Aux) 
-	: .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
+	: not task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
 <- 
  	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
 		+task::deliverer;
