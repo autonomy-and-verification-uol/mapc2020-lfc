@@ -57,6 +57,12 @@
 		!generate_goal(X, Y, Aux);
 	}
 	.
++!generate_goal(0, 0, Aux) 
+	: task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
+<- 
+	.send(Ag, tell, task::deliverer_in_position);
+	!!default::always_skip;
+	.
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,retriever,Group).
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,explorer,Group).
 //+!generate_goal(0, 0) <- !!default::always_skip.

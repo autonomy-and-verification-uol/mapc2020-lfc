@@ -71,8 +71,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	NewTargetX = X - UpdatedX;
 	NewTargetY = Y - UpdatedY;
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
-	.send(Ag, tell, task::deliverer_in_position);
-	!!default::always_skip;
 	.
 	
 @updatecommitlist[atomic]
@@ -108,6 +106,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!action::submit(Task);
 	.send(Origin, achieve, task::task_completed(Task));
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
+	!!default::always_skip;
 	.
 	
 +!try_to_move_deliverer
