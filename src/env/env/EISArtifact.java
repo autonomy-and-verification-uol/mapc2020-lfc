@@ -85,6 +85,12 @@ public class EISArtifact extends Artifact implements AgentListener {
 	}
 	
 	@OPERATION
+	void statusRequest() {
+		logger.info("STATE:");
+		
+	}
+	
+	@OPERATION
 	void register(String entity)  {
 		String agent = getCurrentOpAgentId().getAgentName();
 		logger = Logger.getLogger(EISArtifact.class.getName()+"_"+agent);
@@ -295,8 +301,24 @@ public class EISArtifact extends Artifact implements AgentListener {
 	
 	@OPERATION 
 	void getMyPos(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
-		x.set(mypos.x);
-		y.set(mypos.y);
+//		if (sizeX != 0) {
+//			if (mypos.x % sizeX < 0) {
+//				x.set(mypos.x % sizeX + sizeX);
+//			} else {
+//				x.set(mypos.x % sizeX);
+//			}
+//		} else {
+			x.set(mypos.x);
+//		}
+//		if (sizeY != 0) {
+//			if (mypos.y % sizeY < 0) {
+//				y.set(mypos.y % sizeY + sizeY);
+//			} else {
+//				y.set(mypos.y % sizeY);
+//			}
+//		} else {
+			y.set(mypos.y);
+//		}
 	}
 	
 	@OPERATION 

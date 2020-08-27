@@ -1,56 +1,69 @@
-+!stop::choose_the_biggest_cluster([], cluster(_, [])).
-+!stop::choose_the_biggest_cluster([cluster(Id1, GoalList1)|Clusters], Cluster) :
-	true
-<-
-	!stop::choose_the_biggest_cluster(Clusters, cluster(Id2, GoalList2));
-	.length(GoalList1, Size1);
-	.length(GoalList2, Size2);
-	if(Size1 >= Size2){
-		Cluster = cluster(Id1, GoalList1);
-	} else{
-		Cluster = cluster(Id2, GoalList2);
-	}
-	.
+//+!stop::choose_the_biggest_cluster([], cluster(_, [])).
+//+!stop::choose_the_biggest_cluster([cluster(Id1, GoalList1)|Clusters], Cluster) :
+//	true
+//<-
+//	!stop::choose_the_biggest_cluster(Clusters, cluster(Id2, GoalList2));
+//	.length(GoalList1, Size1);
+//	.length(GoalList2, Size2);
+//	if(Size1 >= Size2){
+//		Cluster = cluster(Id1, GoalList1);
+//	} else{
+//		Cluster = cluster(Id2, GoalList2);
+//	}
+//	.
+
++!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [], GX, GY) <- GoalX = GX; GoalY = GY.
++!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1) : Res = math.abs(MyX - GX) + math.abs(MyY - GY) &  Res < ResAux <- !closest_goal(GoalX, GoalY, MyX, MyY, Res, Goals, GX, GY).
++!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1)  <- !closest_goal(GoalX, GoalY, MyX, MyY, ResAux, Goals, GX1, GY1).
+
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [], TBX, TBY) <- TaskbX = TBX; TaskbY = TBY.
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [taskboard(TBX,TBY)|Taskboards], TBX1, TBY1) : Res = math.abs(MyX - TBX) + math.abs(MyY - TBY) &  Res < ResAux <- !closest_taskboard(TaskbX, TaskbY, MyX, MyY, Res, Taskboards, TBX, TBY).
++!closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, [taskboard(TBX,TBY)|Taskboards], TBX1, TBY1)  <- !closest_taskboard(TaskbX, TaskbY, MyX, MyY, ResAux, Taskboards, TBX1, TBY1).
 
 @stop1[atomic]
 +stop
 	: .my_name(Me) & default::play(Me,explorer,Group) & not stop::first_to_stop(_) // first to stop
-	& .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & map::myMap(Leader) //& not action::move_sent
+//	& .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & map::myMap(Leader) //& not action::move_sent
 <-
-	getGoalClustersWithScouts(Leader, Clusters);
+//	getGoalClustersWithScouts(Leader, Clusters);
 	//!stop::choose_the_biggest_cluster(Clusters, cluster(ClusterId, GoalList));
 	//.length(GoalList, N);
 	//if(N > 5){
-	if(.member(cluster(_, GoalList), Clusters) & .member(Side, [n,e,w,s]) &
-		.member(origin(Side,Scouts,Retrievers, MaxPosS, MaxPosW, MaxPosE, GoalX, GoalY), GoalList)// & not .member(origin(boh, _, _), GoalList)
-	){
+//	if(.member(cluster(_, GoalList), Clusters) & .member(Side, [n,e,w,s]) &
+//		.member(origin(Side,Scouts,Retrievers, MaxPosS, MaxPosW, MaxPosE, GoalX, GoalY), GoalList)// & not .member(origin(boh, _, _), GoalList)
+//	){
 		firstToStop(Me,Flag);
 		if (Flag) {
-			.print("@@@@@@@@@@@@@@@@@@@ MaxPos: ", MaxPosS, ", ", MaxPosW, ", ", MaxPosE);
-			+task::max_pos_s(MaxPosS);
-			+task::max_pos_w(MaxPosW);
-			+task::max_pos_e(MaxPosE);
 			+stop::first_to_stop(Me);
 			//.print("Removing explorer");
 			//-exploration::explorer;
 			-exploration::special(_);
 			-common::avoid(_);
 			-common::escape;
-//			!action::forget_old_action;
 			//.member(origin(_, GoalX, GoalY), GoalList);
-			setTargetGoal(Pos, Me, GoalX, GoalY, Side);
-			initRetrieverAvailablePos(Leader);
+//			setTargetGoal(Pos, Me, GoalX, GoalY, Side);
+//			initRetrieverAvailablePos(Leader);
+			!map::get_goals(Goals);
+			!map::get_taskboards(Taskboards);
+			getMyPos(MyX,MyY);
+			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+			!closest_taskboard(TaskbX, TaskbY, UpdatedX, UpdatedY, 99999, Taskboards, 0, 0);
+			.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
+			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
+			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
+			!map::printall;
+			setTargets(Me, TaskbX, TaskbY, GoalX, GoalY);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
-			!!stop::stop_aux(GoalX, GoalY);
+			!!stop::become_origin(GoalX, GoalY);
 		}
 		else{
 			-stop::stop;
 		}
-	}
-	else {
-		-stop;
-	}
+//	}
+//	else {
+//		-stop;
+//	}
 	.
 	
 @stop2[atomic]
@@ -60,23 +73,13 @@
 	.print("ADD really stop belief");
 	+stop::really_stop;
 	joinRetrievers(Flag);
-	if (Flag == "stocker") {
+	if (Flag == "deliverer") {
 		.print("Removing explorer");
-		//-exploration::explorer;
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
-		!!stop::retrieve_block_as_stocker;
-	}
-	elif (Flag == "helper") {
-		.print("Removing explorer");
-		//-exploration::explorer;
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::retrieve_block_as_helper;
+		!!stop::become_deliverer;
 	}
 	else {
 		.print("Removing explorer");
@@ -84,109 +87,51 @@
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
-		!!stop::retrieve_block_as_retriever;
+		!!stop::become_retriever;
 	}
 //	!!retrieve::retrieve_block;
 	.
 	
-//@stop12
-//+stop
-//	: action::move_sent
-//<-
-//	.wait(not action::move_sent);
-//	-stop;
-//	+stop;
-//	.
-	
 +stop : true <- -stop::stop.
 
-//+!stop::retrieve_block_as_stocker :
-//	true
-//<-
-//	!common::update_role_to(stocker);
-////		!!default::always_skip;
-//	!retrieve::retrieve_block;
-//	.
-+!stop::retrieve_block_as_helper :
++!stop::become_retriever :
 	true
 <-
-	!common::update_role_to(helper);
-	//+retrieve::retriever;
-	//+task::helper;
-	+retrieve::moving_to_origin;
-	getTargetGoal(_, GoalX, GoalY, _);
-	getMyPos(MyX, MyY);
-	TargetX = GoalX+1 - MyX;
-	TargetY = GoalY - MyY;
-	!!planner::generate_goal(TargetX, TargetY, notblock);
-//		!!planner::execute_plan(Plan);
-//		!!retrieve::move_to_goal;
-//		!!retrieve::retrieve_block;
-	.
-	
-+!stop::retrieve_block_as_retriever :
-	true
-<-
-	!common::update_role_to(retriever);
+	!common::change_role(retriever);
 	!retrieve::retrieve_block;
 	.
 	
-+!stop::stop_aux(GoalX, GoalY) :
++!stop::become_deliverer :
 	true
 <-
-	!common::update_role_to(origin);
-	//+retrieve::retriever;
-	
-	+retrieve::moving_to_origin;
-//			.wait(not action::move_sent);
+	!common::change_role(deliverer);
+	getTargetTaskboard(TaskbX,TaskbY);
+//	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	getMyPos(MyX, MyY);
-	TargetX = GoalX - MyX;
-	TargetY = GoalY - MyY;
-	!!planner::generate_goal(TargetX, TargetY, notblock);
-//			!!planner::execute_plan(Plan);
-	//+plan(Plan);
-	//?plan([Head|PlanX]);
-	//.print("@@@@@@ Head: ",Head);
-//			!!retrieve::move_to_goal;
-	.
-
-+!stop::explore_as_explorer :
-	true
-<-
-	!common::update_role_to(explorer);
-	!!exploration::explore([n,s,e,w]);
-	.
-
-@first_to_stop1[atomic]
-+stop::first_to_stop(Ag)[source(_)] :
-	common::my_role(retriever) & .my_name(Me) & stop::first_to_stop(Me) &
-	.all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag) & PosOther < Pos
-<-
-	.print("Removing retriever");
-//	removeRetriever;
-	//-retrieve::retriever;
-	-stop::stop;
-	-stop::first_to_stop(Me);
-	!action::forget_old_action;
-	.print("Adding explorer");
-	//+exploration::explorer;
-	!!stop::explore_as_explorer;
-	.
-@first_to_stop2[atomic]
-+stop::first_to_stop(Ag1)[source(_)] :
-	stop::first_to_stop(Ag2)[source(_)] & Ag1 \== Ag2 &
-	.all_names(AllAgents) & .nth(Pos,AllAgents,Ag1) & .nth(PosOther,AllAgents,Ag2)
-<-
-	if(Pos < PosOther){
-		-stop::first_to_stop(Ag2)[source(_)];
-		-stop::first_to_stop(Ag1)[source(_)];
-		+stop::first_to_stop(Ag1)[source(_)];
-	} else{
-		-stop::first_to_stop(Ag1)[source(_)];
-		-stop::first_to_stop(Ag2)[source(_)];
-		+stop::first_to_stop(Ag2)[source(_)];
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	TargetX = TaskbX - UpdatedX;
+	TargetY = TaskbY - UpdatedY;
+	if(TargetX < 0){
+//		.print("Relative target: ", TargetX + 1, " ", TargetY);
+		!!planner::generate_goal(TargetX + 1, TargetY, notblock);
+	} else {
+//		.print("Relative target: ", TargetX - 1, " ", TargetY);
+		!!planner::generate_goal(TargetX - 1, TargetY, notblock);
 	}
 	.
+	
++!stop::become_origin(GoalX, GoalY) :
+	true
+<-
+	!common::change_role(origin);
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	TargetX = GoalX - UpdatedX;
+	TargetY = GoalY - UpdatedY;
+//	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
+	!!planner::generate_goal(TargetX, TargetY, notblock);
+	.
+
 //@check_join_group[atomic]
 +!stop::check_join_group
 	: .my_name(Me) & default::play(Me,explorer,Group) &
@@ -197,81 +142,37 @@
 	.print("Leader: ", Leader, " Leader1: ", Leader1);
 	if(Leader == Leader1){
 		joinRetrievers(Flag);
-//		-exploration::explorer;
-//		-exploration::special(_);
-//		-common::avoid(_);
-//		-common::escape;
-//		+retrieve::retriever;
-//		!action::forget_old_action;
-		if (Flag == "stocker") {
-			//.print("Removing explorer");
-			//-exploration::explorer;
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::retrieve_block_as_stocker;
-			//!common::update_role_to(stocker);
-			//!retrieve::retrieve_block;
-		}
-		elif (Flag == "helper") {
-			//.print("Removing explorer");
-			//-exploration::explorer;
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-//			.wait(not action::move_sent);
-			!!stop::retrieve_block_as_helper;
-			/*getMyPos(MyX, MyY);
-			!common::update_role_to(helper);
-			//+retrieve::retriever;
-			//+task::helper;
-			+retrieve::moving_to_origin;
-			getTargetGoal(_, GoalX, GoalY, _);
-			TargetX = GoalX+1 - MyX;
-			TargetY = GoalY - MyY;
-			!!planner::generate_goal(TargetX, TargetY);*/
-//			!!retrieve::move_to_goal;
-		}
-		else {
-			.print("Removing explorer");
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::retrieve_block_as_retriever;
-			//!common::update_role_to(retriever);
-			//!retrieve::retrieve_block;
-		}
-	//		!!retrieve::retrieve_block;
+			if (Flag == "deliverer") {
+				.print("Removing explorer");
+				-exploration::special(_);
+				-common::avoid(_);
+				-common::escape;
+				!action::forget_old_action;
+				!!stop::become_deliverer;
+			}
+			else {
+				.print("Removing explorer");
+				-exploration::special(_);
+				-common::avoid(_);
+				-common::escape;
+				!action::forget_old_action;
+				!!stop::become_retriever;
+			}
 	}
 	.
 +!stop::check_join_group : true <- .print("I cannot join the stop group yet").
-
-//+!try_call_stop(true).
-//+!try_call_stop(false)
-//<-
-//	!action::skip;
-//	callStop(Flag);
-//	!try_call_stop(Flag);
-//	.
 
 // trigger for new task addition 
 @trigger1[atomic]
 +default::task(ID, Deadline, Reward, Blocks) 
 	: not(stop::stop)
  <- 
-// 	callStop(Flag);
-// 	!try_call_stop(Flag);
  	!map::get_dispensers(Dispensers);
  	!map::get_taskboards(Taskboards);
+ 	!map::get_goals(Goals);
 	!stop::update_blocks_count(Blocks);
-	!map::get_clusters(Clusters);
-	//.length(Clusters, NClusters);
-	!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, Stop);
+	!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, Stop);
 	!stop::update_stop(Stop);
-//	stopDone;
 	.
 	
 +!stop::update_stop(true) : true <- +stop::stop.
@@ -289,17 +190,17 @@
 	+retrieve::block_count(Type, 1);
 	!stop::update_blocks_count(Blocks).
 	
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, true) : 
-	.member(cluster(_, GoalList), Clusters) &
-	.member(origin(Side, GoalX, GoalY), GoalList) & .member(Side, [n,s,w,e]) &
-	.length(Blocks, NBlocks) & 
++!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, true) : 
+	map::size(x, _) & map::size(y, _) &
+	.length(Goals, NGoals) & NGoals >= 1 &
+//	.length(Blocks, NBlocks) & 
 	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
 	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & (NKnownAgs + 1) >= 3 &//NBlocks & // enough agents to build the structure
 	.findall(Type, (.member(req(_, _, Type), Blocks) & not(.member(dispenser(Type, _, _), Dispensers))), []) // all the necessary types are known
 <- 
-	.print("I can stop exploring now..");
+	.print("I can stop exploring now.");
 	.
-+!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, false). // : true <-  .print("I cannot stop exploring yet..").
++!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, false). // : true <-  .print("I cannot stop exploring yet.").
 
 @trigger2[atomic]
 +!stop::new_dispenser_or_taskboard_or_merge[source(_)] 
@@ -310,24 +211,26 @@
 	.shuffle(PreShuffleTasks,Tasks);
 	!map::get_dispensers(Dispensers);
 	!map::get_taskboards(Taskboards);
-	!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 5);
+	!map::get_goals(Goals);
+	!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Goals, 5);
 //	stopDone;
 	.
 +!stop::new_dispenser_or_taskboard_or_merge[source(_)].
 
-+!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : not(stop::stop).
-+!stop::check_active_tasks([], Dispensers, Taskboards, Counter) : stop::stop.
-+!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 0) : not(stop::stop).
-+!stop::check_active_tasks(Tasks, Dispensers, Taskboards, 0) : stop::stop.
-+!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Counter) 
+
+
++!stop::check_active_tasks([], Dispensers, Taskboards, Goals, Counter) : not(stop::stop).
++!stop::check_active_tasks([], Dispensers, Taskboards, Goals, Counter) : stop::stop.
++!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Goals, 0) : not(stop::stop).
++!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Goals, 0) : stop::stop.
++!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Goals, Counter) 
 	: not(stop::stop) 
 <-
-	!map::get_clusters(Clusters);
-	!stop::conditional_stop(Blocks, Clusters, Dispensers, Taskboards, Stop);
+	!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, Stop);
 	!stop::update_stop(Stop);
 	if (not Stop) {
-		!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Counter-1);
+		!stop::check_active_tasks(Tasks, Dispensers, Taskboards, Goals, Counter-1);
 	}
 	.
-+!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Counter) : stop::stop.
++!stop::check_active_tasks([task(ID, Deadline, Reward, Blocks)|Tasks], Dispensers, Taskboards, Goals, Counter) : stop::stop.
 

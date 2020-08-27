@@ -1,11 +1,12 @@
 +!generate_goal(0, 0, Aux) 
-	: common::my_role(retriever) & retrieve::collect_block(_,_)
+	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::collect_block(_,_)
 <- 
+	.print("Time to collect a block!");
 	!!retrieve::get_block;
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: common::my_role(retriever) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
+	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
 <- 
 	if (default::energy(Energy) & Energy >= 30) {
 		Clear = 1;
@@ -13,10 +14,8 @@
 	else {
 		Clear = 0;
 	}
-	if (Aux == notblock) {
-		callPlanner(Flag);
-		!try_call_planner(Flag);
-	}
+	callPlanner(Flag);
+	!try_call_planner(Flag);
 	getPlanBlockToGoal(Me, 0, 0, BlockX, BlockY, Plan, Clear);
 	plannerDone;
 	.print("@@@@@@ Plan get plan block to goal: ",Plan);
@@ -25,7 +24,7 @@
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: common::my_role(retriever) & .my_name(Me) & retrieve::block(X,Y) & default::thing(X,Y,block,Type)
+	: .my_name(Me) & default::play(Me,retriever,Group) & .my_name(Me) & retrieve::block(X,Y) & default::thing(X,Y,block,Type)
 <- 
 	addAvailableAgent(Me,Type);
 	-retrieve::getting_to_position;
@@ -34,10 +33,9 @@
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: common::my_role(origin)
+	: .my_name(Me) & default::play(Me,origin,Group)
 <- 
  	if (default::goal(0,0)) {
-		-retrieve::moving_to_origin;
 		+task::origin;
 		!!default::always_skip;
 	}
@@ -45,17 +43,33 @@
 		!generate_goal(X, Y, Aux);
 	}
 	.
-+!generate_goal(0, 0, Aux)  : common::my_role(retriever).
++!generate_goal(0, 0, Aux) 
+	: not task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
+<- 
+ 	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
+		+task::deliverer;
+		.send(Ag, tell, task::deliverer_in_position);
+		!!default::always_skip;
+	}
+	elif (default::thing(X, Y, taskboard, _)) {
+		!generate_goal(X, Y, Aux);
+	}
+	.
++!generate_goal(0, 0, Aux) 
+	: task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
+<- 
+	.send(Ag, tell, task::deliverer_in_position);
+	!!default::always_skip;
+	.
++!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,retriever,Group).
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,explorer,Group).
 //+!generate_goal(0, 0) <- !!default::always_skip.
 +!generate_goal(TargetX, TargetY, Aux)
 	: .my_name(Me)
 <-
 	.print("Start of the planner");
-	if (Aux == notblock) {
-		callPlanner(Flag);
-		!try_call_planner(Flag);
-	}
+	callPlanner(Flag);
+	!try_call_planner(Flag);
 
 	if(TargetX <= -5){
 		LocalTargetX = -5;
@@ -122,9 +136,9 @@
 				FinalTargetY = TargetY;
 			}
 			else {
-				if (common::my_role(retriever) & retrieve::collect_block(AddX,AddY)) {
+				if (.my_name(Me) & default::play(Me,retriever,Group) & retrieve::collect_block(AddX,AddY)) {
 					-retrieve::collect_block(AddX,AddY);
-					if (default::thing(FinalLocalTargetX+AddX,FinalLocalTargetY+AddY,dispenser,_) & default::team(OurTeam) & not (default::thing(FinalLocalTargetX+AddX,FinalLocalTargetY+AddY,entity,Team) & Team \== OurTeam)) {
+					if (default::thing(FinalLocalTargetX+AddX,FinalLocalTargetY+AddY,dispenser,_) & not (default::thing(FinalLocalTargetX+AddX,FinalLocalTargetY+AddY,entity,Team))) {
 						if (AddX == -1) {
 							if (not (default::thing(FinalLocalTargetX-2, FinalLocalTargetY, Type, _) & (Type == block | Type == entity))) {
 								+retrieve::collect_block(-1,0);
@@ -560,7 +574,7 @@
 		else {
 			.print("@@@@ Action: ", Action);
 			!action::Action;
-			if (common::my_role(retriever) & (retrieve::getting_to_position | task::doing_task) & not retrieve::block(X,Y)) {
+			if (.my_name(Me) & default::play(Me,retriever,Group) & (retrieve::getting_to_position | task::doing_task) & not retrieve::block(X,Y)) {
 				?localtargetx(RemoveLocalTargetX);
 				?localtargety(RemoveLocalTargetY);
 				-localtargetx(RemoveLocalTargetX);
@@ -597,7 +611,7 @@
 	.
 
 -!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY)[code(.fail(retriever_getting_position))]
-	: common::my_role(retriever) & retrieve::getting_to_position & .my_name(Me)
+	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::getting_to_position & .my_name(Me)
 <-
 	-retrieve::getting_to_position;
 	getMyPos(MyX,MyY);
@@ -606,7 +620,7 @@
 	!!retrieve::retrieve_block;
 	.
 //-!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY)[code(.fail(retriever_doing_task))]
-//	: common::my_role(retriever) & task::doing_task & .my_name(Me)
+//	: .my_name(Me) & default::play(Me,retriever,Group) & task::doing_task & .my_name(Me)
 //<-
 //	-task::doing_task;
 ////	if (not task::danger2) {

@@ -16,16 +16,8 @@ xmls/
 *.bk
 e_r_r_o_r.txt
 .stop___MAS
-agent1_problem.pddl
-agent2_problem.pddl
-agent3_problem.pddl
-agent4_problem.pddl
-agent5_problem.pddl
-agent6_problem.pddl
-agent7_problem.pddl
-agent8_problem.pddl
-agent9_problem.pddl
-agent10_problem.pddl
+agent*.pddl
+agent*.sas
 output.sas
 run.sh
 

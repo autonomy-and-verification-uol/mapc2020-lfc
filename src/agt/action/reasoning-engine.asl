@@ -37,7 +37,7 @@
 //	}
 	chosenAction(Id);
 	.wait({+default::actionID(_)});
-
+	!default::identification;
 	.wait(not action::reasoning_about_belief(_)); 
 	
 	-::access_token(IntentionId,Token);
@@ -53,7 +53,7 @@
 	if ( Result == unknown_action){
 		.print("My action ",LastAction," was unknown to the server. This should never happen!");
 	}	
-	if (Result == failed_random & LastAction \== skip){
+	if (Result == failed_random & LastAction \== skip & LastAction \== clear){
 		.print("My action failed due to random failure, sending it again.");
 		!commit_action(Action); // repeat the previous action
 	}
@@ -63,7 +63,7 @@
 	elif (Result == failed_status) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
-			if (common::my_role(origin)) {
+			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AHAHAHA");
 //				+task::danger;
 			}
@@ -76,7 +76,7 @@
 	elif (Result == failed_status & LastAction == clear & default::energy(Energy) & Energy >= 30) {
 		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
-			if (common::my_role(origin)) {
+			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				+task::danger;
 			}
 			else {

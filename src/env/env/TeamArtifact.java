@@ -84,10 +84,12 @@ public class TeamArtifact extends Artifact {
 	
 	private Map<String, Map<String, Set<Point>>> agentmaps = new HashMap<String, Map<String, Set<Point>>>();
 	
-	private int maxPlanners = 50;
+	private int maxPlanners = 8;
 	private int planners;
 	
 	private String firstToStop;
+	
+	private int deliverer = -1;
 	
 	private String cartographerY1;
 	private String cartographerY2;
@@ -95,11 +97,14 @@ public class TeamArtifact extends Artifact {
 	private String cartographerX1;
 	private String cartographerX2;
 	
-	private int pos;
+	private int sizeX = 0;
+	private int sizeY = 0;
+	
 	private String goalAgent;
+	private Integer targetTaskX;
+	private Integer targetTaskY;
 	private Integer targetGoalX;
 	private Integer targetGoalY;
-	private String goalSide;
 	private List<Point> retrieversAvailablePositions = new ArrayList<>();
 	
 	private static List<Pair<String, String>> ourBlocks = new ArrayList<>();
@@ -163,10 +168,12 @@ public class TeamArtifact extends Artifact {
 		cartographerX1 = null;
 		cartographerX2 = null;
 		goalAgent = null;
+		targetTaskX = null;
+		targetTaskY = null;
 		targetGoalX = null;
 		targetGoalY = null;
-		goalSide = null;
-		pos  = 10;
+		sizeX = 0;
+		sizeY = 0;
 	}
 	
 	@OPERATION
@@ -203,6 +210,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void callPlanner(OpFeedbackParam<Boolean> flag){
+		logger.info("Calling planner with planners "+this.planners);
 		if(this.planners+1 <= this.maxPlanners) {
 			this.planners++;
 			flag.set(true);
@@ -215,53 +223,169 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void plannerDone(){
 		this.planners--;
+		logger.info("Planner done, decreasing planners "+this.planners);
 	}
 	
 	
 	@OPERATION
 	void joinRetrievers(OpFeedbackParam<String> flag){
+		if (this.deliverer == -1) {
+			flag.set("deliverer");
+			this.deliverer = 1; 
+		}
+		else {
 			flag.set("retriever");
+		}
 	}
 	
 	
 	@OPERATION
-	void getTargetGoal(OpFeedbackParam<String> agent, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y, OpFeedbackParam<String> side){
-		if(goalAgent == null) {
-			return;
-		}
-		agent.set(goalAgent);
+	void getTargetGoal(OpFeedbackParam<String> name, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		name.set(goalAgent);
 		x.set(targetGoalX);
 		y.set(targetGoalY);
-		side.set(goalSide);
 	}
 	
 	@OPERATION
-	void setTargetGoal(int pos, String agent, int x, int y, String side){
-		if(pos <= this.pos) {
-			this.goalAgent = agent;
-			this.targetGoalX = x;
-			this.targetGoalY = y;
-			this.pos = pos;
-			this.goalSide = side;
+	void getTargetTaskboard(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		x.set(targetTaskX);
+		y.set(targetTaskY);
+	}
+	
+	@OPERATION
+	void setTargets(String name, int taskx, int tasky, int goalx, int goaly){
+		this.goalAgent = name;
+		this.targetTaskX = taskx;
+		this.targetTaskY = tasky;
+		this.targetGoalX = goalx;
+		this.targetGoalY = goaly;
+		this.retrieversAvailablePositions.clear();
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
+			Point p = new Point(goalx-9, i);
+			this.retrieversAvailablePositions.add(p);
 		}
-	}
-	
-	@OPERATION
-	void setTargetGoal(int pos, String agent, int x, int y){
-		if(pos <= this.pos) {
-			this.goalAgent = agent;
-			this.targetGoalX = x;
-			this.targetGoalY = y;
-			this.pos = pos;
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add east line of the rectangle
+			Point p = new Point(goalx+9, i);
+			this.retrieversAvailablePositions.add(p);
 		}
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add north line of the rectangle
+			Point p = new Point(i, goaly-4);
+			this.retrieversAvailablePositions.add(p);
+		}
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add south line of the rectangle
+			Point p = new Point(i, goaly+8);
+			this.retrieversAvailablePositions.add(p);
+		}
+//		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
+//		for(Point p: this.retrieversAvailablePositions) {
+//			logger.info("@@@@ position("+p.x+","+p.y+")");
+//		}
 	}
 	
 	
 	@OPERATION
-	void updateRetrieverAvailablePos(int x, int y) {
-		for(Point p: this.retrieversAvailablePositions) {
-			p.x += x;
-			p.y += y;
+	void updateTargets(int x, int y) {
+		if (sizeX != 0 && sizeY != 0) {
+			List<Point> retaux = new ArrayList<>();
+			if (targetTaskX + x < 0) {
+				targetTaskX = ((targetTaskX + x) % sizeX) + sizeX;
+			} else {
+				targetTaskX = (targetTaskX + x) % sizeX;
+			}
+			if (targetTaskY + y < 0) {
+				targetTaskY = ((targetTaskY + y) % sizeY) + sizeY;
+			} else {
+				targetTaskY = (targetTaskY + y) % sizeY;
+			}
+			if (targetGoalX + x < 0) {
+				targetGoalX = ((targetGoalX + x) % sizeX) + sizeX;
+			} else {
+				targetGoalX = (targetGoalX + x) % sizeX;
+			}
+			if (targetGoalY + y < 0) {
+				targetGoalY = ((targetGoalY + y) % sizeY) + sizeY;
+			} else {
+				targetGoalY = (targetGoalY + y) % sizeY;
+			}
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		}
+		else if (sizeX != 0) {
+			List<Point> retaux = new ArrayList<>();
+			if (targetTaskX + x < 0) {
+				targetTaskX = ((targetTaskX + x) % sizeX) + sizeX;
+			} else {
+				targetTaskX = (targetTaskX + x) % sizeX;
+			}
+			targetTaskY += y;
+			if (targetGoalX + x < 0) {
+				targetGoalX = ((targetGoalX + x) % sizeX) + sizeX;
+			} else {
+				targetGoalX = (targetGoalX + x) % sizeX;
+			}
+			targetGoalY += y;
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				pnew.y += y;
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		}
+		else if (sizeY != 0) {
+			List<Point> retaux = new ArrayList<>();
+			targetTaskX += x;
+			if (targetTaskY + y < 0) {
+				targetTaskY = ((targetTaskY + y) % sizeY) + sizeY;
+			} else {
+				targetTaskY = (targetTaskY + y) % sizeY;
+			}
+			targetGoalX += x;
+			if (targetGoalY + y < 0) {
+				targetGoalY = ((targetGoalY + y) % sizeY) + sizeY;
+			} else {
+				targetGoalY = (targetGoalY + y) % sizeY;
+			}
+			for(Point p: this.retrieversAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				pnew.x += x;
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			retrieversAvailablePositions.clear();
+			retrieversAvailablePositions.addAll(retaux);
+		} else {
+			this.targetTaskX += x;
+			this.targetTaskY += y;
+			this.targetGoalX += x;
+			this.targetGoalY += y;
+			for(Point p: this.retrieversAvailablePositions) {
+				p.x += x;
+				p.y += y;
+			}
 		}
 	}
 	
@@ -290,10 +414,10 @@ public class TeamArtifact extends Artifact {
 		
 	@OPERATION
 	void getRetrieverAvailablePos(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
-		logger.info("Available retriever positions: ");
-		for(Point p : this.retrieversAvailablePositions) {
-			logger.info("( "+ p.x + ", " + p.y + " )");
-		}
+//		logger.info("Available retriever positions: ");
+//		for(Point p : this.retrieversAvailablePositions) {
+//			logger.info("( "+ p.x + ", " + p.y + " )");
+//		}
 		if(!this.retrieversAvailablePositions.isEmpty()) {
 			x.set(this.retrieversAvailablePositions.get(0).x);
 			y.set(this.retrieversAvailablePositions.get(0).y);
@@ -303,7 +427,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void addRetrieverAvailablePos(int x, int y) {
-		logger.info("(" + x + ", " + y + ") is now a retriever available position");
+//		logger.info("(" + x + ", " + y + ") is now a retriever available position");
 		this.retrieversAvailablePositions.add(new Point(x, y));
 	}
 	
@@ -315,6 +439,16 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void getServerName(String agent, OpFeedbackParam<String> agentServer){
 		agentServer.set(agentNames.get(agent));
+	}
+	
+	@OPERATION 
+	void setSizeX(int x){
+		sizeX = x;
+	}
+	
+	@OPERATION 
+	void setSizeY(int y){
+		sizeY = y;
 	}
 	
 	@OPERATION
@@ -443,7 +577,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void updateMap(String name, String type, int x, int y) {
 		Point p = new Point(x, y);
-		if(!type.startsWith("goal_")) {
+//		if(!type.startsWith("goal_")) {
 			if (!agentmaps.get(name).containsKey(type)) {
 				Set<Point> set = new HashSet<Point>();
 				set.add(p);
@@ -452,7 +586,44 @@ public class TeamArtifact extends Artifact {
 			else {
 				agentmaps.get(name).get(type).add(p);
 			}
+//		}
+	}
+	
+	@OPERATION
+	void updateLocations(String name, String axis, int size) {
+		Map<String, Set<Point>>  mapaux 	 	= new HashMap<String, Set<Point>>();
+		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
+			for (Point p : entry.getValue()) {
+				int x;
+				int y;
+				if (axis.equals("x")) {
+					if (p.x % size < 0) {
+						x = p.x % size + size;
+					} else {
+						x = p.x % size;
+					}
+					y = p.y;
+				} else {
+					x = p.x;
+					if (p.y % size < 0) {
+						y = p.y % size + size;
+					} else {
+						y = p.y % size;
+					}
+				}
+				Point pnew = new Point(x, y);
+				if (!mapaux.containsKey(entry.getKey())) {
+					Set<Point> set = new HashSet<Point>();
+					set.add(pnew);
+					mapaux.put(entry.getKey(), set);
+				}
+				else {
+					mapaux.get(entry.getKey()).add(pnew);
+				}
+			}
 		}
+		agentmaps.get(name).clear();
+		agentmaps.get(name).putAll(mapaux);
 	}
 	
 	private static class OriginPoint extends Point{
@@ -479,7 +650,7 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION 
-	void getMapSize(String name, OpFeedbackParam<Integer> size){
+	void getAllSize(String name, OpFeedbackParam<Integer> size){
 		size.set(agentmaps.get(name).values().stream().mapToInt(Set::size).sum());
 	}
 	
@@ -487,7 +658,7 @@ public class TeamArtifact extends Artifact {
 	void getDispensers(String name, OpFeedbackParam<Literal[]> dispensers){
 		List<Literal> things = new ArrayList<Literal>();
 		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
-			if (!entry.getKey().startsWith("goal_") && !entry.getKey().startsWith("taskboard")) {
+			if (!entry.getKey().startsWith("goal") && !entry.getKey().startsWith("taskboard")) {
 	//		    logger.info(name+"  :   "+entry.getKey() + " = " + entry.getValue());
 				Atom type = new Atom(entry.getKey());
 				for (Point p : entry.getValue()) {
@@ -522,6 +693,25 @@ public class TeamArtifact extends Artifact {
 		}
 		Literal[] arraythings = things.toArray(new Literal[things.size()]);
 		taskboards.set(arraythings);
+	}
+	
+	@OPERATION 
+	void getGoals(String name, OpFeedbackParam<Literal[]> goals){
+		List<Literal> things = new ArrayList<Literal>();
+		for (Map.Entry<String, Set<Point>> entry : agentmaps.get(name).entrySet()) {
+			if (entry.getKey().startsWith("goal")) {
+				for (Point p : entry.getValue()) {
+					Literal literal = ASSyntax.createLiteral("goal");
+					NumberTerm x = new NumberTermImpl(p.x);
+					NumberTerm y = new NumberTermImpl(p.y);
+					literal.addTerm(x);
+					literal.addTerm(y);
+					things.add(literal);
+				}
+			}
+		}
+		Literal[] arraythings = things.toArray(new Literal[things.size()]);
+		goals.set(arraythings);
 	}
 	
 	@OPERATION 
@@ -605,26 +795,26 @@ public class TeamArtifact extends Artifact {
 		clusters.set(arraythings);
 	}
 	
-	@OPERATION 
-	void getGoals(String name, String cluster, OpFeedbackParam<Literal[]> goals){
-		List<Literal> things 		= new ArrayList<Literal>();
-		for(Point p : agentmaps.get(name).get(cluster)) {
-			Literal literal = null;
-			if(p instanceof OriginPoint) {
-				literal = ASSyntax.createLiteral("origin");
-				literal.addTerm(new Atom(((OriginPoint) p).evaluated));
-			} else {
-				literal = ASSyntax.createLiteral("goal");
-			}
-			NumberTerm x = new NumberTermImpl(p.x);
-			NumberTerm y = new NumberTermImpl(p.y);
-			literal.addTerm(x);
-			literal.addTerm(y);
-			things.add(literal);
-		}
-		Literal[] arraythings = things.toArray(new Literal[things.size()]);
-		goals.set(arraythings);
-	}
+//	@OPERATION 
+//	void getGoals(String name, String cluster, OpFeedbackParam<Literal[]> goals){
+//		List<Literal> things 		= new ArrayList<Literal>();
+//		for(Point p : agentmaps.get(name).get(cluster)) {
+//			Literal literal = null;
+//			if(p instanceof OriginPoint) {
+//				literal = ASSyntax.createLiteral("origin");
+//				literal.addTerm(new Atom(((OriginPoint) p).evaluated));
+//			} else {
+//				literal = ASSyntax.createLiteral("goal");
+//			}
+//			NumberTerm x = new NumberTermImpl(p.x);
+//			NumberTerm y = new NumberTermImpl(p.y);
+//			literal.addTerm(x);
+//			literal.addTerm(y);
+//			things.add(literal);
+//		}
+//		Literal[] arraythings = things.toArray(new Literal[things.size()]);
+//		goals.set(arraythings);
+//	}
 	
 	@OPERATION
 	void addAvailableAgent(String name, String type) {

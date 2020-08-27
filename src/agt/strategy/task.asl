@@ -34,12 +34,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 
 @task[atomic]
 +default::task(Id, Deadline, Reward, ReqList)
-	: task::origin & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_)) & .length(ReqList) <= 6 & task::max_pos_s(MaxPosS) & task::max_pos_w(MaxPosW) & task::max_pos_e(MaxPosE)
-	   & 	.findall(X, .member(req(X,Y,Type),ReqList), ListX) &
-	.findall(Y, .member(req(X,Y,Type),ReqList), ListY) &
-	.max(ListY,MaxY) & MaxY <= MaxPosS &
-	.max(ListX,MaxX) & MaxX <= MaxPosE &
-	.min(ListX,MinX) & math.abs(MinX) <= MaxPosW
+	: task::origin & task::deliverer_in_position[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
 <-
 	.print("@@@@@@@@@@@@@@@@@@ ", Id, "  ",Deadline);
 	getAvailableAgent(AgList);
@@ -57,8 +52,25 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		.print("Task ",Id," with deadline ",Deadline," , reward ",Reward," and requirements ",ReqList," is eligible to be performed");
 		.print("Agents committed: ",CommitList);
 		.print("Agent list used: ",AgList);
+		getMyPos(MyX, MyY);
+		!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+		?default::play(Ag,deliverer,Group);
+		-task::deliverer_in_position[source(_)];
+		.send(Ag, achieve, task::accept_and_deliver(Id,UpdatedX,UpdatedY-1));
 		!!perform_task_origin;
 	}
+	.
+	
++!accept_and_deliver(Task,X,Y)
+	: default::play(Ag,origin,Group)
+<-
+	!action::forget_old_action(default,always_skip);
+	!action::accept(Task);
+	getMyPos(MyX,MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	NewTargetX = X - UpdatedX;
+	NewTargetY = Y - UpdatedY;
+	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 	
 @updatecommitlist[atomic]
@@ -84,19 +96,75 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	}
 	.abolish(retrieve::block(_,_));
 	.
+	
++!deliver(Task)[source(Origin)]
+	: true
+<-
+	!action::forget_old_action(default,always_skip);
+	!try_to_move_deliverer;
+	!action::attach(s);
+	!action::submit(Task);
+	.send(Origin, achieve, task::task_completed(Task));
+	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
+	!!default::always_skip;
+	.
+	
++!try_to_move_deliverer
+<-
+	!action::move(s);
+	if (not default::lastActionResult(success)) {
+		!action::move(s);
+	}
+	.
+	
++!task_completed(Task)
+	: committed(Task,CommitListSort)
+<-
+	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
+	-committed(Task,CommitListSort);
+	.
 
 +!perform_task_origin_next
-	: committed(Id,CommitListSort) & ready_submit(0)
+	: committed(Id,CommitListSort) & ready_submit(0) & task::deliverer_in_position[source(_)]
 <-
-	.print("Submitted task ",Id);
-	!action::submit(Id);
-	!update_beliefs_submit(Flag);
-	if (Flag == -1) {
-		.broadcast(achieve, task::task_failed);
-		!clear_all;
-	}
-	-committed(Id,CommitListSort);
+	-task::deliverer_in_position[source(_)];
+	!action::detach(s);
+	!try_to_move;
+	?default::play(Ag,deliverer,Group);
+	.send(Ag, achieve, task::deliver(Id));
+//	!action::submit(Id);
+//	!update_beliefs_submit(Flag);
+//	if (Flag == -1) {
+//		.broadcast(achieve, task::task_failed);
+//		!clear_all;
+//	}
+	
+//	-committed(Id,CommitListSort);
 	!default::always_skip;
+	.
+	
++!perform_task_origin_next
+	: committed(Id,CommitListSort) & ready_submit(0) & not task::deliverer_in_position[source(_)]
+<-
+	!action::skip;
+	!perform_task_origin_next;
+	.
+	
++!try_to_move
+	: not exploration::check_obstacle_special(e)
+<-
+	!action::move(e);
+	.
++!try_to_move
+	: not exploration::check_obstacle_special(w)
+<-
+	!action::move(w);
+	.
++!try_to_move
+	: true
+<-
+	!action::skip;
+	!try_to_move;
 	.
 	
 +!clear_all
@@ -145,7 +213,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!!retrieve::retrieve_block;
 	.
 +!task_failed
-	: common::my_role(origin) & committed(Id,CommitListSort)
+	: .my_name(Me) & default::play(Me,origin,Group) & committed(Id,CommitListSort)
 <-
 	.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ===============");
 	+no_skip;
@@ -162,11 +230,12 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 +!go_back_to_position
 <-
 	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	getRetrieverAvailablePos(TargetXGlobal, TargetYGlobal);
-	TargetX = TargetXGlobal - MyX;
-	TargetY = TargetYGlobal - MyY;
+	TargetX = TargetXGlobal - UpdatedX;
+	TargetY = TargetYGlobal - UpdatedY;
 	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
-	.print("Agent position: ", MyX, MyY);
+	.print("Agent position: ", UpdatedX, UpdatedY);
 	.print("Chosen Relative Goal position: ", TargetX, TargetY);
 	+getting_to_position;
 	!planner::generate_goal(TargetX, TargetY, notblock);
@@ -180,11 +249,15 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	getMyPos(MyX,MyY);
 	.nth(0,CommitListSort,agent(Sum,_,_,_,_));
 	for (.member(agent(Sum,Ag,TypeAg,X,Y),CommitListSort)) {
+		!map::calculate_updated_pos(MyX,MyY,0,0,TestX,TestY);
+		!map::calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
 		if (task::no_block) {
-			.send(Ag,achieve,task::perform_task(MyX+X,MyY+Y,noblock));
+			.print("Global position ",TestX,", ",TestY);
+			.print("Global position for ",Ag," to go ",UpdatedX,", ",UpdatedY);
+			.send(Ag,achieve,task::perform_task(UpdatedX,UpdatedY,noblock));
 		}
 		else {
-			.send(Ag,achieve,task::perform_task(MyX+X,MyY+Y));
+			.send(Ag,achieve,task::perform_task(UpdatedX,UpdatedY));
 		}
 		?batch(Batch);
 		-+batch(Batch+1);
@@ -229,8 +302,9 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 //	.wait(not action::move_sent);
 	getMyPos(MyX,MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	!action::forget_old_action(default,always_skip);
-	?get_direction(ConX-MyX, ConY-MyY, Dir)
+	?get_direction(ConX-UpdatedX, ConY-UpdatedY, Dir)
 	while (not (default::lastAction(attach) & default::lastActionResult(success))) {
 		!action::attach(Dir);
 	}
@@ -245,16 +319,17 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	+helping_connect;
 //	.wait(not action::move_sent);
 	getMyPos(MyX,MyY);
-	.print("My pos X ",MyX," Y ",MyY);
-	.print("Help local block X ",ConX-MyX," Y ",ConY-MyY);
-	?get_block_connect(ConX-MyX, ConY-MyY, X, Y);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	.print("My pos X ",UpdatedX," Y ",UpdatedY);
+	.print("Help local block X ",ConX-UpdatedX," Y ",ConY-UpdatedY);
+	?get_block_connect(ConX-UpdatedX, ConY-UpdatedY, X, Y);
 	!action::forget_old_action(default,always_skip);
 	!action::connect(Help,X,Y);
 	while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 		!action::connect(Help,X,Y);
 	}
 	.send(Help, tell, task::synch_complete);
-	!update_task_beliefs_connect(ConX-MyX,ConY-MyY);
+	!update_task_beliefs_connect(ConX-UpdatedX,ConY-UpdatedY);
 	!perform_task_origin_next;
 	.
 	
@@ -269,20 +344,54 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	removeAvailableAgent(Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
-	addRetrieverAvailablePos(MyX,MyY);
-//	.print("MyXNew ",MyXNew);
-//	.print("MyYNew ",MyYNew);
-//	.print("X ",X);
-//	.print("Y ",Y);
-	NewTargetX = X - MyX;
-	NewTargetY = Y - MyY;
-//	.print("NewTargetX ",NewTargetX);
-//	.print("NewTargetY ",NewTargetY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	addRetrieverAvailablePos(UpdatedX,UpdatedY);
+	.print("MyX ",UpdatedX);
+	.print("MyY ",UpdatedY);
+	.print("X ",X);
+	.print("Y ",Y);
+	?map::size(x, SizeX);
+	?map::size(y, SizeY);
+	Aux1X = X - UpdatedX;
+	Aux1Y = Y - UpdatedY;
+	if (Aux1X < 0) {
+		Aux2X = Aux1X + SizeX;
+	}
+	elif (Aux1X > 0) {
+		Aux2X = Aux1X - SizeX;
+	}
+	else {
+		Aux2X = Aux1X;
+	}
+	if (Aux1Y < 0) {
+		Aux2Y = Aux1Y + SizeY;
+	}
+	elif (Aux1Y > 0) {
+		Aux2Y = Aux1Y - SizeY;
+	}
+	else {
+		Aux2Y = Aux1Y;
+	}
+	if (math.abs(Aux1X) < math.abs(Aux2X)) {
+		NewTargetX = Aux1X;
+	}
+	else {
+		NewTargetX = Aux2X;
+	}
+	if (math.abs(Aux1Y) < math.abs(Aux2Y)) {
+		NewTargetY = Aux1Y;
+	}
+	else {
+		NewTargetY = Aux2Y;
+	}
+	.print("NewTargetX ",NewTargetX);
+	.print("NewTargetY ",NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	getMyPos(MyXNew,MyYNew);
 //	if (not danger2) {
 		?retrieve::block(BX,BY);
-		.send(Origin, achieve, task::help_attach(MyXNew+BX,MyYNew+BY));
+		!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
+		.send(Origin, achieve, task::help_attach(UpdatedXNew,UpdatedYNew));
 //		if (not danger2) {
 			?get_direction(BX,BY,DetachPos);
 			!action::detach(DetachPos);
@@ -307,24 +416,58 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 	+doing_task;
 	!action::forget_old_action(default,always_skip);
-	.print("@@@@ Received order for new task, origin does not have a block");
+	.print("@@@@ Received order for new task, origin has a block");
 	removeAvailableAgent(Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
-	addRetrieverAvailablePos(MyX,MyY);
-//	.print("MyXNew ",MyXNew);
-//	.print("MyYNew ",MyYNew);
-//	.print("X ",X);
-//	.print("Y ",Y);
-	NewTargetX = X - MyX;
-	NewTargetY = Y - MyY;
-//	.print("NewTargetX ",NewTargetX);
-//	.print("NewTargetY ",NewTargetY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	addRetrieverAvailablePos(UpdatedX,UpdatedY);
+	.print("MyX ",UpdatedX);
+	.print("MyY ",UpdatedY);
+	.print("X ",X);
+	.print("Y ",Y);
+	?map::size(x, SizeX);
+	?map::size(y, SizeY);
+	Aux1X = X - UpdatedX;
+	Aux1Y = Y - UpdatedY;
+	if (Aux1X < 0) {
+		Aux2X = Aux1X + SizeX;
+	}
+	elif (Aux1X > 0) {
+		Aux2X = Aux1X - SizeX;
+	}
+	else {
+		Aux2X = Aux1X;
+	}
+	if (Aux1Y < 0) {
+		Aux2Y = Aux1Y + SizeY;
+	}
+	elif (Aux1Y > 0) {
+		Aux2Y = Aux1Y - SizeY;
+	}
+	else {
+		Aux2Y = Aux1Y;
+	}
+	if (math.abs(Aux1X) < math.abs(Aux2X)) {
+		NewTargetX = Aux1X;
+	}
+	else {
+		NewTargetX = Aux2X;
+	}
+	if (math.abs(Aux1Y) < math.abs(Aux2Y)) {
+		NewTargetY = Aux1Y;
+	}
+	else {
+		NewTargetY = Aux2Y;
+	}
+	.print("NewTargetX ",NewTargetX);
+	.print("NewTargetY ",NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	getMyPos(MyXNew,MyYNew);
 //	if (not danger2) {
 		?retrieve::block(BX,BY);
-		.send(Origin, achieve, task::help_connect(MyXNew+BX,MyYNew+BY));
+		!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
+		.send(Origin, achieve, task::help_connect(UpdatedXNew,UpdatedYNew));
 		while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 			!action::connect(Origin,BX,BY);
 		}

@@ -42,7 +42,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @thing[atomic]
 +default::thing(X, Y, entity, Team)
-	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) & identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
+	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) //& identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
 <-
 	+action::reasoning_about_belief(identification);
 //	.print("I see another agent of my team at ", X, ",", Y);
@@ -104,9 +104,13 @@ i_met_new_agent(Iknow, IdList) :-
 @addid1[atomic]
 +!add_identified_ags([],IdList) : true <- true.
 @addid2[atomic]
-+!add_identified_ags([Ag|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & carto::cells(N) & N > 5 & identification::i_know(Ag,LocalX,LocalY) <- +carto::cycle_complete(math.abs(LocalX)-1,math.abs(LocalY)-1); !add_identified_ags(Ags,IdList).
 @addid3[atomic]
-+!add_identified_ags([Ag|Ags],IdList) 
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList) & carto::agent_to_identify(Ag) & not carto::close_gap & identification::i_know(Ag,LocalX,LocalY) <- +carto::new_distance(LocalX,LocalY); !add_identified_ags(Ags,IdList).
+@addid4[atomic]
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
+@addid5[atomic]
++!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
 	: not .member(Ag,IdList)
 <- 
 //	.print(Ag);
@@ -114,10 +118,10 @@ i_met_new_agent(Iknow, IdList) :-
 	-identification::merge(MergeOldList);
 	?identification::i_know(Ag,LocalX,LocalY);
 	+identification::merge([agent(Ag,LocalX,LocalY)|MergeOldList]);
-	?identification::identified(OldList); // remove after merge is added back
-	-identification::identified(OldList); // remove after merge is added back
-	+identification::identified([Ag|OldList]); // remove after merge is added back
-	!carto::try_cartographer(Ag);
+//	?identification::identified(OldList); // remove after merge is added back
+//	-identification::identified(OldList); // remove after merge is added back
+//	+identification::identified([Ag|OldList]); // remove after merge is added back
+	!carto::try_cartographer(Ag,LocalX,LocalY);
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.
@@ -168,20 +172,19 @@ i_met_new_agent(Iknow, IdList) :-
 	-map::myMap(Map);
 	+map::myMap(MapOther);
 	updateMyPos(OriginX,OriginY);
-	if(map::evaluating_cluster([origin(XN, YN), origin(XS, YS), origin(XW, YW), origin(XE, YE)])){
-		-map::evaluating_cluster(_);
-		+map::evaluating_cluster([origin(XN+OriginX, YN+OriginY), origin(XS+OriginX, YS+OriginY), origin(XW+OriginX, YW+OriginY), origin(XE+OriginX, YE+OriginY)]);
-	}
-	if(retrieve::target(TargetX, TargetY)){
-		-retrieve::target(TargetX, TargetY);
-		+retrieve::target(TargetX+OriginX,TargetY+OriginY);
-	}
+//	if(map::evaluating_cluster([origin(XN, YN), origin(XS, YS), origin(XW, YW), origin(XE, YE)])){
+//		-map::evaluating_cluster(_);
+//		+map::evaluating_cluster([origin(XN+OriginX, YN+OriginY), origin(XS+OriginX, YS+OriginY), origin(XW+OriginX, YW+OriginY), origin(XE+OriginX, YE+OriginY)]);
+//	}
+//	if(retrieve::target(TargetX, TargetY)){
+//		-retrieve::target(TargetX, TargetY);
+//		+retrieve::target(TargetX+OriginX,TargetY+OriginY);
+//	}
 	if(Map \== MapOther){
-		getTargetGoal(GoalAgent, GoalX, GoalY, _);
+		getTargetGoal(GoalAgent, GoalX, GoalY);
 		.term2string(Me, Me1);
 		if(GoalAgent == Me1){
-			setTargetGoal(Pos, Me, OriginX+GoalX, OriginY+GoalY);
-			updateRetrieverAvailablePos(OriginX, OriginY);
+			updateTargets(OriginX, OriginY);
 		}
 	}
 	.
@@ -214,13 +217,11 @@ i_met_new_agent(Iknow, IdList) :-
 +!request_leader(Ag,LocalX,LocalY,GlobalX,GlobalY,AgRequesting)[source(Source)]
 	: map::myMap(Leader)
 <-
-//	.wait(not action::move_sent);
 	getMyPos(OtherX,OtherY);
+	!map::calculate_updated_pos(OtherX,OtherY,0,0,UpdatedX,UpdatedY);
 	.print(Source," requested leader to merge with ",Ag);
 	?identification::identified(StopRequestList);
-	//!map::get_dispensers(DispList);
-	//getGoalClustersWithScouts(Leader, Clusters);
-	.send(Source, achieve, identification::reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,OtherX,OtherY,Ag,AgRequesting,StopRequestList));
+	.send(Source, achieve, identification::reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,UpdatedX,UpdatedY,Ag,AgRequesting,StopRequestList));
 	.
 
 @replyleaderme[atomic]
@@ -229,40 +230,53 @@ i_met_new_agent(Iknow, IdList) :-
 <-
 	.print(" Starting merge request from  ",AgRequesting," to merge with ",AgRequested," and their leader is ",Leader);
 	.send(Leader, achieve, identification::confirm_merge);
-	.wait(identification::merge_confirmed(IdListOther, DispList, ClusterGoalList)[source(Leader)] | identification::merge_canceled[source(Leader)]);
-	if (identification::merge_confirmed(IdListOther, DispList, ClusterGoalList)[source(Leader)]) {
-		-identification::merge_confirmed(IdListOther, DispList, ClusterGoalList)[source(Leader)];
-		NewOriginX = (GlobalX + LocalX) - OtherX;
-		NewOriginY = (GlobalY + LocalY) - OtherY;
+	.wait(identification::merge_confirmed(IdListOther, DispList, TaskBList, GList)[source(Leader)] | identification::merge_canceled[source(Leader)]);
+	if (identification::merge_confirmed(IdListOther, DispList, TaskBList, GList)[source(Leader)]) {
+		-identification::merge_confirmed(IdListOther, DispList, TaskBList, GList)[source(Leader)];
+		!map::calculate_updated_pos(GlobalX,GlobalY,LocalX,LocalY,UpdatedX,UpdatedY);
+		NewOriginX = (UpdatedX) - OtherX;
+		NewOriginY = (UpdatedY) - OtherY;
+//		!map::calculate_updated_pos(NewOriginXAux,NewOriginYAux,0,0,NewOriginX,NewOriginY);
 		for (.member(dispenser(Type,DX,DY),DispList)) {
-			.print("Adding new dispenser at  X ",NewOriginX+DX," Y ",NewOriginY+DY);
-			updateMap(Me,Type,NewOriginX+DX,NewOriginY+DY);
+			!map::calculate_updated_pos(NewOriginX,NewOriginY,DX,DY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new dispenser at  X ",NewMapPositionX," Y ",NewMapPositionY);
+			updateMap(Me,Type,NewMapPositionX,NewMapPositionY);
 		}
-		for(.member(cluster(ClusterId, GoalList),ClusterGoalList)){
-			for (.member(origin(Evaluated,Scouts,Retrievers, MaxPosS, MaxPosW, MaxPosE, GX,GY),GoalList)) {
-				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, InsertedInCluster, IsANewCluster);
-				//if(Evaluated \== 'none'){
-				evaluateOrigin(Me, NewOriginX+GX,NewOriginY+GY, Evaluated, MaxPosS, MaxPosW, MaxPosE);
-				for(.member(scout(ScoutX, ScoutY), Scouts)){
-					addScoutToOrigin(Me, NewOriginX+GX, NewOriginY+GY, NewOriginX+ScoutX, NewOriginY+ScoutY);	
-				}
-				.print("Retrievers: ", Retrievers);
-				for(.member(retriever(RetrieverX, RetrieverY), Retrievers)){
-					.print("Updating retriever pos X ",RetrieverX," Y ",RetrieverY);
-					addRetrieverToOrigin(Me, NewOriginX+GX, NewOriginY+GY, NewOriginX+RetrieverX, NewOriginY+RetrieverY);	
-				}
-				//initAvailablePos(Me);
-				//evaluateCluster(Me, InsertedInCluster, GX, GY, Evaluated);
-				//}
-			}
-			for (.member(goal(GX,GY),GoalList)) {
-				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, _, _);
-			}
-			/*for (.member(origin(GX,GY),GoalList)) {
-				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, _);
-			}*/
-			//!retrieve::update_target;
+		for (.member(taskboard(TX,TY),TaskBList)) {
+			!map::calculate_updated_pos(NewOriginX,NewOriginY,TX,TY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new taskboard at  X ",NewMapPositionX," Y ",NewMapPositionY);
+			updateMap(Me,taskboard,NewMapPositionX,NewMapPositionY);
 		}
+		for (.member(goal(GX,GY),GList)) {
+			!map::calculate_updated_pos(NewOriginX,NewOriginY,GX,GY,NewMapPositionX,NewMapPositionY);
+//			.print("Adding new goal at  X ",NewMapPositionX," Y ",NewMapPositionY);
+			updateMap(Me,goal,NewMapPositionX,NewMapPositionY);
+		}
+//		for(.member(cluster(ClusterId, GoalList),ClusterGoalList)){
+//			for (.member(origin(Evaluated,Scouts,Retrievers, MaxPosS, MaxPosW, MaxPosE, GX,GY),GoalList)) {
+//				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, InsertedInCluster, IsANewCluster);
+//				//if(Evaluated \== 'none'){
+//				evaluateOrigin(Me, NewOriginX+GX,NewOriginY+GY, Evaluated, MaxPosS, MaxPosW, MaxPosE);
+//				for(.member(scout(ScoutX, ScoutY), Scouts)){
+//					addScoutToOrigin(Me, NewOriginX+GX, NewOriginY+GY, NewOriginX+ScoutX, NewOriginY+ScoutY);	
+//				}
+//				.print("Retrievers: ", Retrievers);
+//				for(.member(retriever(RetrieverX, RetrieverY), Retrievers)){
+//					.print("Updating retriever pos X ",RetrieverX," Y ",RetrieverY);
+//					addRetrieverToOrigin(Me, NewOriginX+GX, NewOriginY+GY, NewOriginX+RetrieverX, NewOriginY+RetrieverY);	
+//				}
+//				//initAvailablePos(Me);
+//				//evaluateCluster(Me, InsertedInCluster, GX, GY, Evaluated);
+//				//}
+//			}
+//			for (.member(goal(GX,GY),GoalList)) {
+//				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, _, _);
+//			}
+//			/*for (.member(origin(GX,GY),GoalList)) {
+//				updateGoalMap(Me,NewOriginX+GX,NewOriginY+GY, _);
+//			}*/
+//			//!retrieve::update_target;
+//		}
 		?identification::identified(IdList);
 		-identification::identified(IdList);
 		.union(IdList,IdListOther,NewListAux);
@@ -315,8 +329,9 @@ i_met_new_agent(Iknow, IdList) :-
 <-
 	?identification::identified(IdListOther);
 	!map::get_dispensers(DispList);
-	getGoalClustersWithScouts(Me, Clusters);
-	.send(Ag, tell, identification::merge_confirmed(IdListOther,DispList,Clusters));
+	!map::get_taskboards(TaskBList);
+	!map::get_goals(GList);
+	.send(Ag, tell, identification::merge_confirmed(IdListOther,DispList,TaskBList,GList));
 	.wait(identification::merge_completed(NewListAux,NewOriginX,NewOriginY)[source(Ag)]);
 	-identification::merge_completed(NewListAux,NewOriginX,NewOriginY)[source(Ag)];
 	-identification::identified(IdListOther);
@@ -336,7 +351,8 @@ i_met_new_agent(Iknow, IdList) :-
 +!check_all_agent_sees([]) 
 	: .all_names(Ags) & .my_name(Me)
 <- 
-	.findall(Ag, (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y))), Iknow);
+	.findall(ag(Distance,Ag), (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y)) & Distance = math.abs(X) + math.abs(Y)), Iknow);
+	.sort(Iknow,Iknowsorted);
 	+merge([]);
 	.findall(pos(X, Y), (identification::doubts_on(X, Y)), DoubtsOn);
 	//.findall(Ag, (identification::i_know(Ag, _, _)), Identified);
@@ -345,20 +361,20 @@ i_met_new_agent(Iknow, IdList) :-
 //	.print("Agents I know ",Iknow);
 	?identification::identified(IdList);
 //	.print("Idlist ",IdList);
-	!add_identified_ags(Iknow,IdList);
+	!add_identified_ags(Iknowsorted,IdList);
 	?merge(MergeList);
 	-merge(MergeList);
 	?map::myMap(Leader);
-//	if (not .empty(MergeList)) {
-////		.wait(not action::move_sent);
-//		getMyPos(MyX,MyY);
-//		if (Me == Leader) {
-//			!request_merge(MergeList,MyX,MyY);
-//		}
-//		else {
-//			.send(Leader, achieve, identification::request_merge(MergeList,MyX,MyY));
-//		}
-//	}
+	if (not .empty(MergeList)) {
+//		.wait(not action::move_sent);
+		getMyPos(MyX,MyY);
+		if (Me == Leader) {
+			!request_merge(MergeList,MyX,MyY);
+		}
+		else {
+			.send(Leader, achieve, identification::request_merge(MergeList,MyX,MyY));
+		}
+	}
 	.abolish(identification::i_know(_, _, _));
 	.abolish(identification::doubts_on(_, _));
 	.

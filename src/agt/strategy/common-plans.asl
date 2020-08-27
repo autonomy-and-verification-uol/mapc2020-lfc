@@ -99,36 +99,38 @@ find_empty_position(X,Y,5,Vision) :- (not (default::thing(0,-5,Thing,_) & Thing 
 find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X,Y,Count+1,Vision). 
 
 +!go_around(OldDir)
-	: not common::avoid(_) & relative_right(OldDir, Dir) & not exploration::check_obstacle_special(Dir)
+	: not common::avoid(_) & relative_right(OldDir, Dir) & not exploration::check_obstacle_special(Dir) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	+avoid(1);
 	.print("First avoid, no obstacles, direction ",Dir);
-	!retrieve::smart_move(Dir);
-//	!action::move(Dir);
-	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(Dir);
-//		!action::move(Dir);
+//	!retrieve::smart_move(Dir);
+	!action::move(Dir);
+	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
+//		!retrieve::smart_move(Dir);
+		!action::move(Dir);
 	}
 	!go_around(OldDir, Dir);
 	.
 	
 +!go_around(OldDir)
-	: not common::avoid(_) & retrieve::block(X,Y)
+	: not common::avoid(_) & retrieve::block(X,Y) & .my_name(Me) & not default::play(Me,cartographer,Group)
 .
 	
 +!go_around(OldDir)
-	: not common::avoid(_)
+	: not common::avoid(_) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	+avoid(1);
 	.print("First avoid, with obstacles");
-	!retrieve::smart_move(OldDir);
-//	!action::move(OldDir);
-	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(OldDir);
-//		!action::move(OldDir);
+//	!retrieve::smart_move(OldDir);
+	!action::move(OldDir);
+	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
+//		!retrieve::smart_move(OldDir);
+		!action::move(OldDir);
 	}
 	!go_around(OldDir, OldDir);
 	.
+	
++!go_around(OldDir).
 	
 //+!go_around(n, Dir)
 //	: common::avoid(Av) & Av < 3 & retrieve::block(0,-1)
@@ -187,42 +189,43 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 //	.
 	
 +!go_around(OldDir, Dir)
-	: common::avoid(Av) & Av < 3
+	: common::avoid(Av) & Av < 3 & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	-avoid(Av);
 	+avoid(Av+1);
-	!retrieve::smart_move(OldDir);
-//	!action::move(OldDir);
-	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(OldDir);
-//		!action::move(OldDir);
+//	!retrieve::smart_move(OldDir);
+	!action::move(OldDir);
+	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
+//		!retrieve::smart_move(OldDir);
+		!action::move(OldDir);
 	}
 	!go_around(OldDir, Dir);
 	.
 	
 +!go_around(OldDir, Dir)
-	: common::avoid(3) & OldDir \== Dir & exploration::remove_opposite(Dir,NewDir)
+	: common::avoid(3) & OldDir \== Dir & exploration::remove_opposite(Dir,NewDir) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	-avoid(3);
 	.print("@@@@@@@@@@ Finished go around no obstacle");
-	!retrieve::smart_move(NewDir);
-//	!action::move(NewDir);
-	if (default::lastActionResult(failed_path)) {
-		!retrieve::smart_move(NewDir);
-//		!action::move(NewDir);
+//	!retrieve::smart_move(NewDir);
+	!action::move(NewDir);
+	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
+		!action::move(NewDir);
 	}
 	.
 	
 +!go_around(OldDir, Dir)
-	: common::avoid(3)
+	: common::avoid(3) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	-avoid(3);
 	.print("@@@@@@@@@@ Finished go around");
 	!action::move(OldDir);
-	if (default::lastActionResult(failed_path)) {
+	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
 		!action::move(OldDir);
 	}
 	.
+	
++!go_around(OldDir, Dir).
 	
 +!escape(MoveBackX,MoveBackY)
 	: default::vision(V) & find_empty_position(X,Y,1,V)
@@ -395,7 +398,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: not default::lastAction(rotate) & retrieve::block(X,Y) & not default::thing(X,Y,block,_)
 <-
 	-retrieve::block(X,Y);
-	if (common::my_role(origin)) {
+	if (.my_name(Me) & default::play(Me,origin,Group)) {
 //		+danger;
 	}
 	.
