@@ -18,6 +18,7 @@ xmls/
 e_r_r_o_r.txt
 .stop___MAS
 agent*.pddl
+agent*.sas
 output.sas
 run.sh
 
