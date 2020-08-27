@@ -84,7 +84,7 @@ public class TeamArtifact extends Artifact {
 	
 	private Map<String, Map<String, Set<Point>>> agentmaps = new HashMap<String, Map<String, Set<Point>>>();
 	
-	private int maxPlanners = 8;
+	private int maxPlanners = 15;
 	private int planners;
 	
 	private String firstToStop;
@@ -210,7 +210,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void callPlanner(OpFeedbackParam<Boolean> flag){
-		logger.info("Calling planner with planners "+this.planners);
+//		logger.info("Calling planner with planners "+this.planners);
 		if(this.planners+1 <= this.maxPlanners) {
 			this.planners++;
 			flag.set(true);
@@ -223,7 +223,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void plannerDone(){
 		this.planners--;
-		logger.info("Planner done, decreasing planners "+this.planners);
+//		logger.info("Planner done, decreasing planners "+this.planners);
 	}
 	
 	
@@ -392,17 +392,17 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void initRetrieverAvailablePos(String name) {
-		logger.info("initRetrieversAvailablePos");
+//		logger.info("initRetrieversAvailablePos");
 		if(this.targetGoalX == null | this.targetGoalY == null) return;
 		this.retrieversAvailablePositions.clear();
 		for(String key : agentmaps.get(name).keySet()) {
 			if(key.startsWith("goal_")) {
 				for(Point pp : agentmaps.get(name).get(key)) {
 					if(targetGoalX == pp.x && targetGoalY == pp.y) {
-						logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-						logger.info(((OriginPoint) pp).retrievers+"");
+//						logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+//						logger.info(((OriginPoint) pp).retrievers+"");
 						for(Point retriever : ((OriginPoint) pp).retrievers) {
-							logger.info("[" + name + "]" + "( " + retriever.x + ", " + retriever.y + " ) retriever added");
+//							logger.info("[" + name + "]" + "( " + retriever.x + ", " + retriever.y + " ) retriever added");
 							this.retrieversAvailablePositions.add(retriever);
 						}
 						return;
@@ -454,7 +454,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void evaluateOrigin(String name, int x, int y, String evaluation) {
 		//if(evaluation.equals("boh")) return;
-		logger.info("evaluateOrigin(" + name + ", " + x + ", " + y + ", " + evaluation + ")");
+//		logger.info("evaluateOrigin(" + name + ", " + x + ", " + y + ", " + evaluation + ")");
 		for(String key : agentmaps.get(name).keySet()) {
 			if(key.startsWith("goal_")) {
 				for(Point pp : agentmaps.get(name).get(key)) {
@@ -472,13 +472,13 @@ public class TeamArtifact extends Artifact {
 				}
 			}
 		}
-		logger.info("not found it");
+//		logger.info("not found it");
 	}
 	
 	@OPERATION
 	void evaluateOrigin(String name, int x, int y, String evaluation, int maxPosS, int maxPosW, int maxPosE) {
 		//if(evaluation.equals("boh")) return;
-		logger.info("evaluateOrigin(" + name + ", " + x + ", " + y + ", " + evaluation + ")");
+//		logger.info("evaluateOrigin(" + name + ", " + x + ", " + y + ", " + evaluation + ")");
 		for(String key : agentmaps.get(name).keySet()) {
 			if(key.startsWith("goal_")) {
 				for(Point pp : agentmaps.get(name).get(key)) {
@@ -499,7 +499,7 @@ public class TeamArtifact extends Artifact {
 				}
 			}
 		}
-		logger.info("not found it");
+//		logger.info("not found it");
 	}
 	
 	@OPERATION
@@ -522,20 +522,20 @@ public class TeamArtifact extends Artifact {
 			if(key.startsWith("goal_")) {
 				for(Point pp : agentmaps.get(name).get(key)) {
 					if(pp instanceof OriginPoint & originX == pp.x && originY == pp.y) {
-						logger.info("[" + name + "]" + "(" + retrieverX + ", " + retrieverY + ") retriever added to cluster " + key);
+//						logger.info("[" + name + "]" + "(" + retrieverX + ", " + retrieverY + ") retriever added to cluster " + key);
 						((OriginPoint) pp).retrievers.add(new Point(retrieverX, retrieverY));
 						return;
 					}
 				}
 			}
 		}
-		logger.info("[" + name + "]" + "addRetrieverToOrigin has not add anything");
+//		logger.info("[" + name + "]" + "addRetrieverToOrigin has not add anything");
 	}
 	
 	@OPERATION
 	void updateGoalMap(String name, int x, int y, OpFeedbackParam<String> clusterInserterIn, OpFeedbackParam<Boolean> isANewCluster) {
 		Point p = new Point(x, y);
-		logger.info("[" + name + "]: Try to add goal (" + x + ", " + y + ")");
+//		logger.info("[" + name + "]: Try to add goal (" + x + ", " + y + ")");
 		double minDistance = 5;
 		String myCluster = null;
 		int id = 0;

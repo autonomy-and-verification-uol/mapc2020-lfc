@@ -1,7 +1,7 @@
 +!commit_action(Action)
 	: .current_intention(intention(IntentionId,_)) & not ::access_token(IntentionId,_) & ::current_token(Token)
 <-
-	.print("It's my first access ",IntentionId,", receiving a token ",Token," ",Action," ",IntentionId);
+//	.print("It's my first access ",IntentionId,", receiving a token ",Token," ",Action," ",IntentionId);
 	+::access_token(IntentionId,Token);
 	!commit_action(Action);
 	.
@@ -9,7 +9,7 @@
 	: .current_intention(intention(IntentionId,_)) & ::access_token(IntentionId,IntentionToken) & ::current_token(Token) & IntentionToken < Token
 <-
 	
-	.print("My access was revogated ",IntentionId,", my ",IntentionToken," current ",Token,", shutting down!");
+//	.print("My access was revogated ",IntentionId,", my ",IntentionToken," current ",Token,", shutting down!");
 	-::access_token(IntentionId,_);
 	.drop_intention;
 	.
@@ -46,7 +46,7 @@
 	-::committedToAction(Id);
 	
 	?default::lastActionResult(Result);
-	.print("Last action result ",IntentionId," was: ",Result);
+//	.print("Last action result ",IntentionId," was: ",Result);
 	
 	?default::lastAction(LastAction);
 //	?default::lastActionParams(LastActionParams);
@@ -54,14 +54,14 @@
 		.print("My action ",LastAction," was unknown to the server. This should never happen!");
 	}	
 	if (Result == failed_random & LastAction \== skip & LastAction \== clear){
-		.print("My action failed due to random failure, sending it again.");
+//		.print("My action failed due to random failure, sending it again.");
 		!commit_action(Action); // repeat the previous action
 	}
 //	elif (Result == success & LastAction == accept) {
 //		+task::accepted(LastActionParams);
 //	}
 	elif (Result == failed_status) {
-		.print("Agent is disabled.");
+//		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
 			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ AHAHAHA");
@@ -74,7 +74,7 @@
 		!commit_action(Action); 
 	}
 	elif (Result == failed_status & LastAction == clear & default::energy(Energy) & Energy >= 30) {
-		.print("Agent is disabled.");
+//		.print("Agent is disabled.");
 		if (retrieve::block(X,Y) & default::thing(X,Y,block,_) ) {
 			if (.my_name(Me) & default::play(Me,origin,Group)) {
 //				+task::danger;
@@ -89,7 +89,7 @@
 //			-move_sent;
 //		}
 		if (Result \== success){
-			.print("Failing action ",Action," because ",Result);
+//			.print("Failing action ",Action," because ",Result);
 			.fail(action(Action),result(Result));
 //			if (Action \== recharge & Action \== continue & not .substring("assist_assemble",Action) & Result == failed){
 //				.print("Failed to execute action ",Action," with actionId ",Id,". Executing it again.");
@@ -112,7 +112,7 @@
 +!commit_action(Action)
 	: default::actionID(Id) & action::action(Id,ChosenAction) 
 <-
-	.print("I've already picked an action ",ChosenAction," for ",Id," trying ",Action," next");
+//	.print("I've already picked an action ",ChosenAction," for ",Id," trying ",Action," next");
 	.wait({+default::actionID(_)}); 
 	!commit_action(Action);
 	.
@@ -120,7 +120,7 @@
 +!update_percepts
 	: ::action_sent(Id)
 <-
-	.print("An action has been sent to the Server, I have to wait for the perceptions to be updated");
+//	.print("An action has been sent to the Server, I have to wait for the perceptions to be updated");
 	.wait({-::action_sent(_)});
 	. 
 +!update_percepts.
@@ -128,7 +128,7 @@
 +!forget_old_action(Module,Goal) 
 	: not ::action_sent(_) & default::actionID(ActionId)
 <- 
-	.print("I Have a desire ",Module,"::",Goal,", forgetting it");
+//	.print("I Have a desire ",Module,"::",Goal,", forgetting it");
 	
 	.drop_desire(Module::Goal); // we don't want to follow these plans anymore
 	.drop_intention(Module::Goal);
@@ -157,7 +157,7 @@
 	: default::actionID(ActionId)
 <-
 	!revogate_tokens;
-	.print("Dropping all intentions that aim to send an action to the Server");
+//	.print("Dropping all intentions that aim to send an action to the Server");
 	.drop_desire(::commit_action(_));
 	.drop_future_intention(::commit_action(_)); // we don't want to follow these plans anymore
 	if(::action(ActionId,Action)){
@@ -165,7 +165,7 @@
 		-::action(ActionId,Action);
 	}
 	+::committedToAction(ActionId);
-	.print("Finished dropping all intentions");
+//	.print("Finished dropping all intentions");
 	.
 +!forget_old_action
 <-	
@@ -177,7 +177,7 @@
 	: ::current_token(Token) & .current_intention(intention(ContextId,_)) 
 <-
 	.current_intention(intention(BodyId,_));
-	.print("Revogating older tokens...I'm context ",ContextId," body ",BodyId);
+//	.print("Revogating older tokens...I'm context ",ContextId," body ",BodyId);
 	-+::current_token(Token+1);
 	-::access_token(BodyId,_);
 	+::access_token(BodyId,Token+1);
@@ -187,7 +187,7 @@
 +team::chosenActions(ActionId, Agents) // all the agents have chosen their actions
 	: .all_names(AllAgents) & .length(Agents) == .length(AllAgents) & not ::committedToAction(ActionId) & not ::action_sent(ActionId)
 <-
-	.print("All agents have chosen their action on ",ActionId,", dropping wait_request_for_help");
+//	.print("All agents have chosen their action on ",ActionId,", dropping wait_request_for_help");
 	.drop_desire(::wait_request_for_help(ActionId));
 	.drop_intention(::wait_request_for_help(ActionId));
 	!send_action_to_server(ActionId);
@@ -195,16 +195,16 @@
 +!wait_request_for_help(ActionId)
 	: ::committedToAction(ActionId)
 <-
-	.print("I'm strong commited to help someone else on ",ActionId);
+//	.print("I'm strong commited to help someone else on ",ActionId);
 	!send_action_to_server(ActionId);
 	.abolish(::committedToAction(_));
 	.	
 +!wait_request_for_help(ActionId)
 <-
-	.print("Waiting for help request on ",ActionId);
+//	.print("Waiting for help request on ",ActionId);
 	.wait(1000);
 	.wait(not action::reasoning_about_belief(_)); 
-	.print("Time has gone on ",ActionId);
+//	.print("Time has gone on ",ActionId);
 	!send_action_to_server(ActionId);
 	.	
 	
@@ -212,7 +212,7 @@
 +!send_action_to_server(ActionId)
 	: not action::action_sent(ActionId) & action::action(ActionId,Action) & default::step(Step)
 <-
-	.print("Sending ",Step," ",Action);
+//	.print("Sending ",Step," ",Action);
 	action(Action);
 	+action::action_sent(ActionId);
 	.

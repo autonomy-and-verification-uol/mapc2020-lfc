@@ -46,7 +46,7 @@ i_met_new_agent(Iknow, IdList) :-
 <-
 	+action::reasoning_about_belief(identification);
 //	.print("I see another agent of my team at ", X, ",", Y);
-	.print("START TURN");
+//	.print("START TURN");
 	.broadcast(achieve, identification::request_information(ID));
 	.
 
@@ -54,7 +54,7 @@ i_met_new_agent(Iknow, IdList) :-
 +agent_sees(_,_)[source(Name)] 
 	: .all_names(Ags) & .length(Ags,NumberAgents) & count(NumberAgents-2)
 <-
-	.print("I AM HERE!");
+//	.print("I AM HERE!");
 	-count(_);
 	+count(0);
 	!!identify(Ags);
@@ -73,7 +73,7 @@ i_met_new_agent(Iknow, IdList) :-
 <-
 	!check_all_agent_sees(Ags);
 	.abolish(identification::agent_sees(_,_)[source(_)]);
-	.print("END TURN");
+//	.print("END TURN");
 	-action::reasoning_about_belief(identification);
 	.
 
