@@ -411,17 +411,22 @@ public class TeamArtifact extends Artifact {
 			}
 		}
 	}
-		
+	
 	@OPERATION
-	void getRetrieverAvailablePos(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
-//		logger.info("Available retriever positions: ");
-//		for(Point p : this.retrieversAvailablePositions) {
-//			logger.info("( "+ p.x + ", " + p.y + " )");
-//		}
-		if(!this.retrieversAvailablePositions.isEmpty()) {
-			x.set(this.retrieversAvailablePositions.get(0).x);
-			y.set(this.retrieversAvailablePositions.get(0).y);
-			this.retrieversAvailablePositions.remove(0);
+	void getRetrieverAvailablePos(int myX, int myY, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
+		int toRemove = -1;
+		double dist = Double.MAX_VALUE;
+		for(int i = 0; i < this.retrieversAvailablePositions.size(); i++) {
+			double d = Math.abs(myX - this.retrieversAvailablePositions.get(i).x) + Math.abs(myY - this.retrieversAvailablePositions.get(i).y);
+			if(d < dist) {
+				toRemove = i;
+				dist = d;
+			}
+		}
+		if(toRemove != -1) {
+			x.set(this.retrieversAvailablePositions.get(toRemove).x);
+			y.set(this.retrieversAvailablePositions.get(toRemove).y);
+			this.retrieversAvailablePositions.remove(toRemove);
 		}
 	}
 	

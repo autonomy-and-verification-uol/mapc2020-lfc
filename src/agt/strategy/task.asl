@@ -231,7 +231,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	getRetrieverAvailablePos(TargetXGlobal, TargetYGlobal);
+	getRetrieverAvailablePos(MyX, MyY, TargetXGlobal, TargetYGlobal);
 	TargetX = TargetXGlobal - UpdatedX;
 	TargetY = TargetYGlobal - UpdatedY;
 	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
