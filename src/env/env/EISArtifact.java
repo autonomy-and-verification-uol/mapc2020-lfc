@@ -457,12 +457,12 @@ public class EISArtifact extends Artifact implements AgentListener {
     	for(Literal l : this.blockList) {
     		int x = (int)((NumberTerm) l.getTerm(0)).solve();
     		int y = (int)((NumberTerm) l.getTerm(1)).solve();
-    		vision.get(5 + y).set(5 + x, 1);
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 1);
     	}
     	for(Literal l : this.obstacleList) {
     		int x = (int)((NumberTerm) l.getTerm(0)).solve();
     		int y = (int)((NumberTerm) l.getTerm(1)).solve();
-    		vision.get(5 + y).set(5 + x, 2);
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 2);
     	}
     	
     	String code = "b" + blockX + blockY;
@@ -486,20 +486,33 @@ public class EISArtifact extends Artifact implements AgentListener {
     		else nCells += 2;
     	}
     	
+    	//logger.info("blocklist: " + this.blockList);
     	for(Literal l : this.blockList) {
+//    		logger.info(l.toString());
     		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+//    		logger.info("x: " + x);
     		int y = (int)((NumberTerm) l.getTerm(1)).solve();
-    		vision.get(5 + y).set(5 + x, 1);
+//    		logger.info("y: " + y);
+//    		logger.info("(" + (5+x-Math.abs(y)) + "," + (5+y) + ")");
+//    		logger.info("length: " + vision.get(5 + y).size());
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 1);
     	}
+    	//logger.info("obstacleList: " + this.obstacleList);
     	for(Literal l : this.obstacleList) {
+//    		logger.info(l.toString());
     		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+//    		logger.info("x: " + x);
     		int y = (int)((NumberTerm) l.getTerm(1)).solve();
-    		vision.get(5 + y).set(5 + x, 2);
+//    		logger.info("y: " + y);
+//    		logger.info("(" + (5+x-Math.abs(y)) + "," + (5+y) + ")");
+//    		logger.info("length: " + vision.get(5 + y).size());
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 2);
     	}
     	
     	String code = "nb";
     	code += (what.equals("agent") ? "ga" : "gb") + (goalX + "" + goalY + "-");
     	code += clear == 1 ? "cl" : "ncl";
+//    	logger.info("here0");
     	for(int i = 0, nCells = 1; i < 11; i++) {
     		for(int j = 0; j < nCells; j++) {
     			code += vision.get(i).get(j);
@@ -507,6 +520,7 @@ public class EISArtifact extends Artifact implements AgentListener {
     		if(i >= 5) nCells -= 2;
     		else nCells += 2;
     	}
+//    	logger.info("here1");
     	return code;
     }
     

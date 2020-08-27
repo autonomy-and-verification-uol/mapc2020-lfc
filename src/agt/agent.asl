@@ -44,10 +44,10 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
     getPlanAgentToGoal(Me, -1, -3, Plan, 1);
     .print(Plan).*/
 
-+default::actionID(0)
-	: .my_name(agent1) | .my_name(agent2) | .my_name(agent3) | .my_name(agent4)
-<- 
-	!default::galavant.
+//+default::actionID(0)
+//	: .my_name(agent1) | .my_name(agent2) | .my_name(agent3) | .my_name(agent4)
+//<- 
+//	!default::galavant.
 
 
 +default::actionID(_)
