@@ -84,7 +84,7 @@ public class TeamArtifact extends Artifact {
 	
 	private Map<String, Map<String, Set<Point>>> agentmaps = new HashMap<String, Map<String, Set<Point>>>();
 	
-	private int maxPlanners = 50;
+	private int maxPlanners = 8;
 	private int planners;
 	
 	private String firstToStop;
@@ -210,6 +210,7 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void callPlanner(OpFeedbackParam<Boolean> flag){
+		logger.info("Calling planner with planners "+this.planners);
 		if(this.planners+1 <= this.maxPlanners) {
 			this.planners++;
 			flag.set(true);
@@ -222,6 +223,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void plannerDone(){
 		this.planners--;
+		logger.info("Planner done, decreasing planners "+this.planners);
 	}
 	
 	

@@ -265,8 +265,6 @@ most_needed_type(Dispensers, AgList, Type) :-
 	: true
 <-
 //	.wait(not action::move_sent);
-	callPlanner(Flag);
-	!planner::try_call_planner(Flag);
 	!retrieve::decide_block_type_flat(Type); 
 	.print("I decided to get block type: ", Type);
 	if (retrieve::minus_one(DispX,DispY)) {

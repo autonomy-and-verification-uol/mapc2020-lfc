@@ -14,10 +14,8 @@
 	else {
 		Clear = 0;
 	}
-	if (Aux == notblock) {
-		callPlanner(Flag);
-		!try_call_planner(Flag);
-	}
+	callPlanner(Flag);
+	!try_call_planner(Flag);
 	getPlanBlockToGoal(Me, 0, 0, BlockX, BlockY, Plan, Clear);
 	plannerDone;
 	.print("@@@@@@ Plan get plan block to goal: ",Plan);
