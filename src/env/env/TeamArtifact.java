@@ -87,6 +87,8 @@ public class TeamArtifact extends Artifact {
 	private int maxPlanners = 15;
 	private int planners;
 	
+	private int retrievers;
+	
 	private String firstToStop;
 	
 	private int deliverer = -1;
@@ -174,6 +176,7 @@ public class TeamArtifact extends Artifact {
 		targetGoalY = null;
 		sizeX = 0;
 		sizeY = 0;
+		retrievers = 13;
 	}
 	
 	@OPERATION
@@ -233,8 +236,12 @@ public class TeamArtifact extends Artifact {
 			flag.set("deliverer");
 			this.deliverer = 1; 
 		}
-		else {
+		else if (this.retrievers > 0) {
+			this.retrievers--;
 			flag.set("retriever");
+		}
+		else {
+			flag.set("explorer");
 		}
 	}
 	
@@ -263,26 +270,26 @@ public class TeamArtifact extends Artifact {
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
 			Point p = new Point(goalx-9, i);
 			this.retrieversAvailablePositions.add(p);
-			Point p2 = new Point(goalx-11, i);
-			this.retrieversAvailablePositions.add(p2);
+//			Point p2 = new Point(goalx-11, i);
+//			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add east line of the rectangle
 			Point p = new Point(goalx+9, i);
 			this.retrieversAvailablePositions.add(p);
-			Point p2 = new Point(goalx+11, i);
-			this.retrieversAvailablePositions.add(p2);
+//			Point p2 = new Point(goalx+11, i);
+//			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add north line of the rectangle
 			Point p = new Point(i, goaly-4);
 			this.retrieversAvailablePositions.add(p);
-			Point p2 = new Point(i, goaly-6);
-			this.retrieversAvailablePositions.add(p2);
+//			Point p2 = new Point(i, goaly-6);
+//			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add south line of the rectangle
 			Point p = new Point(i, goaly+8);
 			this.retrieversAvailablePositions.add(p);
-			Point p2 = new Point(i, goaly+10);
-			this.retrieversAvailablePositions.add(p2);
+//			Point p2 = new Point(i, goaly+10);
+//			this.retrieversAvailablePositions.add(p2);
 		}
 //		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
 //		for(Point p: this.retrieversAvailablePositions) {

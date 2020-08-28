@@ -81,7 +81,7 @@
 		!action::forget_old_action;
 		!!stop::become_deliverer;
 	}
-	else {
+	elif (Flag == "retriever") {
 		.print("Removing explorer");
 		-exploration::special(_);
 		-common::avoid(_);
