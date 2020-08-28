@@ -389,7 +389,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
-	addRetrieverAvailablePos(UpdatedX,UpdatedY);
+	addRetrieverAvailablePos(MyUpdatedX,MyUpdatedY);
 	DistanceX = GoalX - MyUpdatedX;
 	DistanceY = GoalY - MyUpdatedY;
 	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
