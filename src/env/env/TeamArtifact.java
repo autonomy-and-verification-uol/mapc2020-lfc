@@ -263,18 +263,26 @@ public class TeamArtifact extends Artifact {
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
 			Point p = new Point(goalx-9, i);
 			this.retrieversAvailablePositions.add(p);
+			Point p2 = new Point(goalx-11, i);
+			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add east line of the rectangle
 			Point p = new Point(goalx+9, i);
 			this.retrieversAvailablePositions.add(p);
+			Point p2 = new Point(goalx+11, i);
+			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add north line of the rectangle
 			Point p = new Point(i, goaly-4);
 			this.retrieversAvailablePositions.add(p);
+			Point p2 = new Point(i, goaly-6);
+			this.retrieversAvailablePositions.add(p2);
 		}
 		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add south line of the rectangle
 			Point p = new Point(i, goaly+8);
 			this.retrieversAvailablePositions.add(p);
+			Point p2 = new Point(i, goaly+10);
+			this.retrieversAvailablePositions.add(p2);
 		}
 //		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
 //		for(Point p: this.retrieversAvailablePositions) {
