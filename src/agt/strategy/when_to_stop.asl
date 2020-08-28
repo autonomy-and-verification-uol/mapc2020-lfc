@@ -89,6 +89,10 @@
 		!action::forget_old_action;
 		!!stop::become_retriever;
 	}
+	else {
+		!action::forget_old_action;
+		!!default::always_skip;
+	}
 //	!!retrieve::retrieve_block;
 	.
 	
