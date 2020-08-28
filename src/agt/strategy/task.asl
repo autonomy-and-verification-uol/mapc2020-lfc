@@ -138,12 +138,12 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!task_completed(Task)
-	: committed(Task,CommitListSort) & .my_name(Me)
+	: committed(Task,CommitListSort)
 <-
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
 	-committed(Task,CommitListSort);
 	!action::forget_old_action(default,always_skip);
-	getTargetGoal(Me,GoalX,GoalY);
+	getTargetGoal(Name,GoalX,GoalY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	DistanceX = GoalX - UpdatedX;
