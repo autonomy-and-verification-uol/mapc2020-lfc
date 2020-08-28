@@ -42,7 +42,7 @@ i_met_new_agent(Iknow, IdList) :-
 
 @thing[atomic]
 +default::thing(X, Y, entity, Team)
-	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::actionID(ID) //& identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
+	: not(X == 0 & Y == 0) & default::team(Team) & not(action::reasoning_about_belief(identification)) & default::step(ID) //& identification::identified(List) & .all_names(Ags) & .length(Ags,NumberAgents) & not .length(List,NumberAgents-1)
 <-
 	+action::reasoning_about_belief(identification);
 //	.print("I see another agent of my team at ", X, ",", Y);
@@ -80,7 +80,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!request_information(ID)[source(Name)] 
 	: true 
 <- 
-	.wait(default::actionID(ID)); 
+	.wait(default::step(ID)); 
 	!send_information(Name);
 	.
 	
