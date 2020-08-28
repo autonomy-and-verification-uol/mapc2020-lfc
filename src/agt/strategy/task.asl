@@ -110,7 +110,23 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!action::submit(Task);
 	.send(Origin, achieve, task::task_completed(Task));
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
-	!!default::always_skip;
+	getTargetTaskboard(TaskbX,TaskbY);
+//	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	DistanceX = TaskbX - UpdatedX;
+	DistanceY = TaskbY - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+	if(NewTargetX < 0){
+//		.print("Relative target: ", NewTargetX + 1, " ", NewTargetY);
+		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
+	} else {
+//		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
+		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
+	}
 	.
 	
 +!try_to_move_deliverer
@@ -122,10 +138,22 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!task_completed(Task)
-	: committed(Task,CommitListSort)
+	: committed(Task,CommitListSort) & .my_name(Me)
 <-
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
 	-committed(Task,CommitListSort);
+	!action::forget_old_action(default,always_skip);
+	getTargetGoal(Me,GoalX,GoalY);
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	DistanceX = GoalX - UpdatedX;
+	DistanceY = GoalY - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+//	.print("@@@@ My target is X = ",NewTargetX," Y = ",NewTargetY);
+	!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 
 +!perform_task_origin_next
@@ -133,6 +161,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 	-task::deliverer_in_position[source(_)];
 	!action::detach(s);
+	-task::origin;
 	!try_to_move;
 	?default::play(Ag,deliverer,Group);
 	.send(Ag, achieve, task::deliver(Id));
