@@ -86,20 +86,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("New commit list ",CommitListSort);
 	.
 
-@update_beliefs_submit[atomic]
-+!update_beliefs_submit(Flag)
-<-
-	-ready_submit(0);
-	-batch(_);
-	if (default::lastAction(submit) & not default::lastActionResult(success)) {
-		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK FAILED")
-		Flag = -1;
-	}
-	else {
-		Flag = 1;
-	}
-	.abolish(retrieve::block(_,_));
-	.
 	
 +!deliver(Task)[source(Origin)]
 	: true
@@ -108,6 +94,11 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!try_to_move_deliverer;
 	!action::attach(s);
 	!action::submit(Task);
+	if (default::lastAction(submit) & not default::lastActionResult(success)) {
+		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK FAILED");
+//		.broadcast(achieve, task::task_failed);
+		!clear_all;
+	}
 	.send(Origin, achieve, task::task_completed(Task));
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
 	getTargetTaskboard(TaskbX,TaskbY);
@@ -142,6 +133,9 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
 	-committed(Task,CommitListSort);
+	-ready_submit(0);
+	-batch(_);
+	.abolish(retrieve::block(_,_));
 	!action::forget_old_action(default,always_skip);
 	getTargetGoal(Name,GoalX,GoalY);
 	getMyPos(MyX, MyY);
