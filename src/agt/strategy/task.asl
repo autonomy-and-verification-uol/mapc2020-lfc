@@ -252,8 +252,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		!map::calculate_updated_pos(MyX,MyY,0,0,TestX,TestY);
 		!map::calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
 		if (task::no_block) {
-			.print("Global position ",TestX,", ",TestY);
-			.print("Global position for ",Ag," to go ",UpdatedX,", ",UpdatedY);
 			.send(Ag,achieve,task::perform_task(UpdatedX,UpdatedY,noblock));
 		}
 		else {
@@ -335,7 +333,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	
 +!help_connect(ConX,ConY)[source(Help)] <- .wait({+default::actionID(_)}); !help_connect(ConX,ConY)[source(Help)].
 	
-+!perform_task(X,Y,noblock)[source(Origin)]
++!perform_task(GoalX,GoalY,noblock)[source(Origin)]
 	: .my_name(Me) & retrieve::block(BBX, BBY) & default::thing(BBX, BBY, block, Type)
 <-
 	+doing_task;
@@ -344,48 +342,14 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	removeAvailableAgent(Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
-	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	addRetrieverAvailablePos(UpdatedX,UpdatedY);
-	.print("MyX ",UpdatedX);
-	.print("MyY ",UpdatedY);
-	.print("X ",X);
-	.print("Y ",Y);
-	?map::size(x, SizeX);
-	?map::size(y, SizeY);
-	Aux1X = X - UpdatedX;
-	Aux1Y = Y - UpdatedY;
-	if (Aux1X < 0) {
-		Aux2X = Aux1X + SizeX;
-	}
-	elif (Aux1X > 0) {
-		Aux2X = Aux1X - SizeX;
-	}
-	else {
-		Aux2X = Aux1X;
-	}
-	if (Aux1Y < 0) {
-		Aux2Y = Aux1Y + SizeY;
-	}
-	elif (Aux1Y > 0) {
-		Aux2Y = Aux1Y - SizeY;
-	}
-	else {
-		Aux2Y = Aux1Y;
-	}
-	if (math.abs(Aux1X) < math.abs(Aux2X)) {
-		NewTargetX = Aux1X;
-	}
-	else {
-		NewTargetX = Aux2X;
-	}
-	if (math.abs(Aux1Y) < math.abs(Aux2Y)) {
-		NewTargetY = Aux1Y;
-	}
-	else {
-		NewTargetY = Aux2Y;
-	}
-	.print("NewTargetX ",NewTargetX);
-	.print("NewTargetY ",NewTargetY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
+	addRetrieverAvailablePos(MyUpdatedX,MyUpdatedY);
+	DistanceX = GoalX - MyUpdatedX;
+	DistanceY = GoalY - MyUpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	getMyPos(MyXNew,MyYNew);
 //	if (not danger2) {
@@ -422,10 +386,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	addRetrieverAvailablePos(UpdatedX,UpdatedY);
-	.print("MyX ",UpdatedX);
-	.print("MyY ",UpdatedY);
-	.print("X ",X);
-	.print("Y ",Y);
 	?map::size(x, SizeX);
 	?map::size(y, SizeY);
 	Aux1X = X - UpdatedX;
@@ -460,8 +420,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	else {
 		NewTargetY = Aux2Y;
 	}
-	.print("NewTargetX ",NewTargetX);
-	.print("NewTargetY ",NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	getMyPos(MyXNew,MyYNew);
 //	if (not danger2) {

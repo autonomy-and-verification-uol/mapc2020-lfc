@@ -294,6 +294,31 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	}
 	.
 	
++!map::normalise_distance(Axis, Distance, NormalisedDistance)
+	: map::size(Axis, Size)
+<-
+	if (Distance < 0) {
+		NormalisedDistance = Distance + Size;
+	}
+	elif (Distance > 0) {
+		NormalisedDistance = Distance - Size;
+	}
+	else {
+		NormalisedDistance = Distance;
+	}
+	.
+
++!map::best_route(Distance,NormalisedDistance,NewTarget)
+	: true
+<-
+	if (math.abs(Distance) < math.abs(NormalisedDistance)) {
+		NewTarget = Distance;
+	}
+	else {
+		NewTarget = NormalisedDistance;
+	}
+	.
+
 @map_size[atomic]
 +map::size(Axis, Size)
 	: .my_name(Me) & map::myMap(Me)
