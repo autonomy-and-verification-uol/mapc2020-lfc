@@ -1,7 +1,6 @@
 /bin
 /bin/
 backup/
-cache/
 graphs/
 graphsMapHelper/
 /perceptlog/
@@ -22,7 +21,7 @@ agent*.sas
 output.sas
 run.sh
 
-### Gradle ### 
+### Gradle ###
 .gradle
 /build/
 

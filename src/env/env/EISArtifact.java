@@ -7,11 +7,15 @@ import jason.asSyntax.*;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -271,7 +275,6 @@ public class EISArtifact extends Artifact implements AgentListener {
 //				}
 //				signalList.clear();
 //			}
-			
 			defineObsProperty(actionID.getFunctor(), (Object[]) actionID.getTermsArray());
 		}
 	}
@@ -393,8 +396,15 @@ public class EISArtifact extends Artifact implements AgentListener {
     	String goalCell = coordinate2String(goalX) + coordinate2String(goalY);
     	String goalStatement = createGoalStatement("(at a " + goalCell + ")");
 //    	logger.info("Goal statement: " + goalStatement);
-    	LinkedList<String> returnedPlan = getPlan(agent, goalStatement, null, 0, clear);
-    	plan.set(convertToAgentPlan(returnedPlan));
+    	String code;
+		try {
+			code = generateCode("agent", goalX, goalY, clear);
+			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, null, 0, clear, code);
+	    	plan.set(convertToAgentPlan(returnedPlan));
+		} catch (NoValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     @OPERATION
@@ -403,8 +413,15 @@ public class EISArtifact extends Artifact implements AgentListener {
     	String attachedBlockCell = coordinate2String(blockX) + coordinate2String(blockY);
     	String goalStatement = createGoalStatement("(at a " + goalCell + ")");
 //    	logger.info("Goal statement: " + goalStatement);
-    	LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear);
-    	plan.set(convertToAgentPlan(returnedPlan));
+    	try {
+			String code = generateCode("agent", goalX, goalY, blockX, blockY, clear);
+			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear, code);
+	    	plan.set(convertToAgentPlan(returnedPlan));
+		} catch (NoValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
     
     @OPERATION
@@ -413,18 +430,130 @@ public class EISArtifact extends Artifact implements AgentListener {
     	String attachedBlockCell = coordinate2String(blockX) + coordinate2String(blockY);
     	String goalStatement = createGoalStatement("(at b0 " + goalCell + ")");
 //    	logger.info("Goal statement: " + goalStatement);
-    	LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear);
-    	plan.set(convertToAgentPlan(returnedPlan));
+    	String code;
+		try {
+			code = generateCode("block", goalX, goalY, blockX, blockY, clear);
+			LinkedList<String> returnedPlan = getPlan(agent, goalStatement, attachedBlockCell, 1, clear, code);
+	    	plan.set(convertToAgentPlan(returnedPlan));
+		} catch (NoValueException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
     
     private String createGoalStatement(String actualGoal) {
     	return "\t(:goal " + actualGoal + ")";
     }
     
-    private LinkedList<String> getPlan(String agent, String goalStatement, String attachedBlockCoordinates, int blockCounter, int clear) {
+    private String generateCode(String what, int goalX, int goalY, int blockX, int blockY, int clear) throws NoValueException {
+    	List<List<Integer>> vision = new ArrayList<>();
+    	for(int i = 0, nCells = 1; i < 11; i++, nCells += 2) {
+    		vision.add(new ArrayList<>(Collections.nCopies(nCells, 0)));
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+    	
+    	for(Literal l : this.blockList) {
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 1);
+    	}
+    	for(Literal l : this.obstacleList) {
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 2);
+    	}
+    	
+    	String code = "b" + blockX + blockY;
+    	code += (what.equals("agent") ? "ga" : "gb") + (goalX + "" + goalY + "-");
+    	code += clear == 1 ? "cl" : "ncl";
+    	for(int i = 0, nCells = 1; i < 11; i++) {
+    		for(int j = 0; j < nCells; j++) {
+    			code += vision.get(i).get(j);
+    		}
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+    	return code;
+    }
+    
+    private String generateCode(String what, int goalX, int goalY, int clear) throws NoValueException {
+    	List<List<Integer>> vision = new ArrayList<>();
+    	for(int i = 0, nCells = 1; i < 11; i++, nCells += 2) {
+    		vision.add(new ArrayList<>(Collections.nCopies(nCells, 0)));
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+    	
+    	//logger.info("blocklist: " + this.blockList);
+    	for(Literal l : this.blockList) {
+//    		logger.info(l.toString());
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+//    		logger.info("x: " + x);
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+//    		logger.info("y: " + y);
+//    		logger.info("(" + (5+x-Math.abs(y)) + "," + (5+y) + ")");
+//    		logger.info("length: " + vision.get(5 + y).size());
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 1);
+    	}
+    	//logger.info("obstacleList: " + this.obstacleList);
+    	for(Literal l : this.obstacleList) {
+//    		logger.info(l.toString());
+    		int x = (int)((NumberTerm) l.getTerm(0)).solve();
+//    		logger.info("x: " + x);
+    		int y = (int)((NumberTerm) l.getTerm(1)).solve();
+//    		logger.info("y: " + y);
+//    		logger.info("(" + (5+x-Math.abs(y)) + "," + (5+y) + ")");
+//    		logger.info("length: " + vision.get(5 + y).size());
+    		vision.get(5 + y).set(5 + x - Math.abs(y), 2);
+    	}
+    	
+    	String code = "nb";
+    	code += (what.equals("agent") ? "ga" : "gb") + (goalX + "" + goalY + "-");
+    	code += clear == 1 ? "cl" : "ncl";
+//    	logger.info("here0");
+    	for(int i = 0, nCells = 1; i < 11; i++) {
+    		for(int j = 0; j < nCells; j++) {
+    			code += vision.get(i).get(j);
+    		}
+    		if(i >= 5) nCells -= 2;
+    		else nCells += 2;
+    	}
+//    	logger.info("here1");
+    	return code;
+    }
+    
+    private LinkedList<String> getPlan(String agent, String goalStatement, String attachedBlockCoordinates, int blockCounter, int clear, String code) {
     	
     	LinkedList<String> plan = null;
     	
+    	// check if the plan is already in the cache
+    	if(new File("./planner/cache/" + code).exists()) {
+    		logger.info("Get the plan from cache");
+    		try {
+    			synchronized (EISArtifact.class) {
+					Scanner s = new Scanner(new FileInputStream("./planner/cache/" + code));
+					plan = new LinkedList<String>();
+					
+					while(s.hasNextLine()) {
+						String line = s.nextLine();
+						plan.add(line);
+					}
+					s.close();
+					
+					if(!plan.isEmpty() && plan.get(0).equals("NO PLAN")) {
+						return null;
+					}
+					
+					return plan;
+    			}
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	logger.info("The plan is not cached, so I have to compute one");
     	if(new File("./planner/" + agent + "_problem.pddl").delete())
     		logger.info("DELETED " + agent +"_problem.pddl");
     	if(new File("./planner/" + agent).delete())
@@ -565,7 +694,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 	    	problemFileWriter.flush();
 	    	problemFileWriter.close();
 	    	
-	    	plan = callPlanner2(agent, clear);
+	    	plan = callPlanner2(agent, clear, code);
 
     	} catch (Exception e) {
     		logger.info("Exception while invoking the planner, here is the returned error message:");
@@ -616,7 +745,7 @@ public class EISArtifact extends Artifact implements AgentListener {
 		return plan;
     }
     
-    private LinkedList<String> callPlanner2(String agentName, int clear) throws IOException, InterruptedException {
+    private LinkedList<String> callPlanner2(String agentName, int clear, String code) throws IOException, InterruptedException {
     	String problem = agentName + "_problem.pddl";
     	String output = agentName + "_output";
 //    	logger.info("problem file name: " + problem);
@@ -636,18 +765,22 @@ public class EISArtifact extends Artifact implements AgentListener {
 		Scanner s = new Scanner(p.getInputStream());
 		
 		LinkedList<String> plan = new LinkedList<String>();
-		
-		while(s.hasNextLine()) {
-			String line = s.nextLine();
-			if(line.equals("NO PLAN")) {
-				s.close();
-				return null;
+		synchronized (EISArtifact.class) {
+			FileWriter cachedPlan = new FileWriter("./planner/cache/" + code);
+			
+			while(s.hasNextLine()) {
+				String line = s.nextLine();
+				cachedPlan.write(line + "\n");
+				if(line.equals("NO PLAN")) {
+					s.close();
+					cachedPlan.close();
+					return null;
+				}
+				plan.add(line);
 			}
-			plan.add(line);
+			cachedPlan.close();
+			s.close();
 		}
-		
-		s.close();
-		
 //	   	logger.info("We have a plan!");
 	   	
 		return plan;
