@@ -109,14 +109,18 @@
 //	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	TargetX = TaskbX - UpdatedX;
-	TargetY = TaskbY - UpdatedY;
-	if(TargetX < 0){
-//		.print("Relative target: ", TargetX + 1, " ", TargetY);
-		!!planner::generate_goal(TargetX + 1, TargetY, notblock);
+	DistanceX = TaskbX - UpdatedX;
+	DistanceY = TaskbY - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+	if(NewTargetX < 0){
+//		.print("Relative target: ", NewTargetX + 1, " ", NewTargetY);
+		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
 	} else {
-//		.print("Relative target: ", TargetX - 1, " ", TargetY);
-		!!planner::generate_goal(TargetX - 1, TargetY, notblock);
+//		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
+		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
 	}
 	.
 	
@@ -126,10 +130,14 @@
 	!common::change_role(origin);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	TargetX = GoalX - UpdatedX;
-	TargetY = GoalY - UpdatedY;
-//	.print("@@@@ My target is X = ",TargetX," Y = ",TargetY);
-	!!planner::generate_goal(TargetX, TargetY, notblock);
+	DistanceX = GoalX - UpdatedX;
+	DistanceY = GoalY - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+//	.print("@@@@ My target is X = ",NewTargetX," Y = ",NewTargetY);
+	!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 
 //@check_join_group[atomic]

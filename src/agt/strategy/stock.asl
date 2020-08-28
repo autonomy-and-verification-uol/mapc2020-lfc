@@ -277,17 +277,21 @@ most_needed_type(Dispensers, AgList, Type) :-
 	.print("The nearest dispenser is: ", dispenser(Type, X, Y));
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	TargetX = X - UpdatedX;
-	TargetY = Y - UpdatedY;
+	DistanceX = X - UpdatedX;
+	DistanceY = Y - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 //	.print("My pos: ", UpdatedX, " ", UpdatedY);
-	if(TargetX < 0){
-		.print("Relative target: ", TargetX + 1, " ", TargetY);
+	if(NewTargetX < 0){
+//		.print("Relative target: ", NewTargetX + 1, " ", NewTargetY);
 		+collect_block(-1,0);
-		!!planner::generate_goal(TargetX + 1, TargetY, notblock);
+		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
 	} else {
-		.print("Relative target: ", TargetX - 1, " ", TargetY);
+//		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
 		+collect_block(1,0);
-		!!planner::generate_goal(TargetX - 1, TargetY, notblock);
+		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
 	}
 	.
 
@@ -493,13 +497,17 @@ most_needed_type(Dispensers, AgList, Type) :-
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
-	TargetX = TargetXGlobal - UpdatedX;
-	TargetY = TargetYGlobal - UpdatedY;
+	DistanceX = TargetXGlobal - UpdatedX;
+	DistanceY = TargetYGlobal - UpdatedY;
 //	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
 //	.print("Agent position: ", MyX, MyY);
-	.print("Chosen Relative target position: ", TargetX, TargetY);
+//	.print("Chosen Relative target position: ", TargetX, TargetY);
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 	+getting_to_position;
-	!planner::generate_goal(TargetX, TargetY, notblock);
+	!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 
 -!retrieve::smart_move(Direction) : 
