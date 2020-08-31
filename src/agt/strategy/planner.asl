@@ -1,3 +1,8 @@
+dispenser_in_vision :-
+	.findall(d(X,Y), (default::thing(X, Y, dispenser, _) &
+	(math.abs(X) + math.abs(Y)) <= 3), Dispensers) &
+	not (Dispensers = []).
+
 +!generate_goal(0, 0, Aux) 
 	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::collect_block(_,_)
 <- 
@@ -9,6 +14,22 @@
 	: .my_name(Me) & default::play(Me,useless,Group)
 <- 
 	!!default::always_skip;
+	.
+	
++!generate_goal(0, 0, Aux) 
+	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
+	& dispenser_in_vision
+<- 
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+	DistanceX = TargetXGlobal - UpdatedX;
+	DistanceY = TargetYGlobal - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 	
 +!generate_goal(0, 0, Aux) 
