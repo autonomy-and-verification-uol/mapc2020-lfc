@@ -95,7 +95,6 @@
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
-		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		!!stop::become_useless;
 	}
 //	!!retrieve::retrieve_block;
@@ -114,16 +113,21 @@
 	true
 <-
 	!common::change_role(useless);
-getMyPos(MyX, MyY);
-	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	getUselessAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
-	DistanceX = TargetXGlobal - UpdatedX;
-	DistanceY = TargetYGlobal - UpdatedY;
-	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
-	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
-	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
-	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
-	!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+	if (default::goal(GX,GY) | default::thing(0, 0, dispenser, Type) | default::thing(1, 0, dispenser, Type) | default::thing(-1, 0, dispenser, Type) | default::thing(0, 1, dispenser, Type) | default::thing(0, -1, dispenser, Type)) {
+		getMyPos(MyX, MyY);
+		!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+		getUselessAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+		DistanceX = TargetXGlobal - UpdatedX;
+		DistanceY = TargetYGlobal - UpdatedY;
+		!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+		!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+		!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+		!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+		!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+	}
+	else {
+		!!default::always_skip;
+	}
 	.
 	
 +!stop::become_deliverer :
@@ -183,14 +187,22 @@ getMyPos(MyX, MyY);
 				!action::forget_old_action;
 				!!stop::become_deliverer;
 			}
-			else {
-				.print("Removing explorer");
-				-exploration::special(_);
-				-common::avoid(_);
-				-common::escape;
-				!action::forget_old_action;
-				!!stop::become_retriever;
-			}
+		elif (Flag == "retriever") {
+			.print("Removing explorer");
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_retriever;
+		}
+		else {
+			.print("Removing explorer");
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_useless;
+		}
 	}
 	.
 +!stop::check_join_group : true <- .print("I cannot join the stop group yet").
