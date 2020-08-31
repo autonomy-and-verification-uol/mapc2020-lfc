@@ -90,8 +90,13 @@
 		!!stop::become_retriever;
 	}
 	else {
+		.print("Removing explorer");
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
 		!action::forget_old_action;
-		!!default::always_skip;
+		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		!!stop::become_useless;
 	}
 //	!!retrieve::retrieve_block;
 	.
@@ -103,6 +108,22 @@
 <-
 	!common::change_role(retriever);
 	!retrieve::retrieve_block;
+	.
+	
++!stop::become_useless :
+	true
+<-
+	!common::change_role(useless);
+getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	getUselessAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+	DistanceX = TargetXGlobal - UpdatedX;
+	DistanceY = TargetYGlobal - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+	!!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.
 	
 +!stop::become_deliverer :

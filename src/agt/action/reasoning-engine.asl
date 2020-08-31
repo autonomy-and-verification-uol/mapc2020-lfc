@@ -16,7 +16,7 @@
 +!commit_action(Action)
 	: default::actionID(Id) & action::action_sent(Id) & default::step(Step)
 <-
-	.print("I've already sent an action at step ",Step,", I cannot send a new one ", Action);
+//	.print("I've already sent an action at step ",Step,", I cannot send a new one ", Action);
 	.wait({+default::actionID(_)}); 
 	!commit_action(Action);
 	.
@@ -29,7 +29,7 @@
 	}
 	.abolish(action::action(_,_)); // removes all the possible last actions
 	+action::action(Id,Action);
-	.print("Doing action ",Action, " for ",IntentionId," at step ",Id," . Waiting for step ",Id+1);
+//	.print("Doing action ",Action, " for ",IntentionId," at step ",Id," . Waiting for step ",Id+1);
 	
 	!!wait_request_for_help(Id);
 //	if (.substring("move",Action)) {

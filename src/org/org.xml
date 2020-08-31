@@ -8,6 +8,7 @@
 	 <role id="deliverer" />
 	 <role id="origin" />
 	 <role id="retriever" />
+	 <role id="useless" />
 	 <role id="arsehole" />
 	</role-definitions>
 	
@@ -20,6 +21,7 @@
 	 		  <role id="deliverer" max="1"/>
 	 		  <role id="origin" max="1"/>
 			  <role id="retriever" />
+			  <role id="useless" />
 			  <role id="arsehole" />
 			 </roles>
 	 	</group-specification>

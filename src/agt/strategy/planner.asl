@@ -6,6 +6,12 @@
 	.
 	
 +!generate_goal(0, 0, Aux) 
+	: .my_name(Me) & default::play(Me,useless,Group)
+<- 
+	!!default::always_skip;
+	.
+	
++!generate_goal(0, 0, Aux) 
 	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
 <- 
 	if (default::energy(Energy) & Energy >= 30) {

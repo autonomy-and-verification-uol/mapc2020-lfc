@@ -84,7 +84,7 @@ public class TeamArtifact extends Artifact {
 	
 	private Map<String, Map<String, Set<Point>>> agentmaps = new HashMap<String, Map<String, Set<Point>>>();
 	
-	private int maxPlanners = 15;
+	private int maxPlanners = 8;
 	private int planners;
 	
 	private int retrievers;
@@ -108,6 +108,7 @@ public class TeamArtifact extends Artifact {
 	private Integer targetGoalX;
 	private Integer targetGoalY;
 	private List<Point> retrieversAvailablePositions = new ArrayList<>();
+	private List<Point> uselessAvailablePositions = new ArrayList<>();
 	
 	private static List<Pair<String, String>> ourBlocks = new ArrayList<>();
 	
@@ -241,7 +242,7 @@ public class TeamArtifact extends Artifact {
 			flag.set("retriever");
 		}
 		else {
-			flag.set("explorer");
+			flag.set("useless");
 		}
 	}
 	
@@ -267,6 +268,11 @@ public class TeamArtifact extends Artifact {
 		this.targetGoalX = goalx;
 		this.targetGoalY = goaly;
 		this.retrieversAvailablePositions.clear();
+		this.uselessAvailablePositions.clear();
+		for (int i = 0; i < 50; i++) {
+			Point p = new Point(goalx-25+i, goaly-10);
+			this.uselessAvailablePositions.add(p);
+		}
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
 			Point p = new Point(goalx-9, i);
 			this.retrieversAvailablePositions.add(p);
@@ -338,6 +344,22 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
+			for(Point p: this.uselessAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			uselessAvailablePositions.clear();
+			uselessAvailablePositions.addAll(retaux);
 		}
 		else if (sizeX != 0) {
 			List<Point> retaux = new ArrayList<>();
@@ -365,6 +387,18 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
+			for(Point p: this.uselessAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				if (p.x + x < 0) {
+					pnew.x = ((p.x + x) % sizeX) + sizeX;
+				} else {
+					pnew.x = (p.x + x) % sizeX;
+				}
+				pnew.y += y;
+				retaux.add(pnew);
+			}
+			uselessAvailablePositions.clear();
+			uselessAvailablePositions.addAll(retaux);
 		}
 		else if (sizeY != 0) {
 			List<Point> retaux = new ArrayList<>();
@@ -392,12 +426,28 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
+			for(Point p: this.uselessAvailablePositions) {
+				Point pnew = new Point(0, 0);
+				pnew.x += x;
+				if (p.y + y < 0) {
+					pnew.y = ((p.y + y) % sizeY) + sizeY;
+				} else {
+					pnew.y = (p.y + y) % sizeY;
+				}
+				retaux.add(pnew);
+			}
+			uselessAvailablePositions.clear();
+			uselessAvailablePositions.addAll(retaux);
 		} else {
 			this.targetTaskX += x;
 			this.targetTaskY += y;
 			this.targetGoalX += x;
 			this.targetGoalY += y;
 			for(Point p: this.retrieversAvailablePositions) {
+				p.x += x;
+				p.y += y;
+			}
+			for(Point p: this.uselessAvailablePositions) {
 				p.x += x;
 				p.y += y;
 			}
@@ -442,6 +492,24 @@ public class TeamArtifact extends Artifact {
 			x.set(this.retrieversAvailablePositions.get(toRemove).x);
 			y.set(this.retrieversAvailablePositions.get(toRemove).y);
 			this.retrieversAvailablePositions.remove(toRemove);
+		}
+	}
+	
+	@OPERATION
+	void getUselessAvailablePos(int myX, int myY, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
+		int toRemove = -1;
+		double dist = Double.MAX_VALUE;
+		for(int i = 0; i < this.uselessAvailablePositions.size(); i++) {
+			double d = Math.abs(myX - this.uselessAvailablePositions.get(i).x) + Math.abs(myY - this.uselessAvailablePositions.get(i).y);
+			if(d < dist) {
+				toRemove = i;
+				dist = d;
+			}
+		}
+		if(toRemove != -1) {
+			x.set(this.uselessAvailablePositions.get(toRemove).x);
+			y.set(this.uselessAvailablePositions.get(toRemove).y);
+			this.uselessAvailablePositions.remove(toRemove);
 		}
 	}
 	
