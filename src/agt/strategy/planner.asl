@@ -17,23 +17,7 @@ dispenser_in_vision :-
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
-	& dispenser_in_vision
-<- 
-	getMyPos(MyX, MyY);
-	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
-	DistanceX = TargetXGlobal - UpdatedX;
-	DistanceY = TargetYGlobal - UpdatedY;
-	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
-	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
-	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
-	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
-	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
-	.
-	
-+!generate_goal(0, 0, Aux) 
-	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & .my_name(Me) & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
+	: .my_name(Me) & default::play(Me,retriever,Group) & back_to_origin & retrieve::block(BlockX,BlockY) & not retrieve::getting_to_position
 <- 
 	if (default::energy(Energy) & Energy >= 30) {
 		Clear = 1;
@@ -51,7 +35,23 @@ dispenser_in_vision :-
 	.
 	
 +!generate_goal(0, 0, Aux) 
-	: .my_name(Me) & default::play(Me,retriever,Group) & .my_name(Me) & retrieve::block(X,Y) & default::thing(X,Y,block,Type)
+	: .my_name(Me) & default::play(Me,retriever,Group)
+	& dispenser_in_vision
+<- 
+	getMyPos(MyX, MyY);
+	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+	DistanceX = TargetXGlobal - UpdatedX;
+	DistanceY = TargetYGlobal - UpdatedY;
+	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+	.
+	
++!generate_goal(0, 0, Aux) 
+	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::block(X,Y) & default::thing(X,Y,block,Type)
 <- 
 	addAvailableAgent(Me,Type);
 	-retrieve::getting_to_position;
