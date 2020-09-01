@@ -225,7 +225,7 @@
 	else {
 		.send(Ag, tell, carto::other_cells(C)[source(Ag)]);
 	}
-	.print("@@@@@@ Cartography finished.");
+//	.print("@@@@@@ Cartography finished.");
 	.abolish(carto::_[source(_)]);
 	!common::change_role(explorer);
 	!stop::new_dispenser_or_taskboard_or_merge;
@@ -257,7 +257,7 @@
 +!calculate_map_size(Axis, Size) 
 	: .my_name(Me) & map::myMap(Me)
 <- 
-	.print("################# Axis ",Axis," is of size ",Size);
+//	.print("################# Axis ",Axis," is of size ",Size);
 	+map::size(Axis, Size);
 	updateLocations(Me, Axis, Size);
 	.broadcast(tell, map::size(Axis, Size));

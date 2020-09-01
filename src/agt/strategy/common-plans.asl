@@ -102,7 +102,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: not common::avoid(_) & relative_right(OldDir, Dir) & not exploration::check_obstacle_special(Dir) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	+avoid(1);
-	.print("First avoid, no obstacles, direction ",Dir);
+//	.print("First avoid, no obstacles, direction ",Dir);
 //	!retrieve::smart_move(Dir);
 	!action::move(Dir);
 	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
@@ -120,7 +120,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: not common::avoid(_) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	+avoid(1);
-	.print("First avoid, with obstacles");
+//	.print("First avoid, with obstacles");
 //	!retrieve::smart_move(OldDir);
 	!action::move(OldDir);
 	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
@@ -206,7 +206,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: common::avoid(3) & OldDir \== Dir & exploration::remove_opposite(Dir,NewDir) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	-avoid(3);
-	.print("@@@@@@@@@@ Finished go around no obstacle");
+//	.print("@@@@@@@@@@ Finished go around no obstacle");
 //	!retrieve::smart_move(NewDir);
 	!action::move(NewDir);
 	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
@@ -218,7 +218,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 	: common::avoid(3) & .my_name(Me) & not default::play(Me,cartographer,Group)
 <-
 	-avoid(3);
-	.print("@@@@@@@@@@ Finished go around");
+//	.print("@@@@@@@@@@ Finished go around");
 	!action::move(OldDir);
 	if (default::lastActionResult(failed_path) & not default::play(Me,cartographer,Group)) {
 		!action::move(OldDir);
@@ -366,7 +366,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 +!common::update_role_to(NewRole) :
 	common::my_role(MyRole)
 <-
-	.print("My role is now: ", NewRole);
+//	.print("My role is now: ", NewRole);
 	-+common::previous_role(MyRole);
 	-+common::my_role(NewRole);
 	!action::skip;
@@ -374,13 +374,13 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 +!common::update_role_to(NewRole) :
 	true
 <-
-	.print("My role is now: ", NewRole);
+//	.print("My role is now: ", NewRole);
 	-+common::my_role(NewRole)
 	.
 +!common::go_back_to_previous_role :
 	common::previous_role(MyRole) & common::my_role(OldRole)
 <-
-	.print("Going back to role: ", OldRole);
+//	.print("Going back to role: ", OldRole);
 	-+common::my_role(MyRole);
 	-+common::previous_role(OldRole);
 	!action::skip;
@@ -429,7 +429,7 @@ find_empty_position(X,Y,Count,Vision) :- Count <= Vision & find_empty_position(X
 +!change_role(NewRole)
 	: .my_name(Me) & default::play(Me,OldRole,Group) & default::group(Group,team,GroupId)
 <-
-	.print("I was ",OldRole," becoming ",NewRole);
+//	.print("I was ",OldRole," becoming ",NewRole);
 	leaveRole(OldRole)[artifact_id(GroupId)];
 	adoptRole(NewRole)[artifact_id(GroupId)];
 	.wait(default::play(Me,NewRole,Group));

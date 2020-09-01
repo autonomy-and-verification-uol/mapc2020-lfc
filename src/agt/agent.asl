@@ -23,7 +23,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	: .my_name(Me)
 <- 
 	!newround::new_round;
-    .print("Registering...");
+//    .print("Registering...");
     register(E);
 	.
 
@@ -72,23 +72,23 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 +!identification. // <- .print("No agents in sight").
 
 
-+!default::galavant
-	: .random(NumberX) & X = NumberX * 5 & .random(NumberY) & Y = NumberY * 5 &
-	.random(Number) & exploration::random_dir([n,s,e,w],4,Number,Dir) & .my_name(Me)
-<-
-	X1 = math.round(X);
-    Y1 = math.round(Y);
-	if(X1 + Y1 > 5) {
-		Y2 = Y1 - (X1 + Y1 - 5);
-	} else {
-		Y2 = Y1;
-	}
-	callPlanner(Flag);
-    !planner::try_call_planner(Flag);
-    getPlanAgentToGoal(Me, X1, Y2, Plan, 1);
-    .print(Plan);
-    !action::move(Dir);
-    !default::galavant.
+//+!default::galavant
+//	: .random(NumberX) & X = NumberX * 5 & .random(NumberY) & Y = NumberY * 5 &
+//	.random(Number) & exploration::random_dir([n,s,e,w],4,Number,Dir) & .my_name(Me)
+//<-
+//	X1 = math.round(X);
+//    Y1 = math.round(Y);
+//	if(X1 + Y1 > 5) {
+//		Y2 = Y1 - (X1 + Y1 - 5);
+//	} else {
+//		Y2 = Y1;
+//	}
+//	callPlanner(Flag);
+//    !planner::try_call_planner(Flag);
+//    getPlanAgentToGoal(Me, X1, Y2, Plan, 1);
+//    .print(Plan);
+//    !action::move(Dir);
+//    !default::galavant.
 	
 
 @check_added_name[atomic]

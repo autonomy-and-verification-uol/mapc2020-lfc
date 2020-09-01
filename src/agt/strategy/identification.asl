@@ -219,7 +219,7 @@ i_met_new_agent(Iknow, IdList) :-
 <-
 	getMyPos(OtherX,OtherY);
 	!map::calculate_updated_pos(OtherX,OtherY,0,0,UpdatedX,UpdatedY);
-	.print(Source," requested leader to merge with ",Ag);
+//	.print(Source," requested leader to merge with ",Ag);
 	?identification::identified(StopRequestList);
 	.send(Source, achieve, identification::reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,UpdatedX,UpdatedY,Ag,AgRequesting,StopRequestList));
 	.
@@ -228,7 +228,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!reply_leader(Leader,LocalX,LocalY,GlobalX,GlobalY,OtherX,OtherY,AgRequested,AgRequesting,StopRequestList)[source(Source)]
 	: .my_name(Me) & map::myMap(Me) & ((stop::first_to_stop(Stop) & (Stop == Me | (identification::identified(StopIdList) & .member(Stop, StopIdList)))) | ((not stop::first_to_stop(Stop1) | (stop::first_to_stop(Stop2) & not Stop2 == Source & not .member(Stop, StopRequestList))) & (.all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Leader) & Pos < PosOther)))
 <-
-	.print(" Starting merge request from  ",AgRequesting," to merge with ",AgRequested," and their leader is ",Leader);
+//	.print(" Starting merge request from  ",AgRequesting," to merge with ",AgRequested," and their leader is ",Leader);
 	.send(Leader, achieve, identification::confirm_merge);
 	.wait(identification::merge_confirmed(IdListOther, DispList, TaskBList, GList)[source(Leader)] | identification::merge_canceled[source(Leader)]);
 	if (identification::merge_confirmed(IdListOther, DispList, TaskBList, GList)[source(Leader)]) {
@@ -297,11 +297,11 @@ i_met_new_agent(Iknow, IdList) :-
 		if(default::play(Me,explorer,Group) & not stop::first_to_stop(Me)){
 			!stop::check_join_group;
 		}
-		.print("Merge finished.");
+//		.print("Merge finished.");
 	}
 	else {
 		-identification::merge_canceled[source(Leader)];
-		.print("Merge has been canceled!");
+//		.print("Merge has been canceled!");
 		.term2string(AgRequesting,S);
 		if (S == "self") {
 			!identification::remove_reasoning(AgRequested);

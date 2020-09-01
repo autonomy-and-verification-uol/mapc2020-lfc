@@ -266,7 +266,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 <-
 //	.wait(not action::move_sent);
 	!retrieve::decide_block_type_flat(Type); 
-	.print("I decided to get block type: ", Type);
+//	.print("I decided to get block type: ", Type);
 	if (retrieve::minus_one(DispX,DispY)) {
 		-retrieve::minus_one(DispX,DispY);
 		!retrieve::get_nearest_dispenser_minus_one(Type, dispenser(Type, X, Y), DispX, DispY);
@@ -274,7 +274,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 	else {
 		!retrieve::get_nearest_dispenser(Type, dispenser(Type, X, Y));
 	}
-	.print("The nearest dispenser is: ", dispenser(Type, X, Y));
+//	.print("The nearest dispenser is: ", dispenser(Type, X, Y));
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	DistanceX = X - UpdatedX;
@@ -371,7 +371,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::get_nearest_dispenser_minus_one(Type, Dispenser, DispX, DispY) : 
 	true
 <-
-	!map::get_dispensers(Dispensers); .print("Dispensers: ", Dispensers);
+	!map::get_dispensers(Dispensers); //.print("Dispensers: ", Dispensers);
 	.delete(dispenser(_, DispX, DispY), Dispensers, DispensersNew);
 	!retrieve::get_nearest_dispenser_aux1(DispensersNew, Type, Dispenser).
 @get_nearest_dispenser[atomic]
@@ -423,7 +423,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!create_and_attach_block(Direction, DispX, DispY) :
 	true
 <-
-	.print("!create_and_attach_block(Direction, DispX, DispY)");
+//	.print("!create_and_attach_block(Direction, DispX, DispY)");
 	+retrieve::fetching_block;
 	-retrieve::attach_completed;
 	while(not retrieve::attach_completed){
@@ -521,7 +521,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::smart_move(Direction) :
 	true
 <-
-	.print("Direction: ", Direction);
+//	.print("Direction: ", Direction);
 	if(retrieve::block(1, 0)){
 		!retrieve::smart_rotate(e, Direction);
 	}
@@ -644,13 +644,13 @@ most_needed_type(Dispensers, AgList, Type) :-
 	pick_direction(MyX, MyY, TargetX, TargetY, Direction) & Direction \== DirectionObstacle & 
 	opposite(DirectionToGo, DirectionToGo1) & Direction \== DirectionToGo1
 <-
-	.print("here1");
+//	.print("here1");
 	true.
 +!retrieve::go_around_obstacle(DirectionObstacle, DirectionToGo, MyX, MyY, Attempts, Threshold, OppositeDirection, Count) :
 	not(exploration::check_obstacle_special_1(DirectionObstacle, 2)) & not(exploration::check_agent(DirectionObstacle)) &
 	opposite_direction(DirectionToGo, OppositeDirection)
 <-
-	.print("here2");
+//	.print("here2");
 	if(Count > 0){
 		!retrieve::smart_move(DirectionObstacle);
 //		.wait(not action::move_sent);
@@ -661,7 +661,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::go_around_obstacle(DirectionObstacle, DirectionToGo, MyX, MyY, Attempts, Threshold, ActualDirection, Count) :
 	 Attempts < Threshold & not(exploration::check_obstacle_special_1(DirectionToGo, 1))
 <-
-	.print("here3");
+//	.print("here3");
 	!retrieve::smart_move(DirectionToGo);
 //	.wait(not action::move_sent);
 	getMyPos(MyX1,MyY1);
@@ -673,7 +673,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		!retrieve::smart_clear(DirectionObstacle);
 		if(retrieve::res(0)){
 			if(not map::evaluating_positions(_)){
-				.print("FAILED TO CLEAR: ", Attempts, ", ", Threshold);
+//				.print("FAILED TO CLEAR: ", Attempts, ", ", Threshold);
 				!action::skip;
 				!retrieve::go_around_obstacle(DirectionObstacle, DirectionToGo, MyX, MyY, Attempts, Threshold, ActualDirection, Count);
 			} else {
@@ -682,7 +682,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		}
 	} else {
 		//.fail
-		.print("I WANT TO CLEAR BUT I HAVE NO ENERGY");
+//		.print("I WANT TO CLEAR BUT I HAVE NO ENERGY");
 		if(not map::evaluating_positions(_)){
 			!action::skip;
 			!retrieve::go_around_obstacle(DirectionObstacle, DirectionToGo, MyX, MyY, Attempts, Threshold, ActualDirection, Count);
@@ -695,10 +695,10 @@ most_needed_type(Dispensers, AgList, Type) :-
 	retrieve::target(TargetX, TargetY) & 
 	pick_direction(MyX, MyY, TargetX, TargetY, Direction) 
 <-
-	.print("TargetX: ", TargetX, " TargetY: ", TargetY);
+//	.print("TargetX: ", TargetX, " TargetY: ", TargetY);
 	if (exploration::check_obstacle_special_1(Direction, 1)) {
 		if(i_can_avoid(Direction, DirectionToGo)){
-			.print("GO AROUND OBSTACLE");
+//			.print("GO AROUND OBSTACLE");
 			!retrieve::go_around_obstacle(Direction, DirectionToGo, MyX, MyY, 0, 10, DirectionObstacle1, 1);
 //			.wait(not action::move_sent);
 			getMyPos(MyX1,MyY1);
@@ -707,7 +707,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 					!retrieve::smart_move(Dir);
 				}
 			}
-			.print("OBSTACLE AVOIDED");
+//			.print("OBSTACLE AVOIDED");
 		} elif(default::energy(Energy) & Energy >= 30 & not exploration::check_agent_special(Direction)){
 			!retrieve::smart_clear(Direction);
 			if(retrieve::res(0)){
@@ -718,7 +718,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		}
 		!retrieve::move_to_goal;
 	} else {
-		.print("I do not see any obstacle");
+//		.print("I do not see any obstacle");
 		!retrieve::smart_move(Direction);
 		!retrieve::move_to_goal;
 	}
@@ -763,7 +763,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::smart_rotate(FromDirBlock, ToDirBlock) :
 	true
 <-
-	.print(smart_rotate(FromDirBlock, ToDirBlock));
+//	.print(smart_rotate(FromDirBlock, ToDirBlock));
 	if(FromDirBlock == n & ToDirBlock == e){
 		if(default::obstacle(1, 0)){
 			if(default::energy(Energy) & Energy >= 30){

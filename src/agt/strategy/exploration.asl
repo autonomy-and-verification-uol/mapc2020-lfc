@@ -80,7 +80,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore(DirList) 
 	: .my_name(Me) & default::play(Me,explorer,Group) & check_agent_special(n) & check_agent_special(s) & check_agent_special(e) & check_agent_special(w)  & .random(Number) & random_dir([n,s,e,w],4,Number,Dir)
 <-
-	.print("There is a friendly agent in all possible directions, trying to move randomly.");
+//	.print("There is a friendly agent in all possible directions, trying to move randomly.");
 	!action::move(Dir);
 	!explore([n,s,e,w]);
 	.
@@ -94,7 +94,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore(Dirlist)
 	: (default::obstacle(0,1) | default::obstacle(0,2)) & (default::obstacle(0,-1) | default::obstacle(0,-2)) & (default::obstacle(1,0) | default::obstacle(2,0)) & (default::obstacle(-1,0) | default::obstacle(-2,0)) & .my_name(Me) & default::play(Me,explorer,Group) & .random(Number) & random_dir([n,s,e,w],4,Number,Dir) & default::energy(Energy) & default::energy_threshold(EnergyThreshold) & Energy >= EnergyThreshold // & default::vision(V) & common::find_empty_position(X,Y,1,V)
 <-
-	.print("@@@@@ No movement options available");
+//	.print("@@@@@ No movement options available");
 	!action::skip;
 	!try_to_clear(Dir);
 //	!action::skip;
@@ -172,7 +172,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore_until_obstacle(Dir)
 	: .my_name(Me) & default::play(Me,explorer,Group) & check_agent(Dir)
 <-
-	.print("I see someone from my team, time to *try* to go around it.");
+//	.print("I see someone from my team, time to *try* to go around it.");
 	!common::go_around(Dir);
 	!explore_until_obstacle(Dir);
 	.
@@ -222,7 +222,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore_until_obstacle_special(Dir)
 	: .my_name(Me) & default::play(Me,explorer,Group) & exploration::special(_) & check_agent(Dir)
 <-
-	.print("I see someone from my team, time to *try* to go around it.");
+//	.print("I see someone from my team, time to *try* to go around it.");
 	!common::go_around(Dir);
 	!explore_until_obstacle_special(Dir);
 	.
@@ -269,7 +269,7 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore_until_obstacle_special(Dir)
 	: default::obstacle(0,1) & default::obstacle(0,-1) & default::obstacle(1,0) & default::obstacle(-1,0) & .my_name(Me) & default::play(Me,explorer,Group)
 <-
-	.print("@@@@@ No movement options available AT SPECIAL, sending skip forever");
+//	.print("@@@@@ No movement options available AT SPECIAL, sending skip forever");
 	!default::always_skip;
 	.
 

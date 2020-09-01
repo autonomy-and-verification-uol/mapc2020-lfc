@@ -5,30 +5,29 @@ check_path(XOld,YOld,XFirst,YFirst,XFirst,YFirst) :- true.
 check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== XOld & Y \== YOld & check_path(X,Y,X-1,Y,XFirst,YFirst)) | (default::obstacle(X-1,Y-1) & X-1 \== XOld & Y-1 \== YOld & check_path(X,Y,X-1,Y-1,XFirst,YFirst)) | (default::obstacle(X-1,Y+1)  & X-1 \== XOld & Y+1 \== YOld & check_path(X,Y,X-1,Y+1,XFirst,YFirst)) | (default::obstacle(X,Y-1) & X \== XOld & Y-1 \== YOld & check_path(X,Y,X,Y-1,XFirst,YFirst)) | (default::obstacle(X,Y+1) & X \== XOld & Y+1 \== YOld & check_path(X,Y,X,Y+1,XFirst,YFirst)) | (default::obstacle(X+1,Y) & X+1 \== XOld & Y \== YOld & check_path(X,Y,X+1,Y,XFirst,YFirst)) | (default::obstacle(X+1,Y-1) & X+1 \== XOld & Y-1 \== YOld & check_path(X,Y,X+1,Y-1,XFirst,YFirst)) | (default::obstacle(X+1,Y+1) & X+1 \== XOld & Y+1 \== YOld & check_path(X,Y,X+1,Y+1,XFirst,YFirst)).
 
 // test plan, should be removed later on
-@testplan[atomic]
-+default::step(X)
-	: X \== 0 & X mod 25 = 0
-<-
-	!printall;
-
-	.
-	
-+!printall
-<-
-	!get_dispensers(DList);
-//	!get_clusters(GList);
-	!get_goals(GList);
-	!get_taskboards(TList);
-	!get_all_size(Size);
-	.print("!!!!!!!!!!!!!!!!!!!!!!");
-	.print("Dispensers: ",DList);
-	.print("Goals: ",GList);
-	.print("Taskboards: ",TList);
-	.print("Number of elements in my map: ",Size);
-	.print("!!!!!!!!!!!!!!!!!!!!!!");
-//	getMyPos(MyX,MyY);
-//	.print("My position ",MyX,", ",MyY);
-	.
+//@testplan[atomic]
+//+default::step(X)
+//	: X \== 0 & X mod 25 = 0
+//<-
+//	!printall;
+//	.
+//	
+//+!printall
+//<-
+//	!get_dispensers(DList);
+////	!get_clusters(GList);
+//	!get_goals(GList);
+//	!get_taskboards(TList);
+//	!get_all_size(Size);
+//	.print("!!!!!!!!!!!!!!!!!!!!!!");
+//	.print("Dispensers: ",DList);
+//	.print("Goals: ",GList);
+//	.print("Taskboards: ",TList);
+//	.print("Number of elements in my map: ",Size);
+//	.print("!!!!!!!!!!!!!!!!!!!!!!");
+////	getMyPos(MyX,MyY);
+////	.print("My position ",MyX,", ",MyY);
+//	.
 
 @perceivedispenser[atomic]
 +default::thing(X, Y, dispenser, Type)
@@ -323,13 +322,13 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 +map::size(Axis, Size)
 	: .my_name(Me) & map::myMap(Me)
 <- 
-	.print("################# Axis ",Axis," is of size ",Size);
+//	.print("################# Axis ",Axis," is of size ",Size);
 	updateLocations(Me, Axis, Size);
-	!printall;
+//	!printall;
 	.
 @map_size2[atomic]
-+map::size(Axis, Size)
-<- 
-	.print("################# Axis ",Axis," is of size ",Size);
-	.
++map::size(Axis, Size).
+//<- 
+//	.print("################# Axis ",Axis," is of size ",Size);
+//	.
 	

@@ -48,10 +48,10 @@
 			getMyPos(MyX,MyY);
 			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 			!closest_taskboard(TaskbX, TaskbY, UpdatedX, UpdatedY, 99999, Taskboards, 0, 0);
-			.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
+//			.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
 			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
-			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
-			!map::printall;
+//			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
+//			!map::printall;
 			setTargets(Me, TaskbX, TaskbY, GoalX, GoalY);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
@@ -70,11 +70,11 @@
 +stop
 	: not stop::really_stop & .my_name(Me) & default::play(Me,explorer,Group) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
 <-
-	.print("ADD really stop belief");
+//	.print("ADD really stop belief");
 	+stop::really_stop;
 	joinRetrievers(Flag);
 	if (Flag == "deliverer") {
-		.print("Removing explorer");
+//		.print("Removing explorer");
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
@@ -82,7 +82,7 @@
 		!!stop::become_deliverer;
 	}
 	elif (Flag == "retriever") {
-		.print("Removing explorer");
+//		.print("Removing explorer");
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
@@ -90,7 +90,7 @@
 		!!stop::become_retriever;
 	}
 	else {
-		.print("Removing explorer");
+//		.print("Removing explorer");
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
@@ -176,11 +176,11 @@
 	map::myMap(Leader) & not stop::really_stop
 <-
 	.send(Ag, askOne, map::myMap(Leader1), map::myMap(Leader1));
-	.print("Leader: ", Leader, " Leader1: ", Leader1);
+//	.print("Leader: ", Leader, " Leader1: ", Leader1);
 	if(Leader == Leader1){
 		joinRetrievers(Flag);
 			if (Flag == "deliverer") {
-				.print("Removing explorer");
+//				.print("Removing explorer");
 				-exploration::special(_);
 				-common::avoid(_);
 				-common::escape;
@@ -188,7 +188,7 @@
 				!!stop::become_deliverer;
 			}
 		elif (Flag == "retriever") {
-			.print("Removing explorer");
+//			.print("Removing explorer");
 			-exploration::special(_);
 			-common::avoid(_);
 			-common::escape;
@@ -196,7 +196,7 @@
 			!!stop::become_retriever;
 		}
 		else {
-			.print("Removing explorer");
+//			.print("Removing explorer");
 			-exploration::special(_);
 			-common::avoid(_);
 			-common::escape;
@@ -205,7 +205,7 @@
 		}
 	}
 	.
-+!stop::check_join_group : true <- .print("I cannot join the stop group yet").
++!stop::check_join_group : true. // <- .print("I cannot join the stop group yet").
 
 // trigger for new task addition 
 @trigger1[atomic]
@@ -242,9 +242,10 @@
 	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
 	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & (NKnownAgs + 1) >= 3 &//NBlocks & // enough agents to build the structure
 	.findall(Type, (.member(req(_, _, Type), Blocks) & not(.member(dispenser(Type, _, _), Dispensers))), []) // all the necessary types are known
-<- 
-	.print("I can stop exploring now.");
-	.
+.
+//<- 
+//	.print("I can stop exploring now.");
+//	.
 +!stop::conditional_stop(Blocks, Dispensers, Taskboards, Goals, false). // : true <-  .print("I cannot stop exploring yet.").
 
 @trigger2[atomic]

@@ -6,7 +6,7 @@ dispenser_in_vision :-
 +!generate_goal(0, 0, Aux) 
 	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::collect_block(_,_)
 <- 
-	.print("Time to collect a block!");
+//	.print("Time to collect a block!");
 	!!retrieve::get_block;
 	.
 	
@@ -29,7 +29,7 @@ dispenser_in_vision :-
 	!try_call_planner(Flag);
 	getPlanBlockToGoal(Me, 0, 0, BlockX, BlockY, Plan, Clear);
 	plannerDone;
-	.print("@@@@@@ Plan get plan block to goal: ",Plan);
+//	.print("@@@@@@ Plan get plan block to goal: ",Plan);
 	!planner::execute_plan(Plan, 0, 0, 0, 0);
 	-back_to_origin;
 	.
@@ -94,7 +94,7 @@ dispenser_in_vision :-
 +!generate_goal(TargetX, TargetY, Aux)
 	: .my_name(Me)
 <-
-	.print("Start of the planner");
+//	.print("Start of the planner");
 	callPlanner(Flag);
 	!try_call_planner(Flag);
 
@@ -134,7 +134,7 @@ dispenser_in_vision :-
 		FinalLocalTargetX = LocalTargetX;
 		FinalLocalTargetY = LocalTargetY;
 	}
-	.print("Where we'd like to go ", FinalLocalTargetX, ", ", FinalLocalTargetY);
+//	.print("Where we'd like to go ", FinalLocalTargetX, ", ", FinalLocalTargetY);
 	if (task::doing_task) {
 		ActualFinalLocalTargetX = FinalLocalTargetX;
 		ActualFinalLocalTargetY = FinalLocalTargetY;
@@ -142,7 +142,7 @@ dispenser_in_vision :-
 		FinalTargetY = TargetY;
 	}
 	elif (math.abs(TargetX) + math.abs(TargetY) > 3) {
-		.print("Target is distance 4 or more away.");
+//		.print("Target is distance 4 or more away.");
 		!generate_actual_goal(FinalLocalTargetX,FinalLocalTargetY,ActualFinalLocalTargetX,ActualFinalLocalTargetY);
 		FinalTargetX = TargetX;
 		FinalTargetY = TargetY;
@@ -283,7 +283,7 @@ dispenser_in_vision :-
 			}
 		}
 	}
-	.print("Where we are actually going ", ActualFinalLocalTargetX, ", ", ActualFinalLocalTargetY);
+//	.print("Where we are actually going ", ActualFinalLocalTargetX, ", ", ActualFinalLocalTargetY);
 	if (default::energy(Energy) & Energy >= 30) {
 		Clear = 1;
 	}
@@ -305,7 +305,7 @@ dispenser_in_vision :-
 		getPlanAgentToGoal(Me, ActualFinalLocalTargetX, ActualFinalLocalTargetY, Plan, Clear);
 	}
 	plannerDone;
-	.print("@@@@@@ Plan: ",Plan);
+//	.print("@@@@@@ Plan: ",Plan);
 	!planner::execute_plan(Plan, FinalTargetX, FinalTargetY, ActualFinalLocalTargetX, ActualFinalLocalTargetY);
 	.
 
@@ -465,12 +465,12 @@ dispenser_in_vision :-
 	for (.member(Action, Plan)){
 		if (.substring("clear",Action)) {
 			for(.range(I, 1, 3)){
-				.print("@@@@ Action: ", Action);
+//				.print("@@@@ Action: ", Action);
 				!action::Action;
 			}
 		}
 		else {
-			.print("@@@@ Action: ", Action);
+//			.print("@@@@ Action: ", Action);
 			!action::Action;
 			while (not default::lastActionResult(success)) {
 				!action::Action;
@@ -483,7 +483,7 @@ dispenser_in_vision :-
 	LocalTargetX < 0 & not (default::thing(-1, 0, Type, _) & (Type == block | Type == entity)) & not (default::obstacle(-1,0)) 
 <-
 	!action::move(w);
-	.print("Execute empty plan by moving west");
+//	.print("Execute empty plan by moving west");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX + 1, TargetY, notblock);
 	} else {
@@ -495,7 +495,7 @@ dispenser_in_vision :-
 	LocalTargetX > 0 & not (default::thing(1, 0, Type, _)  & (Type == block | Type == entity)) & not (default::obstacle(1,0))
 <-	
 	!action::move(e);
-	.print("Execute empty plan by moving east");
+//	.print("Execute empty plan by moving east");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX - 1, TargetY, notblock);
 	} else {
@@ -507,7 +507,7 @@ dispenser_in_vision :-
 	LocalTargetY < 0 & not (default::thing(0, -1, Type, _)  & (Type == block | Type == entity)) & not (default::obstacle(0, -1))
 <-	
 	!action::move(n);
-	.print("Execute empty plan by moving north");
+//	.print("Execute empty plan by moving north");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX, TargetY + 1, notblock);
 	} else {
@@ -519,7 +519,7 @@ dispenser_in_vision :-
 	LocalTargetY > 0 & not (default::thing(0, 1, Type, _)  & (Type == block | Type == entity)) & not (default::obstacle(0, 1))
 <-		
 	!action::move(s);
-	.print("Execute empty plan by moving south");
+//	.print("Execute empty plan by moving south");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX, TargetY - 1, notblock);
 	} else {
@@ -535,7 +535,7 @@ dispenser_in_vision :-
 	LocalTargetX > 0 & (not (default::thing(-1, 0, Type, _)  & (Type == block | Type == entity)) | retrieve::block(-1,0)) & not (default::obstacle(-1, 0))
 <-		
 	!action::move(w);
-	.print("Try to find a plan after moving west -- away from goal!");
+//	.print("Try to find a plan after moving west -- away from goal!");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX+1, TargetY, notblock);
 	} else {
@@ -547,7 +547,7 @@ dispenser_in_vision :-
 	LocalTargetX < 0 & (not (default::thing(1, 0, Type, _)  & (Type == block | Type == entity)) | retrieve::block(1,0)) & not (default::obstacle(1, 0))
 <-		
 	!action::move(e);
-	.print("Try to find a plan after moving east -- away from goal!");
+//	.print("Try to find a plan after moving east -- away from goal!");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX-1, TargetY, notblock);
 	} else {
@@ -559,7 +559,7 @@ dispenser_in_vision :-
 	LocalTargetY > 0 & (not (default::thing(0, -1, Type, _)  & (Type == block | Type == entity)) | retrieve::block(0,-1)) & not (default::obstacle(0, -1))
 <-		
 	!action::move(n);
-	.print("Try to find a plan after moving north -- away from goal!");
+//	.print("Try to find a plan after moving north -- away from goal!");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX, TargetY + 1, notblock);
 	} else {
@@ -571,7 +571,7 @@ dispenser_in_vision :-
 	LocalTargetY < 0 & (not (default::thing(0, 1, Type, _)  & (Type == block | Type == entity)) | retrieve::block(0,1)) & not (default::obstacle(0, 1))
 <-		
 	!action::move(s);
-	.print("Try to find a plan after moving south -- away from goal!");
+//	.print("Try to find a plan after moving south -- away from goal!");
 	if (default::lastActionResult(success)) {
 		!generate_goal(TargetX, TargetY - 1, notblock);
 	} else {
@@ -581,7 +581,7 @@ dispenser_in_vision :-
 // We are screwed
 +!execute_plan([], TargetX, TargetY, LocalTargetX, LocalTargetY) 
 <-
-	.print("No trivial solution to the empty plan, OBSTACLES EVERYWHERE!");
+//	.print("No trivial solution to the empty plan, OBSTACLES EVERYWHERE!");
 	!action::skip;
 	!generate_goal(TargetX, TargetY, notblock);
 	.
@@ -594,12 +594,12 @@ dispenser_in_vision :-
 	for (.member(Action, Plan)){
 		if (.substring("clear",Action)) {
 			for(.range(I, 1, 3)){
-				.print("@@@@ Action: ", Action);
+//				.print("@@@@ Action: ", Action);
 				!action::Action;
 			}
 		}
 		else {
-			.print("@@@@ Action: ", Action);
+//			.print("@@@@ Action: ", Action);
 			!action::Action;
 			if (.my_name(Me) & default::play(Me,retriever,Group) & (retrieve::getting_to_position | task::doing_task) & not retrieve::block(X,Y)) {
 				?localtargetx(RemoveLocalTargetX);
@@ -633,7 +633,7 @@ dispenser_in_vision :-
 	?localtargety(FinalLocalTargetY);
 	-localtargetx(FinalLocalTargetX);
 	-localtargety(FinalLocalTargetY);
-	.print("Next relative target X ",TargetX - FinalLocalTargetX," Y ",TargetY - FinalLocalTargetY);
+//	.print("Next relative target X ",TargetX - FinalLocalTargetX," Y ",TargetY - FinalLocalTargetY);
 	!generate_goal(TargetX - FinalLocalTargetX, TargetY - FinalLocalTargetY, notblock);
 	.
 
