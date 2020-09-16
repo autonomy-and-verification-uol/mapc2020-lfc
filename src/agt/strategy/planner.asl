@@ -90,6 +90,7 @@ dispenser_in_vision :-
 	.
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,retriever,Group).
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,explorer,Group).
++!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,arsehole,Group).
 //+!generate_goal(0, 0) <- !!default::always_skip.
 +!generate_goal(TargetX, TargetY, Aux)
 	: .my_name(Me)

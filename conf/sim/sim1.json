@@ -1,7 +1,7 @@
 {
     "setup" : "conf/setup/test1.txt",
 
-    "steps" : 750,
+    "steps" : 5000,
     "randomSeed" : 17,
     "randomFail" : 1,
     "entities" : {"standard" : 15},

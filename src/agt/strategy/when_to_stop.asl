@@ -89,6 +89,13 @@
 		!action::forget_old_action;
 		!!stop::become_retriever;
 	}
+	elif (Flag == "arsehole") {
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		!!stop::become_arsehole;
+	}
 	else {
 //		.print("Removing explorer");
 		-exploration::special(_);
@@ -101,6 +108,14 @@
 	.
 	
 +stop : true <- -stop::stop.
+
++!stop::become_arsehole :
+	true
+<-
+	!common::change_role(arsehole);
+	!arsehole::messing_around;
+	.
+
 
 +!stop::become_retriever :
 	true
