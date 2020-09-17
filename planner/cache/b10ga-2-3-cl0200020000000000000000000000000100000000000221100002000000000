@@ -1,0 +1,6 @@
+move(w)
+move(n)
+move(w)
+rotate(cw)
+move(n)
+move(n)

@@ -9,7 +9,7 @@
 	 <role id="origin" />
 	 <role id="retriever" />
 	 <role id="useless" />
-	 <role id="arsehole" />
+	 <role id="bully" />
 	</role-definitions>
 	
 	<group-specification id="lfc">
@@ -22,7 +22,7 @@
 	 		  <role id="origin" max="1"/>
 			  <role id="retriever" />
 			  <role id="useless" />
-			  <role id="arsehole" />
+			  <role id="bully" />
 			 </roles>
 	 	</group-specification>
 	 </subgroups>

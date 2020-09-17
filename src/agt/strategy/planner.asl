@@ -90,7 +90,7 @@ dispenser_in_vision :-
 	.
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,retriever,Group).
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,explorer,Group).
-+!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,arsehole,Group).
++!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,bully,Group).
 //+!generate_goal(0, 0) <- !!default::always_skip.
 +!generate_goal(TargetX, TargetY, Aux)
 	: .my_name(Me)
@@ -587,7 +587,21 @@ dispenser_in_vision :-
 	!generate_goal(TargetX, TargetY, notblock);
 	.
 
-
++!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY) :
+	.my_name(Me) & default::play(Me, bully, _) & default::thing(X, Y, block, _) & bully::clearable_block(X, Y, 1)
+<-
+	.print("There is a block here, clear it!");
+	for(default::thing(X1, Y1, block, _) & bully::clearable_block(X1, Y1, 1)){
+		!action::clear(X1, Y1);
+		if(default::thing(X1, Y1, block, _)){
+			!action::clear(X1, Y1);
+			if(default::thing(X1, Y1, block, _)){
+				!action::clear(X1, Y1);
+			}
+		}
+	}
+	!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY);
+	.
 +!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY)
 <-
 	+localtargetx(LocalTargetX);

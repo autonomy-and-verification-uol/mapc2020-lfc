@@ -89,12 +89,12 @@
 		!action::forget_old_action;
 		!!stop::become_retriever;
 	}
-	elif (Flag == "arsehole") {
+	elif (Flag == "bully") {
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
-		!!stop::become_arsehole;
+		!!stop::become_bully;
 	}
 	else {
 //		.print("Removing explorer");
@@ -109,11 +109,11 @@
 	
 +stop : true <- -stop::stop.
 
-+!stop::become_arsehole :
++!stop::become_bully :
 	true
 <-
-	!common::change_role(arsehole);
-	!arsehole::messing_around;
+	!common::change_role(bully);
+	!bully::messing_around;
 	.
 
 
