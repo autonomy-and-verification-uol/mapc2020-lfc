@@ -1002,4 +1002,268 @@ public class TeamArtifact extends Artifact {
 		}	
 	}
 	
+	/*
+	 * The following methods are for deciding where to send the explorer
+	 * agent if we do not have enough knowledge about goal positions
+	 * 
+	 * NOTE: all the following methods assume that the size of the map is known. 
+	 */
+	
+	
+	/*
+	 * Input: GLOBAL coordinate of the source and GLOBAL coordinate of the target
+	 * 
+	 * Output: returns the minimum Manhattan distance between source and target while
+	 * assuming that we can go over the edge of the map
+	 * 
+	 */
+	private int getMinimalDistanceFromTarget(Point sourceCoordinates, Point targetCoordinates) {
+		int maxX = this.sizeX / 2;
+		int maxY = this.sizeY / 2;
+		int tmpX = Math.abs((int)targetCoordinates.getX() - (int)sourceCoordinates.getX());
+		
+		int finalX = tmpX;
+		if(tmpX > maxX)
+			finalX = this.sizeX - tmpX;
+		
+		int tmpY = Math.abs((int)targetCoordinates.getY() - (int)sourceCoordinates.getY());
+		
+		int finalY = tmpY;
+		if(tmpY > maxY)
+			finalY = this.sizeY - tmpY;
+		
+		return finalX + finalY;
+	}
+	
+	/*
+	 * Input: GLOBAL coordinate of the source and the name of the agent in order to
+	 * understand which map to look at
+	 * 
+	 * Output: returns the minimum distance to the closest entity (dispenser, taskboard, goal position)
+	 * 
+	 */
+	private int getMinimalDistanceFromAll(Point sourceCoordinates, String agentName) {
+		Map<String, Set<Point>> agentMap = this.agentmaps.get(agentName);
+		Set<Point> coordinatesToCheck = new HashSet<Point>();
+		
+		//Putting all coordinates of known dispensers/goals/taskboards together
+		for(String key : agentMap.keySet())
+			coordinatesToCheck.addAll(agentMap.get(key));
+		
+		//Fictitious value known to be greater than any minimal distance
+		int minimalDistance = this.sizeX + this.sizeY;
+		
+		for(Point target : coordinatesToCheck) {
+			int minimalDistanceFromTarget = getMinimalDistanceFromTarget(sourceCoordinates, target);
+			if(minimalDistanceFromTarget < minimalDistance)
+				minimalDistance = minimalDistanceFromTarget;
+		}
+			
+		return minimalDistance;
+	}
+	
+	/*
+	 * Input: agent name (to use the right map), starting coordinates and their minimal distance from known entities
+	 * 
+	 * Output: the reachable cell which is further away from known entities starting from the given coordinates
+	 * 
+	 */
+	private Point getSinkFromCell(String agentName, Point sourceCoordinates, int sourceMinimalDistance) {
+		Point nextCell = sourceCoordinates;
+		int maximalDistance = sourceMinimalDistance;
+		
+		//Computing coordinates and minimal distances of neighbour cells
+		Point northCell = new Point((int)sourceCoordinates.getX(), ((int)sourceCoordinates.getY() - 1) % this.sizeY);
+		int minimalNorth = getMinimalDistanceFromAll(northCell, agentName);
+		
+		Point eastCell = new Point(((int)sourceCoordinates.getX() + 1) % this.sizeX, (int)sourceCoordinates.getY());
+		int minimalEast = getMinimalDistanceFromAll(eastCell, agentName);
+		
+		Point southCell = new Point((int)sourceCoordinates.getX(), ((int)sourceCoordinates.getY() + 1) % this.sizeY);
+		int minimalSouth = getMinimalDistanceFromAll(southCell, agentName);
+		
+		Point westCell = new Point(((int)sourceCoordinates.getX() - 1) % this.sizeX, (int)sourceCoordinates.getY());
+		int minimalWest = getMinimalDistanceFromAll(westCell, agentName);
+		
+		//update the maximal distance if one of the neighbours is further away from a known entity
+		if(maximalDistance < minimalNorth) {
+			nextCell = northCell;
+			maximalDistance = minimalNorth; 
+		}
+		
+		if(maximalDistance < minimalEast) {
+			nextCell = eastCell;
+			maximalDistance = minimalEast;
+		}
+		
+		if(maximalDistance < minimalSouth) {
+			nextCell = southCell;
+			maximalDistance = minimalSouth;
+		}
+		
+		if(maximalDistance < minimalWest) {
+			nextCell = westCell;
+			maximalDistance = minimalWest;
+		}
+		
+		//Recursive call if the maximal distance has changed
+		if(maximalDistance != sourceMinimalDistance)
+			return getSinkFromCell(agentName, nextCell, maximalDistance);
+		
+		//Otherwise
+		return nextCell;
+	}
+	
+	/*
+	 * Sven's suggestion
+	 * 
+	 * Input: agent name (to use the right map) and its coordinates 
+	 * 
+	 * Output: coordinates of a sink reachable from the vision edge of the agent
+	 * 
+	 * NOTE: this method can be reduced to very few lines by using a Pair class and an auxiliary method. I didn't find a Pair class
+	 * on the spot and didn't want to implement one... 
+	 */
+	private Point getSinkFromAgentPosition(String agentName, Point agentCoordinates) {
+		Point startingCell = agentCoordinates;
+		int maximalDistance = -1;
+		
+		//checking the north cell
+		Point tmpCell = new Point((int)agentCoordinates.getX(), ((int)agentCoordinates.getY() - 5) % this.sizeY);
+		int tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+		
+		if(maximalDistance < tmpDistance) {
+			maximalDistance = tmpDistance;
+			startingCell = tmpCell;
+		}
+		
+		//checking the east cell
+		tmpCell = new Point(((int)agentCoordinates.getX() + 5) % this.sizeX, (int)agentCoordinates.getY());
+		tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+		
+		if(maximalDistance < tmpDistance) {
+			maximalDistance = tmpDistance;
+			startingCell = tmpCell;
+		}
+		
+		//checking the south cell
+		tmpCell = new Point((int)agentCoordinates.getX(), ((int)agentCoordinates.getY() + 5) % this.sizeY);
+		tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+		
+		if(maximalDistance < tmpDistance) {
+			maximalDistance = tmpDistance;
+			startingCell = tmpCell;
+		}
+		
+		//checking the west cell
+		tmpCell = new Point(((int)agentCoordinates.getX() - 5) % this.sizeX, (int)agentCoordinates.getY());
+		tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+		
+		if(maximalDistance < tmpDistance) {
+			maximalDistance = tmpDistance;
+			startingCell = tmpCell;
+		}
+		
+		//checking the other cells at the vision edge
+		for(int i = 1; i < 5; i++) {
+			int j = 5 - i;
+			
+			tmpCell = new Point(((int)agentCoordinates.getX() + i) % this.sizeX, ((int)agentCoordinates.getY() + j) % this.sizeY);
+			tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+			
+			if(maximalDistance < tmpDistance) {
+				maximalDistance = tmpDistance;
+				startingCell = tmpCell;
+			}
+			
+			tmpCell = new Point(((int)agentCoordinates.getX() + i) % this.sizeX, ((int)agentCoordinates.getY() - j) % this.sizeY);
+			tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+			
+			if(maximalDistance < tmpDistance) {
+				maximalDistance = tmpDistance;
+				startingCell = tmpCell;
+			}
+			
+			tmpCell = new Point(((int)agentCoordinates.getX() - i) % this.sizeX, ((int)agentCoordinates.getY() + j) % this.sizeY);
+			tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+			
+			if(maximalDistance < tmpDistance) {
+				maximalDistance = tmpDistance;
+				startingCell = tmpCell;
+			}
+			
+			tmpCell = new Point(((int)agentCoordinates.getX() - i) % this.sizeX, ((int)agentCoordinates.getY() - j) % this.sizeY);
+			tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+			
+			if(maximalDistance < tmpDistance) {
+				maximalDistance = tmpDistance;
+				startingCell = tmpCell;
+			}
+		}
+		
+		return getSinkFromCell(agentName, startingCell, maximalDistance);
+	}
+	
+	
+	/*
+	 * 
+	 * Input: the agent name to use the right map
+	 * 
+	 * Output: the best cell among a bunch of cells on the map
+	 *  
+	 * 
+	 */
+	private Point getDestinationFromRandomPoints(String agentName) {
+		//paramenters to play with
+		int xDistance = 20;
+		int yDistance = 20;
+		
+		int xIterations = this.sizeX / xDistance;
+		int yIterations = this.sizeY / yDistance;
+		
+		//actual algorithm
+		int maximalDistance = - 1;
+		Point returnedPoint = null;
+		
+		for(int x = 0; x <= xIterations; x++)
+			for(int y = 0; y <= yIterations; y++) {
+				
+				Point tmpCell = new Point(x * xDistance,  y * yDistance);
+				int tmpDistance = getMinimalDistanceFromAll(tmpCell, agentName);
+				
+				if(maximalDistance < tmpDistance) {
+					maximalDistance = tmpDistance;
+					returnedPoint = tmpCell;
+				}
+			}
+		
+		return returnedPoint;
+	}
+	
+	
+	/*
+	 * 
+	 * Like the method above, but looks for a sink starting from the returned point
+	 * 
+	 */
+	private Point getSinkFromRandomPoint(String agentName) {
+		Point startingCell = getDestinationFromRandomPoints(agentName);
+		return getSinkFromCell(agentName, startingCell, getMinimalDistanceFromAll(startingCell, agentName));
+	}
+	
+	/*
+	 * Input: agent name (to use the right map), its GLOBAL coordinates and the variables to store the coordinates of the destination
+	 * 
+	 */
+	@OPERATION
+	void getExplorerDestination(String agentName, int agentX, int agentY, OpFeedbackParam<Integer> destinationX, OpFeedbackParam<Integer> destinationY) {
+		
+		//Three possibility so far, uncomment the one you want to try
+		Point destination = getSinkFromAgentPosition(agentName, new Point(agentX, agentY));
+		//Point destination = getDestinationFromRandomPoints(agentName)
+		//Point destination = getSinkFromRandomPoint(agentName);
+		
+		destinationX.set((int)destination.getX());
+		destinationY.set((int)destination.getY());
+	}
 }
