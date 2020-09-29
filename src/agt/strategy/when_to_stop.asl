@@ -12,6 +12,59 @@
 //	}
 //	.
 
++!get_clusters(Goals)
+<-
+	for ( .member(goal(GX,GY), Goals) ) {
+		for ( .member(goal(GX2,GY2), Goals) ) {
+			if (GX \== GX2 & GY \== GY2) {
+				!check_existing_clusters(goal(GX,GY));
+				?stop::flag(Flag);
+				-flag(_);
+				if ( not Flag ) {
+					Distance = math.abs((GX + GY) - (GX2 + GY2));
+					if ( Distance <= 4 ) {
+						!check_existing_clusters2(goal(GX2,GY2));
+						?stop::aux(Cluster);
+						-aux(_);
+						if (.empty(Cluster)) {
+							+cluster([goal(GX,GY),goal(GX2,GY2)]);
+						}
+						else {
+							-cluster(Cluster);
+							+cluster([goal(GX,GY)|Cluster]);
+						}
+					}
+				}
+			}
+		}
+	} 
+	.
+	
++!check_existing_clusters(goal(GX,GY))
+<-
+	+flag(false);
+	for ( stop::cluster(Cluster) ) {
+		if ( stop::flag(false) & .member(goal(GX,GY), Cluster) ) {
+			-flag(false);
+			+flag(true);
+		}
+	}
+	.
+	
++!check_existing_clusters2(goal(GX2,GY2))
+<-
+	+aux([]);
+	for ( stop::cluster(Cluster) ) {
+		if ( stop::aux(L) & .empty(L) & .member(goal(GX2,GY2), Cluster) ) {
+			-aux([]);
+			+aux(Cluster);
+		} elif ( .nth(0, Cluster, goal(FX,FY)) & math.abs((GX2 + GY2) - (FX + FY)) <= 4 ) {
+			-aux([]);
+			+aux(Cluster);
+		}
+	}
+	.
+
 +!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [], GX, GY) <- GoalX = GX; GoalY = GY.
 +!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1) : Res = math.abs(MyX - GX) + math.abs(MyY - GY) &  Res < ResAux <- !closest_goal(GoalX, GoalY, MyX, MyY, Res, Goals, GX, GY).
 +!closest_goal(GoalX, GoalY, MyX, MyY, ResAux, [goal(GX,GY)|Goals], GX1, GY1)  <- !closest_goal(GoalX, GoalY, MyX, MyY, ResAux, Goals, GX1, GY1).
@@ -45,17 +98,59 @@
 //			initRetrieverAvailablePos(Leader);
 			!map::get_goals(Goals);
 			!map::get_taskboards(Taskboards);
-			getMyPos(MyX,MyY);
-			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-			!closest_taskboard(TaskbX, TaskbY, UpdatedX, UpdatedY, 99999, Taskboards, 0, 0);
-//			.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
-			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
+//			getMyPos(MyX,MyY);
+//			!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+			!get_clusters(Goals);
+			+bottom([]);
+			for ( stop::cluster(Clusters) ) {
+				.nth(0, Clusters, goal(FX,FY));
+				+maxY(goal(FX,FY));
+				for ( .member(goal(GX,GY), Clusters) ) {
+					?maxY(goal(MX,MY));
+					if (GY > MY) {
+						-maxY(goal(MX,MY));
+						+maxY(goal(GX,GY));
+					}
+				}
+				?bottom(List);
+				-bottom(List);
+				?maxY(goal(MX,MY));
+				-maxY(goal(MX,MY));
+				+bottom([goal(MX,MY)|List]);
+			}
+			?bottom(BottomGoalList);
+			-bottom(BottomGoalList);
+			
+			for ( .member(goal(GX,GY), BottomGoalList) ) {
+				!closest_taskboard(TaskbX, TaskbY, GX, GY, 99999, Taskboards, 0, 0);
+//				.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
+				+target(GX,GY,TaskbX,TaskbY);
+			}
+			for ( stop::target(GX,GY,TaskbX,TaskbY) ) {
+				LowestD = math.abs(GX - TaskbX) + math.abs(GY - TaskbY);
+				if (not stop::lowest_distance(_,_,_,_,_)) {
+					+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);						
+				} else {
+					?lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
+					if (Lowest < LowestD) {
+						-lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
+						+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);
+					}
+				}
+			}
+			.abolish(stop::target(_,_,_,_));
+			?lowest_distance(_,GX,GY,TaskbX,TaskbY);
+			-lowest_distance(_,GX,GY,TaskbX,TaskbY);
+			.print("@@@@@@@@@@@@@@ Target Taskboard  X ",TaskbX," Y ",TaskbY);
+			.print("@@@@@@@@@@@@@@ Target Goal  X ",GX," Y ",GY);
+//			!get_clusters(Goals, [], Clusters);
+//			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
 //			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 //			!map::printall;
-			setTargets(Me, TaskbX, TaskbY, GoalX, GoalY);
+			setTargets(Me, TaskbX, TaskbY, GX, GY);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
-			!!stop::become_origin(GoalX, GoalY);
+			!!stop::become_origin(GX, GY);
 		}
 		else{
 			-stop::stop;
