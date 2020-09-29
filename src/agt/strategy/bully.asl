@@ -7,7 +7,8 @@ bully::clearable_block(X, Y, 1) :-
 	default::thing(X+1, Y, entity, EnemyTeam) |
 	default::thing(X, Y-1, entity, EnemyTeam) |
 	default::thing(X, Y+1, entity, EnemyTeam)).// &
-	//not (MyTeam = EnemyTeam).
+	//not (MyTeam = EnemyTeam) &
+	//.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
 bully::clearable_block(X, Y, MinimumNumberOfBlocks) :-
 	MinimumNumberOfBlocks > 1 &
 	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
