@@ -21,8 +21,8 @@
 				?stop::flag(Flag);
 				-flag(_);
 				if ( not Flag ) {
-					Distance = math.abs((GX + GY) - (GX2 + GY2));
-					if ( Distance <= 4 ) {
+					// Distance = math.abs((GX + GY) - (GX2 + GY2));
+					if (bully::real_distance(GX, GY, GX2, GY2, Distance) & Distance <= 4) {
 						!check_existing_clusters2(goal(GX2,GY2));
 						?stop::aux(Cluster);
 						-aux(_);

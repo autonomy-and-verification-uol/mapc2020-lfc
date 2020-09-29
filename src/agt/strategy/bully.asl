@@ -2,13 +2,11 @@ last_direction(n).
 
 bully::clearable_block(X, Y, 1) :-
 	.print("clearable_block_aux(", X, ", ", Y, ", ", 1, ")") &
+	math.abs(X) + math.abs(Y) <= 4 &
 	default::team(MyTeam) &
-	(default::thing(X-1, Y, entity, EnemyTeam) |
-	default::thing(X+1, Y, entity, EnemyTeam) |
-	default::thing(X, Y-1, entity, EnemyTeam) |
-	default::thing(X, Y+1, entity, EnemyTeam)).// &
-	//not (MyTeam = EnemyTeam) &
-	//.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
+	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
+	not(.empty(EnemiesAroundBlock)) &
+	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
 bully::clearable_block(X, Y, MinimumNumberOfBlocks) :-
 	MinimumNumberOfBlocks > 1 &
 	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
@@ -23,15 +21,49 @@ bully::neighbour(X, Y, X+1, Y).
 bully::neighbour(X, Y, X, Y-1).
 bully::neighbour(X, Y, X, Y+1).
 
+real_distance(X, Y, X1, Y1, Distance) :-
+	map::size(x, SizeX) &
+	DistanceXa = math.abs(X1-X) &
+	((X1 > X & DistanceXb = (X - X1 + SizeX)) | 
+	 (X1 < X & DistanceXb = (X1 - X + SizeX)) |
+	 (X1 == X & DistanceXb = 0)
+	) &
+	((DistanceXa > DistanceXb & DistanceX = DistanceXb) |
+	 (DistanceXa < DistanceXb & DistanceX = DistanceXa) |
+	 (DistanceXa == DistanceXb & DistanceX = DistanceXa)
+	) &
+	map::size(y, SizeY) &
+	DistanceYa = math.abs(Y1-Y) &
+	((Y1 > Y & DistanceYb = (Y - GY + SizeY)) | 
+	 (Y1 < Y & DistanceYb = (GY - Y + SizeY)) |
+	 (Y1 == Y & DistanceYb = 0)
+	) &
+	((DistanceYa > DistanceYb & DistanceY = DistanceYb) |
+	 (DistanceYa < DistanceYb & DistanceY = DistanceYa) |
+	 (DistanceYa == DistanceYb & DistanceY = DistanceYa)
+	) &
+	Distance = DistanceX + DistanceY.
+
 +!bully::messing_around :
 	true
 <-
 	.print("Start messing around");
+	getMyPos(MyX, MyY);
 	!map::get_goals(Goals);
+	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
 	getTargetGoal(_, GoalX, GoalY);
 	.print("Target goal: ", GoalX, ", ", GoalY);
-	.findall(goal(Distance, GX,GY), 
+	.findall(goal(Distance, GX,GY),
+		(
+			stop::cluster(Cluster) &
+			not(.member(goal(GoalX, GoalY), Cluster)) &
+			.member(goal(GX, GY), Cluster) &
+			bully::real_distance(MyX, MyY, GX, GY, Distance)
+		), 
+		GoalsToMessWithAux
+	);
+	/*.findall(goal(Distance, GX,GY), 
 		(
 			.member(goal(GX,GY), Goals) & 
 			map::size(x, SizeX) &
@@ -57,7 +89,7 @@ bully::neighbour(X, Y, X, Y+1).
 			//DistanceX + DistanceY > 10 &
 			Distance = DistanceX + DistanceY
 		), 
-	GoalsToMessWithAux);
+	GoalsToMessWithAux);*/
 	.sort(GoalsToMessWithAux, GoalsToMessWith);
 	.print("GoalsToMessWith: ", GoalsToMessWith);
 	if(GoalsToMessWith == []) {
