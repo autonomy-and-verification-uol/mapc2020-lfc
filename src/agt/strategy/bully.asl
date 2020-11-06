@@ -1,25 +1,25 @@
 last_direction(n).
 
-bully::clearable_block(X, Y, 1) :-
+clearable_block(X, Y, 1) :-
 	.print("clearable_block_aux(", X, ", ", Y, ", ", 1, ")") &
 	math.abs(X) + math.abs(Y) <= 4 &
 	default::team(MyTeam) &
-	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
+	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
 	not(.empty(EnemiesAroundBlock)) &
-	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
-bully::clearable_block(X, Y, MinimumNumberOfBlocks) :-
+	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
+clearable_block(X, Y, MinimumNumberOfBlocks) :-
 	MinimumNumberOfBlocks > 1 &
 	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
-	bully::neighbour(X, Y, X1, Y1) &
+	neighbour(X, Y, X1, Y1) &
 	.print("check if there is a block in position (", X1, ", ", Y1, ")") &
 	default::thing(X1, Y1, block, _) &
 	.print("a block is actually there") &
-	bully::clearable_block(X1, Y1, MinimumNumberOfBlocks-1).
+	clearable_block(X1, Y1, MinimumNumberOfBlocks-1).
 
-bully::neighbour(X, Y, X-1, Y).
-bully::neighbour(X, Y, X+1, Y).
-bully::neighbour(X, Y, X, Y-1).
-bully::neighbour(X, Y, X, Y+1).
+neighbour(X, Y, X-1, Y).
+neighbour(X, Y, X+1, Y).
+neighbour(X, Y, X, Y-1).
+neighbour(X, Y, X, Y+1).
 
 real_distance(X, Y, X1, Y1, Distance) :-
 	map::size(x, SizeX) &
@@ -43,8 +43,116 @@ real_distance(X, Y, X1, Y1, Distance) :-
 	 (DistanceYa == DistanceYb & DistanceY = DistanceYa)
 	) &
 	Distance = DistanceX + DistanceY.
+	
+min_cluster_x(Cluster, MinX) :-
+	.length(Cluster, N) & N > 0 &
+	min_cluster_x(Cluster, 1000000, MinX).
+min_cluster_x([], X, X).
+min_cluster_x([goal(Gx, Gy)|Cluster], CurrX, MinX) :-
+	Gx <= CurrX &
+	min_cluster_x(Cluster, Gx, MinX).
+min_cluster_x([goal(Gx, Gy)|Cluster], CurrX, MinX) :-
+	Gx > CurrX &
+	min_cluster_x(Cluster, CurrX, MinX).
+min_cluster_y(Cluster, MinY) :-
+	.length(Cluster, N) & N > 0 &
+	min_cluster_y(Cluster, 1000000, MinY).
+min_cluster_y([], Y, Y).
+min_cluster_y([goal(Gx, Gy)|Cluster], CurrY, MinY) :-
+	Gy <= CurrY &
+	min_cluster_y(Cluster, Gy, MinY).
+min_cluster_y([goal(Gx, Gy)|Cluster], CurrY, MinY) :-
+	Gy > CurrY &
+	min_cluster_y(Cluster, CurrY, MinY).
+max_cluster_x(Cluster, MaxX) :-
+	.length(Cluster, N) & N > 0 &
+	max_cluster_x(Cluster, -1000000, MaxX).
+max_cluster_x([], X, X).
+max_cluster_x([goal(Gx, Gy)|Cluster], CurrX, MaxX) :-
+	Gx >= CurrX &
+	max_cluster_x(Cluster, Gx, MaxX).
+max_cluster_x([goal(Gx, Gy)|Cluster], CurrX, MaxX) :-
+	Gx < CurrX &
+	max_cluster_x(Cluster, CurrX, MaxX).
+max_cluster_y(Cluster, MaxY) :-
+	.length(Cluster, N) & N > 0 &
+	max_cluster_y(Cluster, -1000000, MaxY).
+max_cluster_y([], Y, Y).
+max_cluster_y([goal(Gx, Gy)|Cluster], CurrY, MaxY) :-
+	Gy >= CurrY &
+	max_cluster_y(Cluster, Gy, MaxY).
+max_cluster_y([goal(Gx, Gy)|Cluster], CurrY, MaxY) :-
+	Gy < CurrY &
+	max_cluster_y(Cluster, CurrY, MaxY).
+cluster_center(Cluster, X, Y, Radius) :- 
+	min_cluster_x(Cluster, MinX) & 
+	min_cluster_y(Cluster, MinY) &
+	max_cluster_x(Cluster, MaxX) &
+	max_cluster_y(Cluster, MaxY) & 
+	X = math.floor(((MaxX - MinX) / 2) + MinX) & 
+	Y = math.floor(((MaxY - MinY) / 2) + MinY) & 
+	Radius = math.floor(((MaxX - MinX) + (MaxY - MinY)) / 4) + 1.
+patrolling_positions(cluster(X, Y, Radius), Positions) :-
+	map::size(x, SizeX) &
+	map::size(y, SizeY) &
+	.findall(pos(X1, Y1),(
+		.range(Ix, -Radius, Radius) &
+		.range(Iy, -Radius, 0) &
+		X1 = X + Ix &
+		Y1 = Y + Iy &
+		((X1 < 0 & X2 = SizeX - X1) | (X1 >= 0 & X2 = X1)) &
+		((Y1 < 0 & Y2 = SizeY - Y1) | (Y1 >= 0 & Y2 = Y1)) &
+		bully::real_distance(X, Y, X2, Y2, Distance) &
+		Distance = Radius
+	), Positions1a) &
+	.findall(pos(X1, Y1),(
+		.range(Ix, -Radius, Radius) &
+		.range(Iy, 0, Radius) &
+		X1 = X - Ix &
+		Y1 = Y + Iy &
+		((X1 < 0 & X2 = SizeX - X1) | (X1 >= 0 & X2 = X1)) &
+		((Y1 < 0 & Y2 = SizeY - Y1) | (Y1 >= 0 & Y2 = Y1)) &
+		bully::real_distance(X, Y, X2, Y2, Distance) &
+		Distance = Radius
+	), Positions1b) &
+	.concat(Positions1a, Positions1b, Positions).
 
-+!bully::messing_around :
+patience(20).
+
++!messing_around :
+	patience(Patience)
+<-
+	.print("Start messing around");
+	getMyPos(MyX, MyY);
+	!map::get_goals(Goals);
+	!stop::get_clusters(Goals);
+	.print("Goals: ", Goals);
+	getTargetGoal(_, GoalX, GoalY);
+	.print("Target goal: ", GoalX, ", ", GoalY);
+	.findall(cluster(X, Y, Radius, Positions), (
+		stop::cluster(Cluster) & .length(Cluster, N) & N > 0 &
+		not(.member(goal(GoalX, GoalY), Cluster)) &
+		bully::cluster_center(Cluster, X, Y, Radius) &
+		bully::patrolling_positions(cluster(X, Y, Radius), Positions)
+	), ClustersToMessWith);
+	.print("Clusters to mess with: ", ClustersToMessWith);
+	.length(ClustersToMessWith, N);
+	if(N = 0) {
+		.print("skip");
+		!action::skip; 
+		!bully::messing_around
+	} else{
+		.shuffle(ClustersToMessWith, Clusters1);
+		.nth(0, Clusters1, cluster(_, _, _, Positions));
+		-curr_patience(_);
+		+curr_patience(Patience);
+		-positions(_);
+		+positions(Positions);
+		!bully::messing_around(Positions);
+	}
+	.
+
++!messing_around_old :
 	true
 <-
 	.print("Start messing around");
@@ -56,10 +164,10 @@ real_distance(X, Y, X1, Y1, Distance) :-
 	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(goal(Distance, GX,GY),
 		(
-			stop::cluster(Cluster) &
+			stop::cluster(Cluster) & .length(Cluster, N) & N > 0 &
 			not(.member(goal(GoalX, GoalY), Cluster)) &
 			.member(goal(GX, GY), Cluster) &
-			bully::real_distance(MyX, MyY, GX, GY, Distance)
+			real_distance(MyX, MyY, GX, GY, Distance)
 		), 
 		GoalsToMessWithAux
 	);
@@ -104,20 +212,27 @@ real_distance(X, Y, X1, Y1, Distance) :-
 				!action::move(Dir1);
 			}
 		}
-		!bully::messing_around;
+		!messing_around;
 	} else {
-		!bully::messing_around(GoalsToMessWith);
+		!messing_around(GoalsToMessWith);
 	}
 	.
 
-+!bully::messing_around([]) :
-	true
++!messing_around([]) :
+	positions(Positions)
 <-
-	!bully::messing_around;
+	!messing_around(Positions);
 	.
-+!bully::messing_around([goal(_, GX, GY)|GoalsToMessWith]) :
-	true
++!messing_around([pos(GX, GY)|PositionsToMessWith]) :
+	curr_patience(Patience) & Patience <= 0
 <-
+	!messing_around;
+	.
++!messing_around([pos(GX, GY)|PositionsToMessWith]) :
+	curr_patience(Patience) & Patience > 0 & patience(InitialPatience)
+<-
+	-curr_patience(_);
+	+curr_patience(Patience-1);
 	.print("Moving to position: ", GX, ", ", GY);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
@@ -130,9 +245,11 @@ real_distance(X, Y, X1, Y1, Distance) :-
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
 	.print("In place..");
 	for(default::thing(X, Y, block, _) & 
-		bully::clearable_block(X, Y, 1)
+		clearable_block(X, Y, 1) & patience(Patience)
 	) {
 		.print("There is a block here, clear it!");
+		-curr_patience(_);
+		+curr_patience(InitialPatience);
 		!action::clear(X, Y);
 		if(default::thing(X, Y, block, _)){
 			!action::clear(X, Y);
@@ -141,6 +258,6 @@ real_distance(X, Y, X1, Y1, Distance) :-
 			}
 		}
 	}
-	.print("Nothing else to do here, move to next goal");
-	!bully::messing_around(GoalsToMessWith);
+	.print("Nothing else to do here, move to next position");
+	!messing_around(PositionsToMessWith);
 	.
