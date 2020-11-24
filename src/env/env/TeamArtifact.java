@@ -91,7 +91,8 @@ public class TeamArtifact extends Artifact {
 	
 	private String firstToStop;
 	
-	private int deliverer = -1;
+	private int deliverer;
+	private int deliverer2;
 	
 	private String cartographerY1;
 	private String cartographerY2;
@@ -99,16 +100,21 @@ public class TeamArtifact extends Artifact {
 	private String cartographerX1;
 	private String cartographerX2;
 	
-	private int sizeX = 0;
-	private int sizeY = 0;
+	private int sizeX;
+	private int sizeY;
 	
 	private String goalAgent;
+	private String goalAgent2;
 	private Integer targetTaskX;
 	private Integer targetTaskY;
 	private Integer targetGoalX;
 	private Integer targetGoalY;
+	private Integer targetTaskX2;
+	private Integer targetTaskY2;
+	private Integer targetGoalX2;
+	private Integer targetGoalY2;
 	private List<Point> retrieversAvailablePositions = new ArrayList<>();
-	private List<Point> uselessAvailablePositions = new ArrayList<>();
+//	private List<Point> uselessAvailablePositions = new ArrayList<>();
 	
 	private static List<Pair<String, String>> ourBlocks = new ArrayList<>();
 	
@@ -171,13 +177,20 @@ public class TeamArtifact extends Artifact {
 		cartographerX1 = null;
 		cartographerX2 = null;
 		goalAgent = null;
+		goalAgent2 = null;
 		targetTaskX = null;
 		targetTaskY = null;
 		targetGoalX = null;
 		targetGoalY = null;
+		targetTaskX2 = null;
+		targetTaskY2 = null;
+		targetGoalX2 = null;
+		targetGoalY2 = null;
+		deliverer = -1;
+		deliverer2 = -1;
 		sizeX = 0;
 		sizeY = 0;
-		retrievers = 13;
+		retrievers = 10;
 	}
 	
 	@OPERATION
@@ -232,18 +245,26 @@ public class TeamArtifact extends Artifact {
 	
 	
 	@OPERATION
-	void joinRetrievers(OpFeedbackParam<String> flag){
-		if (this.deliverer == -1) {
+	void joinStopGroup(OpFeedbackParam<String> flag){
+		if (this.goalAgent2 == null) {
+			flag.set("origin2");
+			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
+		}
+		else if (this.deliverer == -1) {
 			flag.set("deliverer");
+			this.deliverer = 1; 
+		}
+		else if (this.deliverer2 == -1) {
+			flag.set("deliverer2");
 			this.deliverer = 1; 
 		}
 		else if (this.retrievers > 0) {
 			this.retrievers--;
 			flag.set("retriever");
 		}
-		else {
-			flag.set("useless");
-		}
+//		else {
+//			flag.set("useless");
+//		}
 	}
 	
 	
@@ -255,9 +276,22 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION
+	void getTargetGoal2(OpFeedbackParam<String> name, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		name.set(goalAgent2);
+		x.set(targetGoalX2);
+		y.set(targetGoalY2);
+	}
+	
+	@OPERATION
 	void getTargetTaskboard(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
 		x.set(targetTaskX);
 		y.set(targetTaskY);
+	}
+	
+	@OPERATION
+	void getTargetTaskboard2(OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
+		x.set(targetTaskX2);
+		y.set(targetTaskY2);
 	}
 	
 	@OPERATION
@@ -268,11 +302,53 @@ public class TeamArtifact extends Artifact {
 		this.targetGoalX = goalx;
 		this.targetGoalY = goaly;
 		this.retrieversAvailablePositions.clear();
-		this.uselessAvailablePositions.clear();
-		for (int i = 0; i < 50; i++) {
-			Point p = new Point(goalx-25+i, goaly-10);
-			this.uselessAvailablePositions.add(p);
+//		this.uselessAvailablePositions.clear();
+//		for (int i = 0; i < 50; i++) {
+//			Point p = new Point(goalx-25+i, goaly-10);
+//			this.uselessAvailablePositions.add(p);
+//		}
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
+			Point p = new Point(goalx-9, i);
+			this.retrieversAvailablePositions.add(p);
+//			Point p2 = new Point(goalx-11, i);
+//			this.retrieversAvailablePositions.add(p2);
 		}
+		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add east line of the rectangle
+			Point p = new Point(goalx+9, i);
+			this.retrieversAvailablePositions.add(p);
+//			Point p2 = new Point(goalx+11, i);
+//			this.retrieversAvailablePositions.add(p2);
+		}
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add north line of the rectangle
+			Point p = new Point(i, goaly-4);
+			this.retrieversAvailablePositions.add(p);
+//			Point p2 = new Point(i, goaly-6);
+//			this.retrieversAvailablePositions.add(p2);
+		}
+		for (int i = goalx - 9; i <= goalx + 9; i = i + 3) { // add south line of the rectangle
+			Point p = new Point(i, goaly+8);
+			this.retrieversAvailablePositions.add(p);
+//			Point p2 = new Point(i, goaly+10);
+//			this.retrieversAvailablePositions.add(p2);
+		}
+//		logger.info("Size of retriever positions: "+this.retrieversAvailablePositions.toArray().length);
+//		for(Point p: this.retrieversAvailablePositions) {
+//			logger.info("@@@@ position("+p.x+","+p.y+")");
+//		}
+	}
+	
+	@OPERATION
+	void setTargets(String name, int taskx, int tasky, int goalx, int goaly, int taskx2, int tasky2, int goalx2, int goaly2){
+		this.goalAgent = name;
+		this.targetTaskX = taskx;
+		this.targetTaskY = tasky;
+		this.targetGoalX = goalx;
+		this.targetGoalY = goaly;
+		this.targetTaskX2 = taskx2;
+		this.targetTaskY2 = tasky2;
+		this.targetGoalX2 = goalx2;
+		this.targetGoalY2 = goaly2;
+		this.retrieversAvailablePositions.clear();
 		for (int i = goaly - 1; i <= goaly + 5; i = i + 3) { // add west line of the rectangle
 			Point p = new Point(goalx-9, i);
 			this.retrieversAvailablePositions.add(p);
@@ -344,22 +420,22 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
-			for(Point p: this.uselessAvailablePositions) {
-				Point pnew = new Point(0, 0);
-				if (p.x + x < 0) {
-					pnew.x = ((p.x + x) % sizeX) + sizeX;
-				} else {
-					pnew.x = (p.x + x) % sizeX;
-				}
-				if (p.y + y < 0) {
-					pnew.y = ((p.y + y) % sizeY) + sizeY;
-				} else {
-					pnew.y = (p.y + y) % sizeY;
-				}
-				retaux.add(pnew);
-			}
-			uselessAvailablePositions.clear();
-			uselessAvailablePositions.addAll(retaux);
+//			for(Point p: this.uselessAvailablePositions) {
+//				Point pnew = new Point(0, 0);
+//				if (p.x + x < 0) {
+//					pnew.x = ((p.x + x) % sizeX) + sizeX;
+//				} else {
+//					pnew.x = (p.x + x) % sizeX;
+//				}
+//				if (p.y + y < 0) {
+//					pnew.y = ((p.y + y) % sizeY) + sizeY;
+//				} else {
+//					pnew.y = (p.y + y) % sizeY;
+//				}
+//				retaux.add(pnew);
+//			}
+//			uselessAvailablePositions.clear();
+//			uselessAvailablePositions.addAll(retaux);
 		}
 		else if (sizeX != 0) {
 			List<Point> retaux = new ArrayList<>();
@@ -387,18 +463,18 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
-			for(Point p: this.uselessAvailablePositions) {
-				Point pnew = new Point(0, 0);
-				if (p.x + x < 0) {
-					pnew.x = ((p.x + x) % sizeX) + sizeX;
-				} else {
-					pnew.x = (p.x + x) % sizeX;
-				}
-				pnew.y += y;
-				retaux.add(pnew);
-			}
-			uselessAvailablePositions.clear();
-			uselessAvailablePositions.addAll(retaux);
+//			for(Point p: this.uselessAvailablePositions) {
+//				Point pnew = new Point(0, 0);
+//				if (p.x + x < 0) {
+//					pnew.x = ((p.x + x) % sizeX) + sizeX;
+//				} else {
+//					pnew.x = (p.x + x) % sizeX;
+//				}
+//				pnew.y += y;
+//				retaux.add(pnew);
+//			}
+//			uselessAvailablePositions.clear();
+//			uselessAvailablePositions.addAll(retaux);
 		}
 		else if (sizeY != 0) {
 			List<Point> retaux = new ArrayList<>();
@@ -426,18 +502,18 @@ public class TeamArtifact extends Artifact {
 			}
 			retrieversAvailablePositions.clear();
 			retrieversAvailablePositions.addAll(retaux);
-			for(Point p: this.uselessAvailablePositions) {
-				Point pnew = new Point(0, 0);
-				pnew.x += x;
-				if (p.y + y < 0) {
-					pnew.y = ((p.y + y) % sizeY) + sizeY;
-				} else {
-					pnew.y = (p.y + y) % sizeY;
-				}
-				retaux.add(pnew);
-			}
-			uselessAvailablePositions.clear();
-			uselessAvailablePositions.addAll(retaux);
+//			for(Point p: this.uselessAvailablePositions) {
+//				Point pnew = new Point(0, 0);
+//				pnew.x += x;
+//				if (p.y + y < 0) {
+//					pnew.y = ((p.y + y) % sizeY) + sizeY;
+//				} else {
+//					pnew.y = (p.y + y) % sizeY;
+//				}
+//				retaux.add(pnew);
+//			}
+//			uselessAvailablePositions.clear();
+//			uselessAvailablePositions.addAll(retaux);
 		} else {
 			this.targetTaskX += x;
 			this.targetTaskY += y;
@@ -447,10 +523,10 @@ public class TeamArtifact extends Artifact {
 				p.x += x;
 				p.y += y;
 			}
-			for(Point p: this.uselessAvailablePositions) {
-				p.x += x;
-				p.y += y;
-			}
+//			for(Point p: this.uselessAvailablePositions) {
+//				p.x += x;
+//				p.y += y;
+//			}
 		}
 	}
 	
@@ -495,23 +571,23 @@ public class TeamArtifact extends Artifact {
 		}
 	}
 	
-	@OPERATION
-	void getUselessAvailablePos(int myX, int myY, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
-		int toRemove = -1;
-		double dist = Double.MAX_VALUE;
-		for(int i = 0; i < this.uselessAvailablePositions.size(); i++) {
-			double d = Math.abs(myX - this.uselessAvailablePositions.get(i).x) + Math.abs(myY - this.uselessAvailablePositions.get(i).y);
-			if(d < dist) {
-				toRemove = i;
-				dist = d;
-			}
-		}
-		if(toRemove != -1) {
-			x.set(this.uselessAvailablePositions.get(toRemove).x);
-			y.set(this.uselessAvailablePositions.get(toRemove).y);
-			this.uselessAvailablePositions.remove(toRemove);
-		}
-	}
+//	@OPERATION
+//	void getUselessAvailablePos(int myX, int myY, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
+//		int toRemove = -1;
+//		double dist = Double.MAX_VALUE;
+//		for(int i = 0; i < this.uselessAvailablePositions.size(); i++) {
+//			double d = Math.abs(myX - this.uselessAvailablePositions.get(i).x) + Math.abs(myY - this.uselessAvailablePositions.get(i).y);
+//			if(d < dist) {
+//				toRemove = i;
+//				dist = d;
+//			}
+//		}
+//		if(toRemove != -1) {
+//			x.set(this.uselessAvailablePositions.get(toRemove).x);
+//			y.set(this.uselessAvailablePositions.get(toRemove).y);
+//			this.uselessAvailablePositions.remove(toRemove);
+//		}
+//	}
 	
 	@OPERATION
 	void addRetrieverAvailablePos(int x, int y) {

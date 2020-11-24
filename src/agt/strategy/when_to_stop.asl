@@ -130,9 +130,14 @@
 				LowestD = math.abs(GX - TaskbX) + math.abs(GY - TaskbY);
 				if (not stop::lowest_distance(_,_,_,_,_)) {
 					+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);						
+				} 
+				elif (not stop::lowest_distance2(_,_,_,_,_)) {
+					+lowest_distance2(LowestD,GX,GY,TaskbX,TaskbY);	
 				} else {
 					?lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
 					if (Lowest < LowestD) {
+						-lowest_distance2(_,_,_,_,_);
+						+lowest_distance2(Lowest,LGX,LGY,LTaskbX,LTaskbY);
 						-lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
 						+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);
 					}
@@ -141,13 +146,23 @@
 			.abolish(stop::target(_,_,_,_));
 			?lowest_distance(_,GX,GY,TaskbX,TaskbY);
 			-lowest_distance(_,GX,GY,TaskbX,TaskbY);
-			.print("@@@@@@@@@@@@@@ Target Taskboard  X ",TaskbX," Y ",TaskbY);
-			.print("@@@@@@@@@@@@@@ Target Goal  X ",GX," Y ",GY);
+			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster 1  X ",TaskbX," Y ",TaskbY);
+			.print("@@@@@@@@@@@@@@ Target Goal Cluster 1 X ",GX," Y ",GY);
+			if (lowest_distance2(_,GX2,GY2,TaskbX2,TaskbY2)) {
+				.print("@@@@@@@@@@@@@@ Target Taskboard Cluster 2  X ",TaskbX2," Y ",TaskbY2);
+				.print("@@@@@@@@@@@@@@ Target Goal Cluster 2  X ",GX2," Y ",GY2);
+				-lowest_distance2(_,GX2,GY2,TaskbX2,TaskbY2);
+				setTargets(Me, TaskbX, TaskbY, GX, GY, TaskbX2, TaskbY2, GX2, GY2);
+			}
+			else {
+				.print("@@@@@@@@@@@@@@ Only 1 cluster.");
+				setTargets(Me, TaskbX, TaskbY, GX, GY);
+			}
 //			!get_clusters(Goals, [], Clusters);
 //			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
 //			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 //			!map::printall;
-			setTargets(Me, TaskbX, TaskbY, GX, GY);
+			
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GX, GY);
@@ -167,14 +182,34 @@
 <-
 //	.print("ADD really stop belief");
 	+stop::really_stop;
-	joinRetrievers(Flag);
-	if (Flag == "deliverer") {
+	joinStopGroup(Flag);
+	if (Flag == "origin2") {
+//		.print("Removing explorer");
+		!action::forget_old_action;
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		getTargetGoal2(_,GX2,GY2);
+		
+		!!stop::become_origin(GX2, GY2);
+	}
+	elif (Flag == "deliverer") {
 //		.print("Removing explorer");
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
-		!!stop::become_deliverer;
+		getTargetTaskboard(TaskbX,TaskbY);
+		!!stop::become_deliverer(TaskbX,TaskbY);
+	}
+	elif (Flag == "deliverer2") {
+//		.print("Removing explorer");
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		getTargetTaskboard2(TaskbX2,TaskbY2);
+		!!stop::become_deliverer(TaskbX2,TaskbY2);
 	}
 	elif (Flag == "retriever") {
 //		.print("Removing explorer");
@@ -184,14 +219,14 @@
 		!action::forget_old_action;
 		!!stop::become_retriever;
 	}
-	else {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_useless;
-	}
+//	else {
+////		.print("Removing explorer");
+//		-exploration::special(_);
+//		-common::avoid(_);
+//		-common::escape;
+//		!action::forget_old_action;
+//		!!stop::become_useless;
+//	}
 //	!!retrieve::retrieve_block;
 	.
 	
@@ -225,11 +260,10 @@
 	}
 	.
 	
-+!stop::become_deliverer :
++!stop::become_deliverer(TaskbX,TaskbY) :
 	true
 <-
 	!common::change_role(deliverer);
-	getTargetTaskboard(TaskbX,TaskbY);
 //	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
@@ -273,7 +307,7 @@
 	.send(Ag, askOne, map::myMap(Leader1), map::myMap(Leader1));
 //	.print("Leader: ", Leader, " Leader1: ", Leader1);
 	if(Leader == Leader1){
-		joinRetrievers(Flag);
+		joinStopGroup(Flag);
 			if (Flag == "deliverer") {
 //				.print("Removing explorer");
 				-exploration::special(_);
