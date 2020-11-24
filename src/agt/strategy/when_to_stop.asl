@@ -127,6 +127,7 @@
 				+target(GX,GY,TaskbX,TaskbY);
 			}
 			for ( stop::target(GX,GY,TaskbX,TaskbY) ) {
+				.print("Target GX",GX," GY ",GY," TaskbX ",TaskbX," TaskbY ",TaskbY);
 				LowestD = math.abs(GX - TaskbX) + math.abs(GY - TaskbY);
 				if (not stop::lowest_distance(_,_,_,_,_)) {
 					+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);						
@@ -135,7 +136,7 @@
 					+lowest_distance2(LowestD,GX,GY,TaskbX,TaskbY);	
 				} else {
 					?lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
-					if (Lowest < LowestD) {
+					if (LowestD < Lowest) {
 						-lowest_distance2(_,_,_,_,_);
 						+lowest_distance2(Lowest,LGX,LGY,LTaskbX,LTaskbY);
 						-lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);

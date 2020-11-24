@@ -256,7 +256,7 @@ public class TeamArtifact extends Artifact {
 		}
 		else if (this.deliverer2 == -1) {
 			flag.set("deliverer2");
-			this.deliverer = 1; 
+			this.deliverer2 = 1; 
 		}
 		else if (this.retrievers > 0) {
 			this.retrievers--;

@@ -18,8 +18,8 @@
 	 		<roles>
 			  <role id="explorer" />
 			  <role id="cartographer" />
-	 		  <role id="deliverer" max="1"/>
-	 		  <role id="origin" max="1"/>
+	 		  <role id="deliverer" max="2"/>
+	 		  <role id="origin" max="2"/>
 			  <role id="retriever" />
 			  <role id="useless" />
 			  <role id="arsehole" />
