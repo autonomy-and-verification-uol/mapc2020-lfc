@@ -163,10 +163,14 @@
 	
 @stop2[atomic]
 +stop
-	: not stop::really_stop & .my_name(Me) & default::play(Me,explorer,Group) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
+	: not stop::really_stop & .my_name(Me) & (default::play(Me,explorer,Group) | default::play(Me, bully, Group)) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
 <-
 //	.print("ADD really stop belief");
 	+stop::really_stop;
+	if(default::play(Me, bully, Group)) {
+		-bully::beginning;
+		+bully::stop_being_a_bully;	
+	}
 	joinRetrievers(Flag);
 	if (Flag == "deliverer") {
 //		.print("Removing explorer");

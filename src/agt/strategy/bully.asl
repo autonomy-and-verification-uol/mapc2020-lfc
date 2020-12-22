@@ -116,8 +116,40 @@ patrolling_positions(cluster(X, Y, Radius), Positions) :-
 		Distance = Radius
 	), Positions1b) &
 	.concat(Positions1a, Positions1b, Positions).
+patrolling_positions(cluster(X, Y, Radius), Positions) :-
+	.findall(pos(X1, Y1),(
+		.range(Ix, -Radius, Radius) &
+		.range(Iy, -Radius, 0) &
+		X1 = X + Ix &
+		Y1 = Y + Iy &
+		Distance = (math.abs(X1 - X) + math.abs(Y1 - Y)) &
+		Distance = Radius
+	), Positions1a) &
+	.findall(pos(X1, Y1),(
+		.range(Ix, -Radius, Radius) &
+		.range(Iy, 0, Radius) &
+		X1 = X - Ix &
+		Y1 = Y + Iy &
+		Distance = (math.abs(X1 - X) + math.abs(Y1 - Y)) &
+		Distance = Radius
+	), Positions1b) &
+	.concat(Positions1a, Positions1b, Positions).
 
 patience(20).
+
++!bully::messing_around(GX, GY):
+	bully::patrolling_positions(cluster(GX, GY, 3), Positions)
+<-
+	.print("Start messing around");
+	-curr_patience(_);
+	+curr_patience(10000000);
+	-positions(_);
+	+positions(Positions);
+	-beginning;
+	+beginning;
+	-stop_being_a_bully;
+	!bully::messing_around(Positions);
+	.
 
 +!messing_around :
 	patience(Patience)
@@ -148,6 +180,7 @@ patience(20).
 		+curr_patience(Patience);
 		-positions(_);
 		+positions(Positions);
+		-stop_being_a_bully;
 		!bully::messing_around(Positions);
 	}
 	.
@@ -218,6 +251,17 @@ patience(20).
 	}
 	.
 
++!messing_around(_) :
+	bully::stop_being_a_bully
+<-
+	.print("stop being a bully");
+	-beginning;
+	-curr_patience(_);
+	-positions(_);
+	!action::forget_old_action;
+	!common::change_role(explorer);
+	!!exploration::explore([n,s,e,w]);
+	.
 +!messing_around([]) :
 	positions(Positions)
 <-
@@ -253,7 +297,7 @@ patience(20).
 		!action::clear(X, Y);
 		if(default::thing(X, Y, block, _)){
 			!action::clear(X, Y);
-			if(default::thing(X, Y, block, _)){
+			if(default::thing(X, Y, block, _) | default::thing(X-1, Y, block, _) | default::thing(X+1, Y, block, _) | default::thing(X, Y-1, block, _) | default::thing(X, Y+1, block, _)){
 				!action::clear(X, Y);
 			}
 		}
