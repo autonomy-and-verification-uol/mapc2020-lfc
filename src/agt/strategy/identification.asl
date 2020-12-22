@@ -121,10 +121,8 @@ i_met_new_agent(Iknow, IdList) :-
 //	?identification::identified(OldList); // remove after merge is added back
 //	-identification::identified(OldList); // remove after merge is added back
 //	+identification::identified([Ag|OldList]); // remove after merge is added back
-	if(not(default::play(Me, bully, Group))) {
-		.print("I try to be a cartographer"); 
+	if(not(default::play(Me, bully, _)) & not(default::play(Ag, bully, _))){
 		!carto::try_cartographer(Ag,LocalX,LocalY);
-		.print("Finished");
 	}
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
@@ -356,13 +354,6 @@ i_met_new_agent(Iknow, IdList) :-
 	: .all_names(Ags) & .my_name(Me)
 <- 
 	.findall(ag(Distance,Ag), (identification::i_know(Ag, X, Y) & not(identification::doubts_on(X, Y)) & Distance = math.abs(X) + math.abs(Y)), Iknow);
-	
-	if(.member(ag(_, Bully), Iknow) & default::play(Bully,bully,_) & default::play(Me,bully,_) & bully::beginning &
-		.nth(Nth,Ags,Me) & .nth(Nth1,Ags,Bully) & Nth1 < Nth
-	) {
-		+bully::stop_being_a_bully;
-	}
-	
 	.sort(Iknow,Iknowsorted);
 	+merge([]);
 	.findall(pos(X, Y), (identification::doubts_on(X, Y)), DoubtsOn);
@@ -388,6 +379,11 @@ i_met_new_agent(Iknow, IdList) :-
 	}
 	.abolish(identification::i_know(_, _, _));
 	.abolish(identification::doubts_on(_, _));
+	if(.member(ag(_, Bully), Iknow) & default::play(Bully,bully,_) & default::play(Me,bully,_) & bully::beginning &
+		.nth(Nth,Ags,Me) & .nth(Nth1,Ags,Bully) & Nth1 < Nth
+	) {
+		+bully::stop_being_a_bully;
+	}
 	.
 +!check_all_agent_sees([Ag|Ags]) 
 	: agent_sees(see, EverythingSeen)[source(Ag)]

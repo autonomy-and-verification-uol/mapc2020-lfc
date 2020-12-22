@@ -150,9 +150,10 @@ patience(20).
 	-stop_being_a_bully;
 	!bully::messing_around(Positions);
 	.
++!bully::messing_around(GX, GY).	
 
 +!messing_around :
-	patience(Patience)
+	patience(Patience) & .my_name(Me) & default::play(Me, bully, Group)
 <-
 	.print("Start messing around");
 	getMyPos(MyX, MyY);
@@ -184,9 +185,10 @@ patience(20).
 		!bully::messing_around(Positions);
 	}
 	.
++!messing_around.
 
 +!messing_around_old :
-	true
+	.my_name(Me) & default::play(Me, bully, Group)
 <-
 	.print("Start messing around");
 	getMyPos(MyX, MyY);
@@ -252,9 +254,46 @@ patience(20).
 	.
 
 +!messing_around(_) :
-	bully::stop_being_a_bully
+	bully::stop_being_a_bully & stop::really_stop
 <-
-	.print("stop being a bully");
+	.print("stop being a bully1");
+	joinRetrievers(Flag);
+	if (Flag == "deliverer") {
+//		.print("Removing explorer");
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		!!stop::become_deliverer;
+	}
+	elif (Flag == "retriever") {
+//		.print("Removing explorer");
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		!!stop::become_retriever;
+	}
+	elif (Flag == "bully") {
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		!!stop::become_bully;
+	}
+	else {
+//		.print("Removing explorer");
+		-exploration::special(_);
+		-common::avoid(_);
+		-common::escape;
+		!action::forget_old_action;
+		!!stop::become_useless;
+	}
+	.
++!messing_around(_) :
+	bully::stop_being_a_bully 
+<-
+	.print("stop being a bully2");
 	-beginning;
 	-curr_patience(_);
 	-positions(_);
@@ -263,17 +302,17 @@ patience(20).
 	!!exploration::explore([n,s,e,w]);
 	.
 +!messing_around([]) :
-	positions(Positions)
+	positions(Positions) & .my_name(Me) & default::play(Me, bully, Group)
 <-
 	!messing_around(Positions);
 	.
 +!messing_around([pos(GX, GY)|PositionsToMessWith]) :
-	curr_patience(Patience) & Patience <= 0
+	curr_patience(Patience) & Patience <= 0 & .my_name(Me) & default::play(Me, bully, Group)
 <-
 	!messing_around;
 	.
 +!messing_around([pos(GX, GY)|PositionsToMessWith]) :
-	curr_patience(Patience) & Patience > 0 & patience(InitialPatience)
+	curr_patience(Patience) & Patience > 0 & patience(InitialPatience) & .my_name(Me) & default::play(Me, bully, Group)
 <-
 	-curr_patience(_);
 	+curr_patience(Patience-1);
@@ -305,3 +344,4 @@ patience(20).
 	.print("Nothing else to do here, move to next position");
 	!messing_around(PositionsToMessWith);
 	.
++!messing_around(_) : true <- .print("messing_around ended").	

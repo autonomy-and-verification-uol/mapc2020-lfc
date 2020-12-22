@@ -170,38 +170,39 @@
 	if(default::play(Me, bully, Group)) {
 		-bully::beginning;
 		+bully::stop_being_a_bully;	
-	}
-	joinRetrievers(Flag);
-	if (Flag == "deliverer") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_deliverer;
-	}
-	elif (Flag == "retriever") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_retriever;
-	}
-	elif (Flag == "bully") {
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_bully;
-	}
-	else {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_useless;
+	} else{
+		joinRetrievers(Flag);
+		if (Flag == "deliverer") {
+	//		.print("Removing explorer");
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_deliverer;
+		}
+		elif (Flag == "retriever") {
+	//		.print("Removing explorer");
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_retriever;
+		}
+		elif (Flag == "bully") {
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_bully;
+		}
+		else {
+	//		.print("Removing explorer");
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_useless;
+		}
 	}
 //	!!retrieve::retrieve_block;
 	.
