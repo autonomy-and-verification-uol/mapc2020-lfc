@@ -1,0 +1,418 @@
+mas scenario {
+		
+	agent agent1: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent1, team::agentart.team_artifact
+		goals: register("connectionB1")
+		roles: explorer in lfc
+
+	}
+	agent agent2: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent2, team::agentart.team_artifact
+		goals: register("connectionB2")
+		roles: explorer in lfc
+
+	}
+	agent agent3: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent3, team::agentart.team_artifact
+		goals: register("connectionB3")
+		roles: explorer in lfc
+
+	}
+	agent agent4: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent4, team::agentart.team_artifact
+		goals: register("connectionB4")
+		roles: explorer in lfc
+
+	}
+	agent agent5: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent5, team::agentart.team_artifact
+		goals: register("connectionB5")
+		roles: explorer in lfc
+
+	}
+	agent agent6: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent6, team::agentart.team_artifact
+		goals: register("connectionB6")
+		roles: explorer in lfc
+
+	}
+	agent agent7: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent7, team::agentart.team_artifact
+		goals: register("connectionB7")
+		roles: explorer in lfc
+
+	}
+	agent agent8: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent8, team::agentart.team_artifact
+		goals: register("connectionB8")
+		roles: explorer in lfc
+
+	}
+	agent agent9: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent9, team::agentart.team_artifact
+		goals: register("connectionB9")
+		roles: explorer in lfc
+
+	}
+	agent agent10: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent10, team::agentart.team_artifact
+		goals: register("connectionB10")
+		roles: explorer in lfc
+
+	}
+	agent agent11: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent11, team::agentart.team_artifact
+		goals: register("connectionB11")
+		roles: explorer in lfc
+
+	}
+	agent agent12: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent12, team::agentart.team_artifact
+		goals: register("connectionB12")
+		roles: explorer in lfc
+
+	}
+	agent agent13: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent13, team::agentart.team_artifact
+		goals: register("connectionB13")
+		roles: explorer in lfc
+
+	}
+	agent agent14: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent14, team::agentart.team_artifact
+		goals: register("connectionB14")
+		roles: explorer in lfc
+
+	}
+	agent agent15: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent15, team::agentart.team_artifact
+		goals: register("connectionB15")
+		roles: explorer in lfc
+
+	}
+	agent agent16: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent16, team::agentart.team_artifact
+		goals: register("connectionB16")
+		roles: explorer in lfc
+
+	}
+	agent agent17: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent17, team::agentart.team_artifact
+		goals: register("connectionB17")
+		roles: explorer in lfc
+
+	}
+	agent agent18: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent18, team::agentart.team_artifact
+		goals: register("connectionB18")
+		roles: explorer in lfc
+
+	}
+	agent agent19: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent19, team::agentart.team_artifact
+		goals: register("connectionB19")
+		roles: explorer in lfc
+
+	}
+	agent agent20: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent20, team::agentart.team_artifact
+		goals: register("connectionB20")
+		roles: explorer in lfc
+
+	}
+	agent agent21: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent21, team::agentart.team_artifact
+		goals: register("connectionB21")
+		roles: explorer in lfc
+
+	}
+	agent agent22: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent22, team::agentart.team_artifact
+		goals: register("connectionB22")
+		roles: explorer in lfc
+
+	}
+	agent agent23: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent23, team::agentart.team_artifact
+		goals: register("connectionB23")
+		roles: explorer in lfc
+
+	}
+	agent agent24: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent24, team::agentart.team_artifact
+		goals: register("connectionB24")
+		roles: explorer in lfc
+
+	}
+	agent agent25: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent25, team::agentart.team_artifact
+		goals: register("connectionB25")
+		roles: explorer in lfc
+
+	}
+	agent agent26: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent26, team::agentart.team_artifact
+		goals: register("connectionB26")
+		roles: explorer in lfc
+
+	}
+	agent agent27: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent27, team::agentart.team_artifact
+		goals: register("connectionB27")
+		roles: explorer in lfc
+
+	}
+	agent agent28: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent28, team::agentart.team_artifact
+		goals: register("connectionB28")
+		roles: explorer in lfc
+
+	}
+	agent agent29: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent29, team::agentart.team_artifact
+		goals: register("connectionB29")
+		roles: explorer in lfc
+
+	}
+	agent agent30: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent30, team::agentart.team_artifact
+		goals: register("connectionB30")
+		roles: explorer in lfc
+
+	}
+	agent agent31: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent31, team::agentart.team_artifact
+		goals: register("connectionB31")
+		roles: explorer in lfc
+
+	}
+	agent agent32: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent32, team::agentart.team_artifact
+		goals: register("connectionB32")
+		roles: explorer in lfc
+
+	}
+	agent agent33: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent33, team::agentart.team_artifact
+		goals: register("connectionB33")
+		roles: explorer in lfc
+
+	}
+	agent agent34: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent34, team::agentart.team_artifact
+		goals: register("connectionB34")
+		roles: explorer in lfc
+
+	}
+	agent agent35: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent35, team::agentart.team_artifact
+		goals: register("connectionB35")
+		roles: explorer in lfc
+
+	}
+	agent agent36: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent36, team::agentart.team_artifact
+		goals: register("connectionB36")
+		roles: explorer in lfc
+
+	}
+	agent agent37: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent37, team::agentart.team_artifact
+		goals: register("connectionB37")
+		roles: explorer in lfc
+
+	}
+	agent agent38: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent38, team::agentart.team_artifact
+		goals: register("connectionB38")
+		roles: explorer in lfc
+
+	}
+	agent agent39: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent39, team::agentart.team_artifact
+		goals: register("connectionB39")
+		roles: explorer in lfc
+
+	}
+	agent agent40: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent40, team::agentart.team_artifact
+		goals: register("connectionB40")
+		roles: explorer in lfc
+
+	}
+	agent agent41: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent41, team::agentart.team_artifact
+		goals: register("connectionB41")
+		roles: explorer in lfc
+
+	}
+	agent agent42: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent42, team::agentart.team_artifact
+		goals: register("connectionB42")
+		roles: explorer in lfc
+
+	}
+	agent agent43: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent43, team::agentart.team_artifact
+		goals: register("connectionB43")
+		roles: explorer in lfc
+
+	}
+	agent agent44: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent44, team::agentart.team_artifact
+		goals: register("connectionB44")
+		roles: explorer in lfc
+
+	}
+	agent agent45: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent45, team::agentart.team_artifact
+		goals: register("connectionB45")
+		roles: explorer in lfc
+
+	}
+	agent agent46: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent46, team::agentart.team_artifact
+		goals: register("connectionB46")
+		roles: explorer in lfc
+
+	}
+	agent agent47: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent47, team::agentart.team_artifact
+		goals: register("connectionB47")
+		roles: explorer in lfc
+
+	}
+	agent agent48: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent48, team::agentart.team_artifact
+		goals: register("connectionB48")
+		roles: explorer in lfc
+
+	}
+	agent agent49: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent49, team::agentart.team_artifact
+		goals: register("connectionB49")
+		roles: explorer in lfc
+
+	}
+	agent agent50: agentB.asl {
+		join: agentart
+		focus: agentart.eis_art_agent50, team::agentart.team_artifact
+		goals: register("connectionB50")
+		roles: explorer in lfc
+
+	}
+	
+	workspace agentart {
+		artifact eis_art_agent1: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig1.json")
+		artifact eis_art_agent2: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig2.json")
+		artifact eis_art_agent3: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig3.json") 
+		artifact eis_art_agent4: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig4.json")
+		artifact eis_art_agent5: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig5.json")
+		artifact eis_art_agent6: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig6.json")
+		artifact eis_art_agent7: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig7.json")
+		artifact eis_art_agent8: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig8.json")
+		artifact eis_art_agent9: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig9.json")
+		artifact eis_art_agent10: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig10.json")
+		artifact eis_art_agent11: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig11.json")
+		artifact eis_art_agent12: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig12.json")
+		artifact eis_art_agent13: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig13.json")
+		artifact eis_art_agent14: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig14.json")
+		artifact eis_art_agent15: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig15.json")
+		artifact eis_art_agent16: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig16.json")
+		artifact eis_art_agent17: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig17.json")
+		artifact eis_art_agent18: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig18.json") 
+		artifact eis_art_agent19: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig19.json")
+		artifact eis_art_agent20: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig20.json")
+		artifact eis_art_agent21: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig21.json")
+		artifact eis_art_agent22: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig22.json")
+		artifact eis_art_agent23: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig23.json")
+		artifact eis_art_agent24: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig24.json")
+		artifact eis_art_agent25: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig25.json")
+		artifact eis_art_agent26: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig26.json")
+		artifact eis_art_agent27: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig27.json")
+		artifact eis_art_agent28: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig28.json")
+		artifact eis_art_agent29: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig29.json")
+		artifact eis_art_agent30: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig30.json")
+		artifact eis_art_agent31: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig31.json")
+		artifact eis_art_agent32: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig32.json")
+		artifact eis_art_agent33: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig33.json")
+		artifact eis_art_agent34: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig34.json")
+		artifact eis_art_agent35: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig35.json")
+		artifact eis_art_agent36: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig36.json")
+		artifact eis_art_agent37: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig37.json")
+		artifact eis_art_agent38: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig38.json")
+		artifact eis_art_agent39: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig39.json")
+		artifact eis_art_agent40: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig40.json")
+		artifact eis_art_agent41: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig41.json")
+		artifact eis_art_agent42: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig42.json")
+		artifact eis_art_agent43: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig43.json")
+		artifact eis_art_agent44: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig44.json")
+		artifact eis_art_agent45: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig45.json")
+		artifact eis_art_agent46: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig46.json")
+		artifact eis_art_agent47: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig47.json")
+		artifact eis_art_agent48: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig48.json")
+		artifact eis_art_agent49: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig49.json")
+		artifact eis_art_agent50: env.EISArtifact("conf/eisconfig/localhost/teamB/eismassimconfig50.json")
+		
+		artifact team_artifact: env.TeamArtifact()
+	}
+	
+	organisation org : org.xml{
+		group lfc : team		
+	}
+
+    asl-path: src/agt
+              src/agt/inc
+	
+	platform: cartago("infrastructure")
+
+}
