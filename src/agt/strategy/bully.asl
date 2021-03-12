@@ -256,8 +256,8 @@ patience(20).
 +!messing_around(_) :
 	bully::stop_being_a_bully & stop::really_stop
 <-
-	.print("stop being a bully1");
 	joinStopGroup(Flag);
+	.print("stop being a bully and become a ", Flag);
     if (Flag == "origin2") {
   //		.print("Removing explorer");
       !action::forget_old_action;
