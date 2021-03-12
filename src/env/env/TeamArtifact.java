@@ -87,13 +87,13 @@ public class TeamArtifact extends Artifact {
 	private int maxPlanners = 50;
 	private int planners;
 	
-	private int retrievers;
+//	private int retrievers;
 	//private int bullys;
 	
 	private String firstToStop;
 	
 	private int deliverer;
-	private int deliverer2;
+//	private int deliverer2;
 	
 	private String cartographerY1;
 	private String cartographerY2;
@@ -103,6 +103,12 @@ public class TeamArtifact extends Artifact {
 	
 	private int sizeX;
 	private int sizeY;
+	
+	private int maxTeams;
+	
+	private int activeTeam;
+	
+	private int teamsComplete;
 	
 	private String goalAgent;
 	private String goalAgent2;
@@ -188,10 +194,12 @@ public class TeamArtifact extends Artifact {
 		targetGoalX2 = null;
 		targetGoalY2 = null;
 		deliverer = -1;
-		deliverer2 = -1;
+//		deliverer2 = -1;
 		sizeX = 0;
 		sizeY = 0;
-		retrievers = 10;
+//		retrievers = 10;
+		teamsComplete = 0;
+		activeTeam = 15;
 		//bullys = 1;
 	}
 	
@@ -248,29 +256,36 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void joinStopGroup(OpFeedbackParam<String> flag){
-//		if (this.goalAgent2 == null) {
-//			flag.set("origin2");
-//			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
-//		}
-		if (this.deliverer == -1) {
-			flag.set("deliverer");
-			this.deliverer = 1; 
-		}
-//		else if (this.deliverer2 == -1) {
-//			flag.set("deliverer2");
-//			this.deliverer2 = 1; 
-//		}
-		else if (this.retrievers > 0) {
-			this.retrievers--;
-			flag.set("retriever");
-		}
-		else {//if (this.bullys > 0) {
-			//this.bullys--;
-			flag.set("bully");
-		}
+		if (this.teamsComplete != this.maxTeams) {
+	//		if (this.goalAgent2 == null) {
+	//			flag.set("origin2");
+	//			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
+	//		}
+			if (this.deliverer == -1) {
+				this.deliverer = 1;
+				this.activeTeam = activeTeam - 2;
+				flag.set("deliverer");
+			}
+	//		else if (this.deliverer2 == -1) {
+	//			flag.set("deliverer2");
+	//			this.deliverer2 = 1; 
+	//		}
+			else if (this.activeTeam > 1) {
+				this.activeTeam--;
+				flag.set("retriever");
+			}
+			else if (this.activeTeam == 1) {
+				this.activeTeam = 15;
+				this.teamsComplete++;
+				flag.set("bully");
+			}
 //		else {
 //			flag.set("useless");
 //		}
+		}
+		else {
+			flag.set("bully");
+		}
 	}
 	
 	
@@ -599,6 +614,11 @@ public class TeamArtifact extends Artifact {
 	void addRetrieverAvailablePos(int x, int y) {
 //		logger.info("(" + x + ", " + y + ") is now a retriever available position");
 		this.retrieversAvailablePositions.add(new Point(x, y));
+	}
+
+	@OPERATION
+	void addTeamSize(int size){
+		maxTeams = size;
 	}
 	
 	@OPERATION
