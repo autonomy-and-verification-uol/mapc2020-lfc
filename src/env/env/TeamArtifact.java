@@ -246,18 +246,18 @@ public class TeamArtifact extends Artifact {
 	
 	@OPERATION
 	void joinStopGroup(OpFeedbackParam<String> flag){
-		if (this.goalAgent2 == null) {
-			flag.set("origin2");
-			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
-		}
-		else if (this.deliverer == -1) {
+//		if (this.goalAgent2 == null) {
+//			flag.set("origin2");
+//			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
+//		}
+		if (this.deliverer == -1) {
 			flag.set("deliverer");
 			this.deliverer = 1; 
 		}
-		else if (this.deliverer2 == -1) {
-			flag.set("deliverer2");
-			this.deliverer2 = 1; 
-		}
+//		else if (this.deliverer2 == -1) {
+//			flag.set("deliverer2");
+//			this.deliverer2 = 1; 
+//		}
 		else if (this.retrievers > 0) {
 			this.retrievers--;
 			flag.set("retriever");
