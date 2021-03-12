@@ -21,8 +21,8 @@
 				?stop::flag(Flag);
 				-flag(_);
 				if ( not Flag ) {
-					Distance = math.abs((GX + GY) - (GX2 + GY2));
-					if ( Distance <= 4 ) {
+					// Distance = math.abs((GX + GY) - (GX2 + GY2));
+					if (bully::real_distance(GX, GY, GX2, GY2, Distance) & Distance <= 4) {
 						!check_existing_clusters2(goal(GX2,GY2));
 						?stop::aux(Cluster);
 						-aux(_);
@@ -179,47 +179,58 @@
 	
 @stop2[atomic]
 +stop
-	: not stop::really_stop & .my_name(Me) & default::play(Me,explorer,Group) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
+	: not stop::really_stop & .my_name(Me) & (default::play(Me,explorer,Group) | default::play(Me, bully, Group)) & stop::first_to_stop(Ag) & identification::identified(IdList) & .member(Ag, IdList) //& not action::move_sent // someone else stopped already and my map is his map
 <-
 //	.print("ADD really stop belief");
 	+stop::really_stop;
-	joinStopGroup(Flag);
-	if (Flag == "origin2") {
-//		.print("Removing explorer");
-		!action::forget_old_action;
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		getTargetGoal2(_,GX2,GY2);
-		
-		!!stop::become_origin(GX2, GY2);
-	}
-	elif (Flag == "deliverer") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		getTargetTaskboard(TaskbX,TaskbY);
-		!!stop::become_deliverer(TaskbX,TaskbY);
-	}
-	elif (Flag == "deliverer2") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		getTargetTaskboard2(TaskbX2,TaskbY2);
-		!!stop::become_deliverer(TaskbX2,TaskbY2);
-	}
-	elif (Flag == "retriever") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_retriever;
-	}
+	if(default::play(Me, bully, Group)) {
+		-bully::beginning;
+		+bully::stop_being_a_bully;	
+	} else{
+		joinStopGroup(Flag);
+    if (Flag == "origin2") {
+  //		.print("Removing explorer");
+      !action::forget_old_action;
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      getTargetGoal2(_,GX2,GY2);
+      !!stop::become_origin(GX2, GY2);
+    }
+    elif (Flag == "deliverer") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      getTargetTaskboard(TaskbX,TaskbY);
+      !!stop::become_deliverer(TaskbX,TaskbY);
+    }
+    elif (Flag == "deliverer2") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      getTargetTaskboard2(TaskbX2,TaskbY2);
+      !!stop::become_deliverer(TaskbX2,TaskbY2);
+    }
+    elif (Flag == "retriever") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      !!stop::become_retriever;
+    }
+		elif (Flag == "bully") {
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_bully;
+		}
+  }
 //	else {
 ////		.print("Removing explorer");
 //		-exploration::special(_);
@@ -232,6 +243,14 @@
 	.
 	
 +stop : true <- -stop::stop.
+
++!stop::become_bully :
+	true
+<-
+	!common::change_role(bully);
+	!bully::messing_around;
+	.
+
 
 +!stop::become_retriever :
 	true

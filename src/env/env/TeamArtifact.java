@@ -88,6 +88,7 @@ public class TeamArtifact extends Artifact {
 	private int planners;
 	
 	private int retrievers;
+	private int bullys;
 	
 	private String firstToStop;
 	
@@ -191,6 +192,7 @@ public class TeamArtifact extends Artifact {
 		sizeX = 0;
 		sizeY = 0;
 		retrievers = 10;
+		bullys = 1;
 	}
 	
 	@OPERATION
@@ -253,6 +255,10 @@ public class TeamArtifact extends Artifact {
 		if (this.deliverer == -1) {
 			flag.set("deliverer");
 			this.deliverer = 1; 
+		}
+		else if (this.bullys > 0) {
+			this.bullys--;
+			flag.set("bully");
 		}
 //		else if (this.deliverer2 == -1) {
 //			flag.set("deliverer2");

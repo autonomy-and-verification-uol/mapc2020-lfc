@@ -111,7 +111,7 @@ i_met_new_agent(Iknow, IdList) :-
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) : .member(Ag,IdList)  <- !add_identified_ags(Ags,IdList).
 @addid5[atomic]
 +!add_identified_ags([ag(Distance,Ag)|Ags],IdList) 
-	: not .member(Ag,IdList)
+	: not .member(Ag,IdList) & .my_name(Me)
 <- 
 //	.print(Ag);
 	?identification::merge(MergeOldList); 
@@ -121,7 +121,9 @@ i_met_new_agent(Iknow, IdList) :-
 //	?identification::identified(OldList); // remove after merge is added back
 //	-identification::identified(OldList); // remove after merge is added back
 //	+identification::identified([Ag|OldList]); // remove after merge is added back
-	!carto::try_cartographer(Ag,LocalX,LocalY);
+	if(not(default::play(Me, bully, _)) & not(default::play(Ag, bully, _))){
+		!carto::try_cartographer(Ag,LocalX,LocalY);
+	}
 //    +action::reasoning_about_belief(Ag);	
 	!add_identified_ags(Ags,IdList);
 	.
@@ -377,6 +379,11 @@ i_met_new_agent(Iknow, IdList) :-
 	}
 	.abolish(identification::i_know(_, _, _));
 	.abolish(identification::doubts_on(_, _));
+	if(.member(ag(_, Bully), Iknow) & default::play(Bully,bully,_) & default::play(Me,bully,_) & bully::beginning &
+		.nth(Nth,Ags,Me) & .nth(Nth1,Ags,Bully) & Nth1 < Nth
+	) {
+		+bully::stop_being_a_bully;
+	}
 	.
 +!check_all_agent_sees([Ag|Ags]) 
 	: agent_sees(see, EverythingSeen)[source(Ag)]

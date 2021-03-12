@@ -73,13 +73,20 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 
 @perceivegoal[atomic]
 +default::goal(X,Y)
-	: true
+	: .my_name(Me) & default::play(Me,Role,Group)
 <-
 	getMyPos(MyX,MyY);
 //	.print("Perceived goal position at X ", X, " at Y ", Y);
 	!map::get_goals(Goals);
 	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
 	!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals);
+	if(Role=explorer & not(bully::stop_being_a_bully)) {
+		.print("My role is: ", Role);
+		.print("I become a bully");
+		!action::forget_old_action;
+		!common::change_role(bully);
+		!!bully::messing_around(UpdatedX, UpdatedY);
+	}
 	.
 	
 +!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals) : .member(goal(UpdatedX, UpdatedY), Goals) <- true.
@@ -306,6 +313,7 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 		NormalisedDistance = Distance;
 	}
 	.
++!map::normalise_distance(Axis, Distance, Distance).
 
 +!map::best_route(Distance,NormalisedDistance,NewTarget)
 	: true

@@ -8,6 +8,7 @@
 { include("strategy/task.asl", task) }
 { include("strategy/when_to_stop.asl", stop) }
 { include("strategy/stock.asl", retrieve) }
+{ include("strategy/bully.asl", bully) }
 { include("strategy/map.asl", map) }
 { include("strategy/common-plans.asl", common) }
 { include("strategy/planner.asl", planner) }
