@@ -1,0 +1,14 @@
+{
+  "scenario": "assemble2020",
+  "host": "localhost",
+  "port": 12300,
+  "scheduling": false,
+  "only-once": false,
+  "timeout": 3000,
+  "times": false,
+  "notifications": false,
+  "queued": true,
+  "entities": [
+    {"name": "connectionB18", "username": "agentB18", "password": "1", "print-iilang": false, "print-json": false}
+  ]
+}
