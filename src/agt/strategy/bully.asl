@@ -257,37 +257,48 @@ patience(20).
 	bully::stop_being_a_bully & stop::really_stop
 <-
 	.print("stop being a bully1");
-	joinRetrievers(Flag);
-	if (Flag == "deliverer") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_deliverer;
-	}
-	elif (Flag == "retriever") {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_retriever;
-	}
+	joinStopGroup(Flag);
+    if (Flag == "origin2") {
+  //		.print("Removing explorer");
+      !action::forget_old_action;
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      getTargetGoal2(_,GX2,GY2);
+      !!stop::become_origin(GX2, GY2);
+    }
+    elif (Flag == "deliverer") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      getTargetTaskboard(TaskbX,TaskbY);
+      !!stop::become_deliverer(TaskbX,TaskbY);
+    }
+    elif (Flag == "deliverer2") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      getTargetTaskboard2(TaskbX2,TaskbY2);
+      !!stop::become_deliverer(TaskbX2,TaskbY2);
+    }
+    elif (Flag == "retriever") {
+  //		.print("Removing explorer");
+      -exploration::special(_);
+      -common::avoid(_);
+      -common::escape;
+      !action::forget_old_action;
+      !!stop::become_retriever;
+    }
 	elif (Flag == "bully") {
 		-exploration::special(_);
 		-common::avoid(_);
 		-common::escape;
 		!action::forget_old_action;
 		!!stop::become_bully;
-	}
-	else {
-//		.print("Removing explorer");
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_useless;
 	}
 	.
 +!messing_around(_) :
