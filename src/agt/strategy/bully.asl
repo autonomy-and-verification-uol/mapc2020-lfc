@@ -1,7 +1,7 @@
 last_direction(n).
 
 clearable_block(X, Y, 1) :-
-	.print("clearable_block_aux(", X, ", ", Y, ", ", 1, ")") &
+//	.print("clearable_block_aux(", X, ", ", Y, ", ", 1, ")") &
 	math.abs(X) + math.abs(Y) <= 4 &
 	default::team(MyTeam) &
 	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
@@ -9,11 +9,11 @@ clearable_block(X, Y, 1) :-
 	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
 clearable_block(X, Y, MinimumNumberOfBlocks) :-
 	MinimumNumberOfBlocks > 1 &
-	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
+//	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
 	neighbour(X, Y, X1, Y1) &
-	.print("check if there is a block in position (", X1, ", ", Y1, ")") &
+//	.print("check if there is a block in position (", X1, ", ", Y1, ")") &
 	default::thing(X1, Y1, block, _) &
-	.print("a block is actually there") &
+//	.print("a block is actually there") &
 	clearable_block(X1, Y1, MinimumNumberOfBlocks-1).
 
 neighbour(X, Y, X-1, Y).
@@ -140,7 +140,7 @@ patience(20).
 +!bully::messing_around(GX, GY):
 	bully::patrolling_positions(cluster(GX, GY, 3), Positions)
 <-
-	.print("Start messing around");
+//	.print("Start messing around");
 	!update_patience(10000000);
 	-positions(_);
 	+positions(Positions);
@@ -161,11 +161,11 @@ patience(20).
 +!messing_around :
 	patience(Patience) & .my_name(Me) & default::play(Me, bully, Group)
 <-
-	.print("Start messing around");
+//	.print("Start messing around");
 	getMyPos(MyX, MyY);
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
-	.print("Goals: ", Goals);
+//	.print("Goals: ", Goals);
 	?team::teamLeader(TeamLeader);
 //	getTargetGoal(TeamLeader, GoalX, GoalY);
 	getTargetGoals(TargetGoals);
@@ -177,10 +177,10 @@ patience(20).
 		bully::cluster_center(Cluster, X, Y, Radius) &
 		bully::patrolling_positions(cluster(X, Y, Radius), Positions)
 	), ClustersToMessWith);
-	.print("Clusters to mess with: ", ClustersToMessWith);
+//	.print("Clusters to mess with: ", ClustersToMessWith);
 	.length(ClustersToMessWith, N);
 	if(N = 0) {
-		.print("skip");
+//		.print("skip");
 		!action::skip; 
 		!bully::messing_around
 	} else{
@@ -199,14 +199,14 @@ patience(20).
 +!messing_around_old :
 	.my_name(Me) & default::play(Me, bully, Group)
 <-
-	.print("Start messing around");
+//	.print("Start messing around");
 	getMyPos(MyX, MyY);
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
-	.print("Goals: ", Goals);
+//	.print("Goals: ", Goals);
 	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader, GoalX, GoalY);
-	.print("Target goal: ", GoalX, ", ", GoalY);
+//	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(goal(Distance, GX,GY),
 		(
 			stop::cluster(Cluster) & .length(Cluster, N) & N > 0 &
@@ -244,7 +244,7 @@ patience(20).
 		), 
 	GoalsToMessWithAux);*/
 	.sort(GoalsToMessWithAux, GoalsToMessWith);
-	.print("GoalsToMessWith: ", GoalsToMessWith);
+//	.print("GoalsToMessWith: ", GoalsToMessWith);
 	if(GoalsToMessWith == []) {
 		for(.range(I, 1, 15) & last_direction(Dir)){
 			.random(R);
@@ -307,7 +307,7 @@ patience(20).
 +!messing_around(_) :
 	bully::stop_being_a_bully 
 <-
-	.print("stop being a bully2");
+//	.print("stop being a bully2");
 	-beginning;
 	-curr_patience(_);
 	-positions(_);
@@ -329,7 +329,7 @@ patience(20).
 	curr_patience(Patience) & Patience > 0 & patience(InitialPatience) & .my_name(Me) & default::play(Me, bully, Group)
 <-
 	!update_patience(Patience-1);
-	.print("Moving to position: ", GX, ", ", GY);
+//	.print("Moving to position: ", GX, ", ", GY);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	DistanceX = GX - UpdatedX;
@@ -339,11 +339,11 @@ patience(20).
 	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
 	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
-	.print("In place..");
+//	.print("In place..");
 	for(default::thing(X, Y, block, _) & 
 		clearable_block(X, Y, 1) & patience(Patience)
 	) {
-		.print("There is a block here, clear it!");
+//		.print("There is a block here, clear it!");
 		!update_patience(InitialPatience);
 		!action::clear(X, Y);
 		if(default::thing(X, Y, block, _)){
@@ -353,10 +353,10 @@ patience(20).
 			}
 		}
 	}
-	.print("Nothing else to do here, move to next position");
+//	.print("Nothing else to do here, move to next position");
 	!messing_around(PositionsToMessWith);
 	.
-+!messing_around(_) : true <- .print("messing_around ended").	
++!messing_around(_) : true. //<- .print("messing_around ended").	
 
 @updatepatience[atomic]
 +!update_patience(NewPatience) :
