@@ -137,6 +137,9 @@ patrolling_positions(cluster(X, Y, Radius), Positions) :-
 
 patience(20).
 
+@new_team[atomic]
++!bully::new_team : default::play(Me, bully, Group) <- !!reconsider_clusters.
+
 +!bully::messing_around(GX, GY):
 	bully::patrolling_positions(cluster(GX, GY, 3), Positions)
 <-

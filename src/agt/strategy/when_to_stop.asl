@@ -197,6 +197,7 @@
 	      -common::escape;
 	      !calculate_new_cluster;
 //	      getTargetGoal2(_,GX2,GY2);
+		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX2, GY2);
 	    }
 	    elif (Flag == "deliverer") {
