@@ -75,7 +75,7 @@ dispenser_in_vision :-
 <- 
  	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
 		+task::deliverer;
-		.send(Ag, tell, task::deliverer_in_position);
+		.send(Ag, tell, task::deliverer_in_position_no_task(Me));
 		!!default::always_skip;
 	}
 	elif (default::thing(X, Y, taskboard, _)) {
@@ -85,7 +85,7 @@ dispenser_in_vision :-
 +!generate_goal(0, 0, Aux) 
 	: task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
 <- 
-	.send(Ag, tell, task::deliverer_in_position);
+	.send(Ag, tell, task::deliverer_in_position_task(Me));
 	!!default::always_skip;
 	.
 +!generate_goal(0, 0, Aux)  : .my_name(Me) & default::play(Me,retriever,Group).

@@ -34,7 +34,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 
 @task[atomic]
 +default::task(Id, Deadline, Reward, ReqList)
-	: task::origin & task::deliverer_in_position[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
+	: task::origin & task::deliverer_in_position_no_task(Deliverer)[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
 <-
 	.print("@@@@@@@@@@@@@@@@@@ ", Id, "  ",Deadline);
 	getAvailableAgent(AgList);
@@ -54,9 +54,9 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		.print("Agent list used: ",AgList);
 		getMyPos(MyX, MyY);
 		!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-		?default::play(Ag,deliverer,Group);
-		-task::deliverer_in_position[source(_)];
-		.send(Ag, achieve, task::accept_and_deliver(Id,UpdatedX,UpdatedY-1));
+		//?default::play(Ag,deliverer,Group);
+		-task::deliverer_in_position_no_task(Deliverer)[source(_)];
+		.send(Deliverer, achieve, task::accept_and_deliver(Id,UpdatedX,UpdatedY-1));
 		!!perform_task_origin;
 	}
 	.
@@ -101,23 +101,22 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	}
 	.send(Origin, achieve, task::task_completed(Task));
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
-	getTargetTaskboard(TaskbX,TaskbY);
-//	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
-	getMyPos(MyX, MyY);
-	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	DistanceX = TaskbX - UpdatedX;
-	DistanceY = TaskbY - UpdatedY;
-	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
-	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
-	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
-	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
-	if(NewTargetX < 0){
-//		.print("Relative target: ", NewTargetX + 1, " ", NewTargetY);
-		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
-	} else {
-//		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
-		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
-	}
+	!action::forget_old_action;
+	!stop::become_retriever;
+//	getTargetTaskboard(TaskbX,TaskbY);
+//	getMyPos(MyX, MyY);
+//	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
+//	DistanceX = TaskbX - UpdatedX;
+//	DistanceY = TaskbY - UpdatedY;
+//	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
+//	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
+//	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
+//	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
+//	if(NewTargetX < 0){
+//		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
+//	} else {
+//		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
+//	}
 	.
 	
 +!try_to_move_deliverer
@@ -151,14 +150,14 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 
 +!perform_task_origin_next
-	: committed(Id,CommitListSort) & ready_submit(0) & task::deliverer_in_position[source(_)]
+	: committed(Id,CommitListSort) & ready_submit(0) & task::deliverer_in_position_task(Deliverer)[source(_)]
 <-
-	-task::deliverer_in_position[source(_)];
+	-task::deliverer_in_position_task(Deliverer)[source(_)];
 	!action::detach(s);
 	-task::origin;
 	!try_to_move;
-	?default::play(Ag,deliverer,Group);
-	.send(Ag, achieve, task::deliver(Id));
+	//?default::play(Ag,deliverer,Group);
+	.send(Deliverer, achieve, task::deliver(Id));
 //	!action::submit(Id);
 //	!update_beliefs_submit(Flag);
 //	if (Flag == -1) {
@@ -171,7 +170,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!perform_task_origin_next
-	: committed(Id,CommitListSort) & ready_submit(0) & not task::deliverer_in_position[source(_)]
+	: committed(Id,CommitListSort) & ready_submit(0) & not task::deliverer_in_position_task(_)[source(_)]
 <-
 	!action::skip;
 	!perform_task_origin_next;
@@ -323,7 +322,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 
 +!help_attach(ConX,ConY)[source(Help)]
-	: no_block
+	: no_block & ready_submit(AgentsRequired)
 <-
 //	.wait(not action::move_sent);
 	getMyPos(MyX,MyY);
@@ -333,13 +332,13 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	while (not (default::lastAction(attach) & default::lastActionResult(success))) {
 		!action::attach(Dir);
 	}
-	.send(Help, tell, task::synch_complete);
+	.send(Help, tell, task::synch_complete(AgentsRequired));
 	!update_task_beliefs_attach;
 	!perform_task_origin_next;
 	.
 	
 +!help_connect(ConX,ConY)[source(Help)]
-	:  not helping_connect
+	:  not helping_connect & ready_submit(AgentsRequired)
 <-
 	+helping_connect;
 //	.wait(not action::move_sent);
@@ -353,7 +352,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 		!action::connect(Help,X,Y);
 	}
-	.send(Help, tell, task::synch_complete);
+	.send(Help, tell, task::synch_complete(AgentsRequired));
 	!update_task_beliefs_connect(ConX-UpdatedX,ConY-UpdatedY);
 	!perform_task_origin_next;
 	.
@@ -384,10 +383,10 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
 		.send(Origin, achieve, task::help_attach(UpdatedXNew,UpdatedYNew));
 //		if (not danger2) {
-			?get_direction(BX,BY,DetachPos);
-			!action::detach(DetachPos);
-			.wait(task::synch_complete[source(Origin)]);
-			-task::synch_complete[source(Origin)];
+		?get_direction(BX,BY,DetachPos);
+		!action::detach(DetachPos);
+		.wait(task::synch_complete(AgentsRequired)[source(Origin)]);
+		-task::synch_complete(AgentsRequired)[source(Origin)];
 //		}
 //		else {
 //			-planner::back_to_origin;
@@ -398,8 +397,15 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //		-planner::back_to_origin;
 //		-danger2;
 //	}
-	-doing_task;
-	!!retrieve::retrieve_block;
+	-doing_task;	
+	.findall(D, default::play(D,deliverer,Group), LD);
+	if(AgentsRequired <= 2 & .length(LD, 1)){
+		!action::forget_old_action;
+	    getTargetTaskboard(TaskbX,TaskbY);
+		!!stop::become_deliverer(TaskbX, TaskbY);
+	} else {
+		!!retrieve::retrieve_block;
+	}
 	.
 	
 +!perform_task(GoalX,GoalY)[source(Origin)]
@@ -428,8 +434,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 			!action::connect(Origin,BX,BY);
 		}
-		.wait(task::synch_complete[source(Origin)]);
-		-task::synch_complete[source(Origin)];
+		.wait(task::synch_complete(AgentsRequired)[source(Origin)]);
+		-task::synch_complete(AgentsRequired)[source(Origin)];
 //		if (not danger2) {
 			?get_direction(BX,BY,DetachPos);
 			!action::detach(DetachPos);
@@ -444,5 +450,12 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //		-danger2;
 //	}
 	-doing_task;
-	!!retrieve::retrieve_block;
+	.findall(D, default::play(D,deliverer,Group), LD);
+	if(AgentsRequired <= 2 & .length(LD, 1)){
+		!action::forget_old_action;
+	    getTargetTaskboard(TaskbX,TaskbY);
+		!!stop::become_deliverer(TaskbX, TaskbY);
+	} else {
+		!!retrieve::retrieve_block;
+	}
 	.

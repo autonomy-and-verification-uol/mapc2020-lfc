@@ -1,0 +1,8 @@
+rotate(cw)
+move(s)
+rotate(cw)
+move(w)
+move(w)
+move(s)
+rotate(cw)
+move(s)
