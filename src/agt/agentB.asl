@@ -135,8 +135,9 @@
 //	common::my_role(retriever) &
 //	not retrieve::block(X, Y) & .my_name(Me)
 //<-
-//	getAvailableMeType(Me, Type);
-//	removeAvailableAgent(Me);
+//	?team::teamLeader(TeamLeader);
+//	getAvailableMeType(TeamLeader, Me, Type);
+//	removeAvailableAgent(TeamLeader, Me);
 //	removeBlock(Me);
 //	getMyPos(MyX,MyY);
 //	addRetrieverAvailablePos(MyX,MyY);

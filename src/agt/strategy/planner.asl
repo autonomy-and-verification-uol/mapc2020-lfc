@@ -54,7 +54,8 @@ dispenser_in_vision :-
 +!generate_goal(0, 0, Aux) 
 	: .my_name(Me) & default::play(Me,retriever,Group) & retrieve::block(X,Y) & default::thing(X,Y,block,Type)
 <- 
-	addAvailableAgent(Me,Type);
+	?team::teamLeader(TeamLeader);
+	addAvailableAgent(TeamLeader,Me,Type);
 	-retrieve::getting_to_position;
 	+back_to_origin;
 	!!default::always_skip;

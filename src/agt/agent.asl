@@ -185,8 +185,9 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	.my_name(Me) & default::play(Me,retriever,Group) &
 	not retrieve::block(X, Y) & .my_name(Me)
 <-
-	getAvailableMeType(Me, Type);
-	removeAvailableAgent(Me);
+	?team::teamLeader(TeamLeader);
+	getAvailableMeType(TeamLeader, Me, Type);
+	removeAvailableAgent(TeamLeader, Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);

@@ -1034,19 +1034,19 @@ public class TeamArtifact extends Artifact {
 //	}
 	
 	@OPERATION
-	void addAvailableAgent(String name, String type) {
-		agentAvailable.put(name, type);
+	void addAvailableAgent(String leader, String name, String type) {
+		teams.get(leader).addAgentAvailable(name, type);
 	}
 	
 	@OPERATION
-	void removeAvailableAgent(String name) {
-		agentAvailable.remove(name);
+	void removeAvailableAgent(String leader, String name) {
+		teams.get(leader).removeAgentAvailable(name);
 	}
 	
 	@OPERATION 
-	void getAvailableAgent(OpFeedbackParam<Literal[]> list){
+	void getAvailableAgent(String leader, OpFeedbackParam<Literal[]> list){
 		List<Literal> agents 		= new ArrayList<Literal>();
-		for (Map.Entry<String, String> entry : agentAvailable.entrySet()) {
+		for (Map.Entry<String, String> entry :teams.get(leader).getAgentAvailable().entrySet()) {
 			Literal literal = ASSyntax.createLiteral("agent");	
 			Atom name = new Atom(entry.getKey());
 			Atom type = new Atom(entry.getValue());
@@ -1059,8 +1059,8 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION 
-	void getAvailableMeType(String me, OpFeedbackParam<String> type) {
-		type.set(agentAvailable.get(me));
+	void getAvailableMeType(String leader, String me, OpFeedbackParam<String> type) {
+		type.set(teams.get(leader).getAgentAvailableType(me));
 	}
 	
 	@OPERATION
@@ -1402,6 +1402,7 @@ public class TeamArtifact extends Artifact {
 		int targetGoalX;
 		int targetGoalY;
 		List<Point> retrieversAvailablePositions = new ArrayList<>();
+		Map<String, String>  agentAvailable 	 	= new HashMap<String, String>();
 		
 		public Team(int targetTaskX, int targetTaskY, int targetGoalX, int targetGoalY, List<Point> retrieversAvailablePositions) {
 			this.targetTaskX = targetTaskX;
@@ -1409,6 +1410,7 @@ public class TeamArtifact extends Artifact {
 			this.targetGoalX = targetGoalX;
 			this.targetGoalY = targetGoalY;
 			this.retrieversAvailablePositions.addAll(retrieversAvailablePositions);
+			this.agentAvailable.clear();
 		}
 		
 		public int getTargetTaskX()
@@ -1464,6 +1466,24 @@ public class TeamArtifact extends Artifact {
 		
 		public void addRetrieversAvailablePositions(int x, int y) {
 			this.retrieversAvailablePositions.add(new Point(x,y));
+		}
+		
+		public Map<String, String> getAgentAvailable()
+		{
+			return agentAvailable;
+		}
+		
+		public String getAgentAvailableType(String name)
+		{
+			return agentAvailable.get(name);
+		}
+		
+		public void addAgentAvailable(String name, String type) {
+			this.agentAvailable.put(name,type);
+		}
+
+		public void removeAgentAvailable(String name) {
+			this.agentAvailable.remove(name);
 		}
 		
 	}

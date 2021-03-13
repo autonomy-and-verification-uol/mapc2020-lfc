@@ -37,7 +37,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	: task::origin & task::deliverer_in_position_no_task(Deliverer)[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
 <-
 	.print("@@@@@@@@@@@@@@@@@@ ", Id, "  ",Deadline);
-	getAvailableAgent(AgList);
+	?team::teamLeader(TeamLeader);
+	getAvailableAgent(TeamLeader, AgList);
 	?evaluate_task(ReqList, AgList, [], CommitList);
 	.print("New task required length ",.length(ReqList));
 	.print("Committed length ",.length(CommitList));
@@ -368,11 +369,11 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	+doing_task;
 	!action::forget_old_action(default,always_skip);
 	.print("@@@@ Received order for new task, origin does not have a block");
-	removeAvailableAgent(Me);
+	?team::teamLeader(TeamLeader);
+	removeAvailableAgent(TeamLeader, Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
-	?team::teamLeader(TeamLeader);
 	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);
 	DistanceX = GoalX - MyUpdatedX;
 	DistanceY = GoalY - MyUpdatedY;
@@ -419,11 +420,11 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	+doing_task;
 	!action::forget_old_action(default,always_skip);
 	.print("@@@@ Received order for new task, origin has a block");
-	removeAvailableAgent(Me);
+	?team::teamLeader(TeamLeader);
+	removeAvailableAgent(TeamLeader, Me);
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
-	?team::teamLeader(TeamLeader);
 	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);
 	DistanceX = GoalX - MyUpdatedX;
 	DistanceY = GoalY - MyUpdatedY;

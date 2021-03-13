@@ -301,7 +301,6 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::decide_block_type_flat(Type) : 
 	.my_name(Me)
 <-
-	//getAvailableAgent(AgList);
 	getBlocks(Blocks);
 	!map::get_dispensers(Dispensers);
 	.setof(B, (.member(dispenser(B, _, _), Dispensers) & not .member(block(_, B), Blocks)), MostNeededTypes);
