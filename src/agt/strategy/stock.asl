@@ -290,7 +290,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
 	} else {
 //		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
-		+collect_block(1,0);team::teamLeader(TeamLeader);
+		+collect_block(1,0);
 		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
 	}
 	.
