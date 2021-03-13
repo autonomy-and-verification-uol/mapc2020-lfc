@@ -137,7 +137,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-batch(_);
 	.abolish(retrieve::block(_,_));
 	!action::forget_old_action(default,always_skip);
-	team::teamLeader(TeamLeader);
+	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader,GoalX,GoalY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);

@@ -160,7 +160,7 @@ patience(20).
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
-	team::teamLeader(TeamLeader);
+	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader, GoalX, GoalY);
 	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(cluster(X, Y, Radius, Positions), (
@@ -196,7 +196,7 @@ patience(20).
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
-	team::teamLeader(TeamLeader);
+	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader, GoalX, GoalY);
 	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(goal(Distance, GX,GY),

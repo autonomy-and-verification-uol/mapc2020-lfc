@@ -182,8 +182,7 @@ i_met_new_agent(Iknow, IdList) :-
 //		-retrieve::target(TargetX, TargetY);
 //		+retrieve::target(TargetX+OriginX,TargetY+OriginY);
 //	}
-	if(Map \== MapOther){
-		?team::teamLeader(TeamLeader);
+	if(Map \== MapOther & team::teamLeader(TeamLeader)){
 		.term2string(Me, Me1);
 		if(TeamLeader == Me1){
 			updateTargets(TeamLeader,OriginX, OriginY);

@@ -384,7 +384,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::get_nearest_dispenser_aux1(Dispensers, Type, dispenser(Type, X, Y)) :
 	true
 <-
-	team::teamLeader(TeamLeader);
+	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader,MyX,MyY);
 	.findall(dispenser(Type, X, Y, Distance), (.member(dispenser(Type, X, Y), Dispensers) & (Distance = math.abs(MyX - X) + math.abs(MyY - Y))), DispensersDist);
 	!retrieve::get_nearest_dispenser_aux2(DispensersDist, dispenser(Type, X, Y, _)).
