@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
@@ -298,6 +299,21 @@ public class TeamArtifact extends Artifact {
 	void getTargetGoal(String name, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y){
 		x.set(teams.get(name).getTargetGoalX());
 		y.set(teams.get(name).getTargetGoalY());
+	}
+	
+	@OPERATION
+	void getTargetGoals(OpFeedbackParam<Literal[]> goals){
+		List<Literal> targetGoals = new ArrayList<Literal>();
+		for(Entry<String, Team> team : teams.entrySet()) {
+			Literal literal = ASSyntax.createLiteral("goal");
+			NumberTerm x = new NumberTermImpl(team.getValue().targetGoalX);
+			NumberTerm y = new NumberTermImpl(team.getValue().targetGoalY);
+			literal.addTerm(x);
+			literal.addTerm(y);
+			targetGoals.add(literal);
+		}
+		Literal[] arrayGoals = targetGoals.toArray(new Literal[targetGoals.size()]);
+		goals.set(arrayGoals);
 	}
 	
 //	@OPERATION

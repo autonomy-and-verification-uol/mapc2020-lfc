@@ -161,11 +161,13 @@ patience(20).
 	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
 	?team::teamLeader(TeamLeader);
-	getTargetGoal(TeamLeader, GoalX, GoalY);
-	.print("Target goal: ", GoalX, ", ", GoalY);
+//	getTargetGoal(TeamLeader, GoalX, GoalY);
+	getTargetGoals(TargetGoals);
+//	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(cluster(X, Y, Radius, Positions), (
 		stop::cluster(Cluster) & .length(Cluster, N) & N > 0 &
-		not(.member(goal(GoalX, GoalY), Cluster)) &
+		.findall(goal(GAuxX, GAuxY), (.member(goal(GAuxX, GAuxY), TargetGoals) & .member(goal(GAuxX, GAuxY), Cluster)), []) &
+//		not(.member(goal(GoalX, GoalY), Cluster)) &
 		bully::cluster_center(Cluster, X, Y, Radius) &
 		bully::patrolling_positions(cluster(X, Y, Radius), Positions)
 	), ClustersToMessWith);
