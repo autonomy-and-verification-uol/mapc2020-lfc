@@ -222,7 +222,7 @@
 			getTargetGoals(GoalClusters);
 			+bottom([]);
 			for (.member(GC,GoalClusters)) {
-				if (not .member(GC,BottomGoalList)) {
+				if (not .member(GC,BottomGoalListOld)) {
 					?bottom(List);
 					-bottom(List);
 					+bottom([List|GC]);
@@ -414,7 +414,7 @@
 			getTargetGoals(GoalClusters);
 			+bottom([]);
 			for (.member(GC,GoalClusters)) {
-				if (not .member(GC,BottomGoalList)) {
+				if (not .member(GC,BottomGoalListOld)) {
 					?bottom(List);
 					-bottom(List);
 					+bottom([List|GC]);
