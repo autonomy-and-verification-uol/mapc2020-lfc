@@ -371,7 +371,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("@@@@ Received order for new task, origin does not have a block");
 	?team::teamLeader(TeamLeader);
 	removeAvailableAgent(TeamLeader, Me);
-	removeBlock(Me);
+	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
 	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);
@@ -422,7 +422,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("@@@@ Received order for new task, origin has a block");
 	?team::teamLeader(TeamLeader);
 	removeAvailableAgent(TeamLeader, Me);
-	removeBlock(Me);
+	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
 	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);

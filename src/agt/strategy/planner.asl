@@ -321,7 +321,8 @@ dispenser_in_vision :-
 	: .my_name(Me)
 <-
 	plannerDone;
-	removeBlock(Me);
+	?team::teamLeader(TeamLeader);
+	removeBlock(TeamLeader, Me);
 	getMyPos(MyX, MyY);
 	DispX = MyX + FinalLocalTargetX;
 	DispY = MyY + FinalLocalTargetY;
@@ -661,7 +662,7 @@ dispenser_in_vision :-
 	getMyPos(MyX,MyY);
 	?team::teamLeader(TeamLeader);
 	addRetrieverAvailablePos(TeamLeader,TargetX+MyX,TargetY+MyY);
-	removeBlock(Me);
+	removeBlock(TeamLeader, Me);
 	!!retrieve::retrieve_block;
 	.
 //-!execute_plan(Plan, TargetX, TargetY, LocalTargetX, LocalTargetY)[code(.fail(retriever_doing_task))]

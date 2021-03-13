@@ -28,8 +28,6 @@ public class TeamArtifact extends Artifact {
 
 	private static Map<String, String>  agentNames 	 	= new HashMap<String, String>();
 	
-	private static Map<String, String>  agentAvailable 	 	= new HashMap<String, String>();
-
 	private static Map<Integer, Set<String>> actionsByStep   = new HashMap<Integer, Set<String>>();
 	
 	private Map<String, Set<Point>>  map1 	 	= new HashMap<String, Set<Point>>();
@@ -123,8 +121,6 @@ public class TeamArtifact extends Artifact {
 //	private List<Point> uselessAvailablePositions = new ArrayList<>();
 	
 	private Map<String, Team>  teams 	 	= new HashMap<String, Team>();
-	
-	private static List<Pair<String, String>> ourBlocks = new ArrayList<>();
 	
 	void init(){
 		logger.info("Team Artifact has been created!");
@@ -1064,9 +1060,9 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION
-	void getBlocks(OpFeedbackParam<Literal[]> list) {
+	void getBlocks(String name, OpFeedbackParam<Literal[]> list) {
 		List<Literal> things = new ArrayList<Literal>();
-		for(Pair<String, String> p : ourBlocks) {
+		for(Pair<String, String> p : teams.get(name).getBlocks()) {
 			Literal literal = ASSyntax.createLiteral("block");	
 			literal.addTerm(ASSyntax.createAtom(p.getFirst()));
 			literal.addTerm(ASSyntax.createAtom(p.getSecond()));
@@ -1077,13 +1073,13 @@ public class TeamArtifact extends Artifact {
 	}
 	
 	@OPERATION
-	void addBlock(String ag, String b) {
-		ourBlocks.add(new Pair<String, String>(ag, b));
+	void addBlock(String leader, String ag, String b) {
+		teams.get(leader).addBlock(ag, b);
 	}
 	
 	@OPERATION
-	void removeBlock(String ag) {
-		ourBlocks.removeIf(p -> p.getFirst().equals(ag));
+	void removeBlock(String leader, String ag) {
+		teams.get(leader).removeBlock(ag);
 	}
 	
 	@OPERATION
@@ -1091,7 +1087,6 @@ public class TeamArtifact extends Artifact {
 		agentNames.clear();
 		actionsByStep.clear();
 		agentmaps.clear();
-		agentAvailable.clear();
 		map1.clear();
 		map2.clear();
 		map3.clear();
@@ -1103,7 +1098,7 @@ public class TeamArtifact extends Artifact {
 		map9.clear();
 		map10.clear();
 		retrieversAvailablePositions.clear();
-		ourBlocks.clear();
+		teams.clear();
 		this.init();
 	}
 	
@@ -1403,6 +1398,7 @@ public class TeamArtifact extends Artifact {
 		int targetGoalY;
 		List<Point> retrieversAvailablePositions = new ArrayList<>();
 		Map<String, String>  agentAvailable 	 	= new HashMap<String, String>();
+		List<Pair<String, String>> ourBlocks = new ArrayList<>();
 		
 		public Team(int targetTaskX, int targetTaskY, int targetGoalX, int targetGoalY, List<Point> retrieversAvailablePositions) {
 			this.targetTaskX = targetTaskX;
@@ -1411,6 +1407,7 @@ public class TeamArtifact extends Artifact {
 			this.targetGoalY = targetGoalY;
 			this.retrieversAvailablePositions.addAll(retrieversAvailablePositions);
 			this.agentAvailable.clear();
+			this.ourBlocks.clear();
 		}
 		
 		public int getTargetTaskX()
@@ -1484,6 +1481,19 @@ public class TeamArtifact extends Artifact {
 
 		public void removeAgentAvailable(String name) {
 			this.agentAvailable.remove(name);
+		}
+		
+		public List<Pair<String, String>> getBlocks()
+		{
+			return ourBlocks;
+		}
+		
+		public void addBlock(String ag, String b) {
+			this.ourBlocks.add(new Pair<String, String>(ag, b));
+		}
+
+		public void removeBlock(String ag) {
+			this.ourBlocks.removeIf(p -> p.getFirst().equals(ag));
 		}
 		
 	}

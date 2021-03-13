@@ -290,7 +290,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		!!planner::generate_goal(NewTargetX + 1, NewTargetY, notblock);
 	} else {
 //		.print("Relative target: ", NewTargetX - 1, " ", NewTargetY);
-		+collect_block(1,0);
+		+collect_block(1,0);team::teamLeader(TeamLeader);
 		!!planner::generate_goal(NewTargetX - 1, NewTargetY, notblock);
 	}
 	.
@@ -301,7 +301,8 @@ most_needed_type(Dispensers, AgList, Type) :-
 +!retrieve::decide_block_type_flat(Type) : 
 	.my_name(Me)
 <-
-	getBlocks(Blocks);
+	?team::teamLeader(TeamLeader);
+	getBlocks(TeamLeader, Blocks);
 	!map::get_dispensers(Dispensers);
 	.setof(B, (.member(dispenser(B, _, _), Dispensers) & not .member(block(_, B), Blocks)), MostNeededTypes);
 	if(MostNeededTypes == []){
@@ -325,7 +326,7 @@ most_needed_type(Dispensers, AgList, Type) :-
 		.shuffle(MostNeededTypes, Types);
 		.nth(0, Types, Type);
 	}
-	addBlock(Me, Type);
+	addBlock(TeamLeader, Me, Type);
 	.
 
 +!retrieve::decide_block_type(Type) : 

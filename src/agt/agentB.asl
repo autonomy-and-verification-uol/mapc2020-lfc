@@ -138,7 +138,7 @@
 //	?team::teamLeader(TeamLeader);
 //	getAvailableMeType(TeamLeader, Me, Type);
 //	removeAvailableAgent(TeamLeader, Me);
-//	removeBlock(Me);
+//	removeBlock(TeamLeader, Me);
 //	getMyPos(MyX,MyY);
 //	addRetrieverAvailablePos(MyX,MyY);
 //	!!retrieve::retrieve_block;

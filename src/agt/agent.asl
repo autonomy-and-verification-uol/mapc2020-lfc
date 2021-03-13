@@ -188,7 +188,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	?team::teamLeader(TeamLeader);
 	getAvailableMeType(TeamLeader, Me, Type);
 	removeAvailableAgent(TeamLeader, Me);
-	removeBlock(Me);
+	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	addRetrieverAvailablePos(UpdatedX,UpdatedY);
