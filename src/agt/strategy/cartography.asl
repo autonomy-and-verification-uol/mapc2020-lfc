@@ -16,9 +16,9 @@
 		.send(Ag2, tell, carto::registration_concluded);
 	}
 	else {
-		.print("wait the other agent");
+//		.print("wait the other agent");
 		.wait(carto::registration_concluded[source(Ag2)]);
-		.print("finished waiting the other agent");
+//		.print("finished waiting the other agent");
 		-carto::registration_concluded[source(Ag2)];
 	}
 	.
@@ -68,7 +68,7 @@
 <-
 	!action::forget_old_action;
 	!common::change_role(cartographer);
-	.print("I become cartographer");
+//	.print("I become cartographer");
 	if (Distance <= 3) {
 		if (Me == Ag1) {
 			+agent_to_identify(Ag2);
@@ -94,7 +94,7 @@
 <-
 	!action::forget_old_action;
 	!common::change_role(cartographer);
-	.print("I become cartographer");
+//	.print("I become cartographer");
 	if (Distance <= 3) {
 		if (Me == Ag1) {
 			+agent_to_identify(Ag2);

@@ -1,4 +1,4 @@
-{ include("common-cartago.asl") }
+	{ include("common-cartago.asl") }
 { include("common-moise.asl") }
 { include("org-obedient.asl", org) }
 { include("action/actions.asl", action) }
@@ -191,7 +191,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	addRetrieverAvailablePos(UpdatedX,UpdatedY);
+	addRetrieverAvailablePos(TeamLeader,UpdatedX,UpdatedY);
 	!!retrieve::retrieve_block;
 	.
 +!always_skip 

@@ -81,8 +81,8 @@ check_path(XOld,YOld,X,Y,XFirst,YFirst) :- (default::obstacle(X-1,Y) & X-1 \== X
 	!calculate_updated_pos(MyX,MyY,X,Y,UpdatedX,UpdatedY);
 	!map::update_goal_in_map(MyX, MyY, X, Y, UpdatedX, UpdatedY, Goals);
 	if(Role=explorer & not(bully::stop_being_a_bully)) {
-		.print("My role is: ", Role);
-		.print("I become a bully");
+//		.print("My role is: ", Role);
+//		.print("I become a bully");
 		!action::forget_old_action;
 		!common::change_role(bully);
 		!!bully::messing_around(UpdatedX, UpdatedY);

@@ -530,7 +530,7 @@ public class EISArtifact extends Artifact implements AgentListener {
     	
     	// check if the plan is already in the cache
     	if(new File("./planner/cache/" + code).exists()) {
-    		logger.info("Get the plan from cache");
+//    		logger.info("Get the plan from cache");
     		try {
     			synchronized (EISArtifact.class) {
 					Scanner s = new Scanner(new FileInputStream("./planner/cache/" + code));
@@ -553,11 +553,13 @@ public class EISArtifact extends Artifact implements AgentListener {
 				e.printStackTrace();
 			}
     	}
-    	logger.info("The plan is not cached, so I have to compute one");
-    	if(new File("./planner/" + agent + "_problem.pddl").delete())
-    		logger.info("DELETED " + agent +"_problem.pddl");
-    	if(new File("./planner/" + agent).delete())
-    		logger.info("DELETED " + agent);
+//    	logger.info("The plan is not cached, so I have to compute one");
+    	new File("./planner/" + agent + "_problem.pddl").delete();
+//    	if(new File("./planner/" + agent + "_problem.pddl").delete())
+//    		logger.info("DELETED " + agent +"_problem.pddl");
+    	new File("./planner/" + agent).delete();
+//    	if(new File("./planner/" + agent).delete())
+//    		logger.info("DELETED " + agent);
     	
     	try {
     	

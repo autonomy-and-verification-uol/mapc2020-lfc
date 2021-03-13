@@ -140,7 +140,7 @@
 //	removeAvailableAgent(TeamLeader, Me);
 //	removeBlock(TeamLeader, Me);
 //	getMyPos(MyX,MyY);
-//	addRetrieverAvailablePos(MyX,MyY);
+//	addRetrieverAvailablePos(TeamLeader,MyX,MyY);
 //	!!retrieve::retrieve_block;
 //	.
 //+!always_skip 
