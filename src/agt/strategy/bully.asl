@@ -272,16 +272,79 @@ patience(20).
 	joinStopGroup(Flag,TeamLeader);
 //	.print("stop being a bully and become a ", Flag);
 	+team::teamLeader(TeamLeader);
-    if (Flag == "origin") {
-  //		.print("Removing explorer");
-      !action::forget_old_action;
-      -exploration::special(_);
-      -common::avoid(_);
-      -common::escape;
-      !calculate_new_cluster;
-//	      getTargetGoal2(_,GX2,GY2);
-      !!stop::become_origin(GX2, GY2);
-    }
+	    if (Flag == "origin") {
+	  //		.print("Removing explorer");
+	      !action::forget_old_action;
+	      -exploration::special(_);
+	      -common::avoid(_);
+	      -common::escape;
+			!map::get_goals(Goals);
+			!map::get_taskboards(Taskboards);
+			!get_clusters(Goals);
+			+bottom([]);
+			for ( stop::cluster(Clusters) ) {
+				.nth(0, Clusters, goal(FX,FY));
+				+maxY(goal(FX,FY));
+				for ( .member(goal(GX,GY), Clusters) ) {
+					?maxY(goal(MX,MY));
+					if (GY > MY) {
+						-maxY(goal(MX,MY));
+						+maxY(goal(GX,GY));
+					}
+				}
+				?bottom(List);
+				-bottom(List);
+				?maxY(goal(MX,MY));
+				-maxY(goal(MX,MY));
+				+bottom([goal(MX,MY)|List]);
+			}
+			?bottom(BottomGoalListOld);
+			-bottom(BottomGoalListOld);
+			.abolish(stop::cluster(_));
+			getTargetGoals(GoalClusters);
+			+bottom([]);
+			for (.member(GC,GoalClusters)) {
+				if (not .member(GC,BottomGoalList)) {
+					?bottom(List);
+					-bottom(List);
+					+bottom([List|GC]);
+				}
+			}
+			?bottom(BottomGoalList);
+			-bottom(BottomGoalList);
+			
+			for ( .member(goal(GX,GY), BottomGoalList) ) {
+				!closest_taskboard(TaskbX, TaskbY, GX, GY, 99999, Taskboards, 0, 0);
+//				.print("@@@@@@@@@@@@@@ Closest taskboard  X ",TaskbX," Y ",TaskbY);
+				+target(GX,GY,TaskbX,TaskbY);
+			}
+			for ( stop::target(GX,GY,TaskbX,TaskbY) ) {
+				.print("Target GX",GX," GY ",GY," TaskbX ",TaskbX," TaskbY ",TaskbY);
+				LowestD = math.abs(GX - TaskbX) + math.abs(GY - TaskbY);
+				if (not stop::lowest_distance(_,_,_,_,_)) {
+					+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);						
+//				} 
+//				elif (not stop::lowest_distance2(_,_,_,_,_)) {
+//					+lowest_distance2(LowestD,GX,GY,TaskbX,TaskbY);	
+				} else {
+					?lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
+					if (LowestD < Lowest) {
+//						-lowest_distance2(_,_,_,_,_);
+//						+lowest_distance2(Lowest,LGX,LGY,LTaskbX,LTaskbY);
+						-lowest_distance(Lowest,LGX,LGY,LTaskbX,LTaskbY);
+						+lowest_distance(LowestD,GX,GY,TaskbX,TaskbY);
+					}
+				}
+			}
+			.abolish(stop::target(_,_,_,_));
+			?lowest_distance(_,GX,GY,TaskbX,TaskbY);
+			-lowest_distance(_,GX,GY,TaskbX,TaskbY);
+			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
+			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
+			
+		  .broadcast(achieve, bully::new_team);
+	      !!stop::become_origin(GX, GY);
+	    }
     elif (Flag == "deliverer") {
   //		.print("Removing explorer");
       -exploration::special(_);
