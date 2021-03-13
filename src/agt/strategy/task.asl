@@ -332,7 +332,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	while (not (default::lastAction(attach) & default::lastActionResult(success))) {
 		!action::attach(Dir);
 	}
-	.send(Help, tell, task::synch_complete(AgentsRequired));
+	.send(Help, tell, task::synch_complete);
 	!update_task_beliefs_attach;
 	!perform_task_origin_next;
 	.
@@ -352,7 +352,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 		!action::connect(Help,X,Y);
 	}
-	.send(Help, tell, task::synch_complete(AgentsRequired));
+	.send(Help, tell, task::synch_complete);
 	!update_task_beliefs_connect(ConX-UpdatedX,ConY-UpdatedY);
 	!perform_task_origin_next;
 	.
@@ -385,8 +385,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //		if (not danger2) {
 		?get_direction(BX,BY,DetachPos);
 		!action::detach(DetachPos);
-		.wait(task::synch_complete(AgentsRequired)[source(Origin)]);
-		-task::synch_complete(AgentsRequired)[source(Origin)];
+		.wait(task::synch_complete[source(Origin)]);
+		-task::synch_complete[source(Origin)];
 //		}
 //		else {
 //			-planner::back_to_origin;
@@ -399,7 +399,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //	}
 	-doing_task;	
 	.findall(D, default::play(D,deliverer,Group), LD);
-	if(AgentsRequired <= 2 & .length(LD, 1)){
+	if(.length(LD, 1)){
 		!action::forget_old_action;
 	    getTargetTaskboard(TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
@@ -434,8 +434,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 		while (not (default::lastAction(connect) & default::lastActionResult(success))) {
 			!action::connect(Origin,BX,BY);
 		}
-		.wait(task::synch_complete(AgentsRequired)[source(Origin)]);
-		-task::synch_complete(AgentsRequired)[source(Origin)];
+		.wait(task::synch_complete[source(Origin)]);
+		-task::synch_complete[source(Origin)];
 //		if (not danger2) {
 			?get_direction(BX,BY,DetachPos);
 			!action::detach(DetachPos);
@@ -451,7 +451,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //	}
 	-doing_task;
 	.findall(D, default::play(D,deliverer,Group), LD);
-	if(AgentsRequired <= 2 & .length(LD, 1)){
+	if(.length(LD, 1)){
 		!action::forget_old_action;
 	    getTargetTaskboard(TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
