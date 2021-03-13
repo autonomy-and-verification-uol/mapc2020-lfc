@@ -406,7 +406,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void updateTargets(String name, int x, int y) {
 		this.retrieversAvailablePositions.clear();
-		this.retrieversAvailablePositions = teams.get(name).getRetrieversAvailablePositions();
+		this.retrieversAvailablePositions.addAll(teams.get(name).getRetrieversAvailablePositions());
 		if (sizeX != 0 && sizeY != 0) {
 			List<Point> retaux = new ArrayList<>();
 			if (teams.get(name).getTargetTaskX() + x < 0) {
@@ -584,7 +584,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void getRetrieverAvailablePos(String name, int myX, int myY, OpFeedbackParam<Integer> x, OpFeedbackParam<Integer> y) {
 		this.retrieversAvailablePositions.clear();
-		this.retrieversAvailablePositions = teams.get(name).getRetrieversAvailablePositions();
+		this.retrieversAvailablePositions.addAll(teams.get(name).getRetrieversAvailablePositions());
 		int toRemove = -1;
 		double dist = Double.MAX_VALUE;
 		for(int i = 0; i < this.retrieversAvailablePositions.size(); i++) {
@@ -1392,7 +1392,7 @@ public class TeamArtifact extends Artifact {
 			this.targetTaskY = targetTaskY;
 			this.targetGoalX = targetGoalX;
 			this.targetGoalY = targetGoalY;
-			this.retrieversAvailablePositions = retrieversAvailablePositions;
+			this.retrieversAvailablePositions.addAll(retrieversAvailablePositions);
 		}
 		
 		public int getTargetTaskX()
@@ -1443,7 +1443,7 @@ public class TeamArtifact extends Artifact {
 		public void setRetrieversAvailablePositions(List<Point> list)
 		{
 			this.retrieversAvailablePositions.clear();
-			this.retrieversAvailablePositions = list;
+			this.retrieversAvailablePositions.addAll(list);
 		}
 		
 		public void addRetrieversAvailablePositions(int x, int y) {
