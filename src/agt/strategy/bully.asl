@@ -141,8 +141,7 @@ patience(20).
 	bully::patrolling_positions(cluster(GX, GY, 3), Positions)
 <-
 	.print("Start messing around");
-	-curr_patience(_);
-	+curr_patience(10000000);
+	!update_patience(10000000);
 	-positions(_);
 	+positions(Positions);
 	-beginning;
@@ -151,6 +150,13 @@ patience(20).
 	!bully::messing_around(Positions);
 	.
 +!bully::messing_around(GX, GY).	
+
+
++!reconsider_clusters :
+	true
+<-
+	!update_patience(0)
+	.
 
 +!messing_around :
 	patience(Patience) & .my_name(Me) & default::play(Me, bully, Group)
@@ -322,8 +328,7 @@ patience(20).
 +!messing_around([pos(GX, GY)|PositionsToMessWith]) :
 	curr_patience(Patience) & Patience > 0 & patience(InitialPatience) & .my_name(Me) & default::play(Me, bully, Group)
 <-
-	-curr_patience(_);
-	+curr_patience(Patience-1);
+	!update_patience(Patience-1);
 	.print("Moving to position: ", GX, ", ", GY);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
@@ -339,8 +344,7 @@ patience(20).
 		clearable_block(X, Y, 1) & patience(Patience)
 	) {
 		.print("There is a block here, clear it!");
-		-curr_patience(_);
-		+curr_patience(InitialPatience);
+		!update_patience(InitialPatience);
 		!action::clear(X, Y);
 		if(default::thing(X, Y, block, _)){
 			!action::clear(X, Y);
@@ -353,3 +357,11 @@ patience(20).
 	!messing_around(PositionsToMessWith);
 	.
 +!messing_around(_) : true <- .print("messing_around ended").	
+
+@updatepatience[atomic]
++!update_patience(NewPatience) :
+	true
+<-
+	-curr_patience(_);
+	+curr_patience(NewPatience);
+	.
