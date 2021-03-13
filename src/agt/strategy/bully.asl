@@ -160,7 +160,8 @@ patience(20).
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
-	getTargetGoal(_, GoalX, GoalY);
+	team::teamLeader(TeamLeader);
+	getTargetGoal(TeamLeader, GoalX, GoalY);
 	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(cluster(X, Y, Radius, Positions), (
 		stop::cluster(Cluster) & .length(Cluster, N) & N > 0 &
@@ -195,7 +196,8 @@ patience(20).
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
 	.print("Goals: ", Goals);
-	getTargetGoal(_, GoalX, GoalY);
+	team::teamLeader(TeamLeader);
+	getTargetGoal(TeamLeader, GoalX, GoalY);
 	.print("Target goal: ", GoalX, ", ", GoalY);
 	.findall(goal(Distance, GX,GY),
 		(
@@ -256,15 +258,17 @@ patience(20).
 +!messing_around(_) :
 	bully::stop_being_a_bully & stop::really_stop
 <-
-	joinStopGroup(Flag);
-	.print("stop being a bully and become a ", Flag);
-    if (Flag == "origin2") {
+	joinStopGroup(Flag,TeamLeader);
+//	.print("stop being a bully and become a ", Flag);
+	+team::teamLeader(TeamLeader);
+    if (Flag == "origin") {
   //		.print("Removing explorer");
       !action::forget_old_action;
       -exploration::special(_);
       -common::avoid(_);
       -common::escape;
-      getTargetGoal2(_,GX2,GY2);
+      !calculate_new_cluster;
+//	      getTargetGoal2(_,GX2,GY2);
       !!stop::become_origin(GX2, GY2);
     }
     elif (Flag == "deliverer") {
@@ -273,17 +277,8 @@ patience(20).
       -common::avoid(_);
       -common::escape;
       !action::forget_old_action;
-      getTargetTaskboard(TaskbX,TaskbY);
+      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
       !!stop::become_deliverer(TaskbX,TaskbY);
-    }
-    elif (Flag == "deliverer2") {
-  //		.print("Removing explorer");
-      -exploration::special(_);
-      -common::avoid(_);
-      -common::escape;
-      !action::forget_old_action;
-      getTargetTaskboard2(TaskbX2,TaskbY2);
-      !!stop::become_deliverer(TaskbX2,TaskbY2);
     }
     elif (Flag == "retriever") {
   //		.print("Removing explorer");

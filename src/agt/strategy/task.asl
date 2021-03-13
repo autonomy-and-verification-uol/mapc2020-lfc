@@ -103,7 +103,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  Submitted task ",Task);
 	!action::forget_old_action;
 	!stop::become_retriever;
-//	getTargetTaskboard(TaskbX,TaskbY);
+//	?team::teamLeader(TeamLeader);
+//	getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 //	getMyPos(MyX, MyY);
 //	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 //	DistanceX = TaskbX - UpdatedX;
@@ -136,7 +137,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-batch(_);
 	.abolish(retrieve::block(_,_));
 	!action::forget_old_action(default,always_skip);
-	getTargetGoal(Name,GoalX,GoalY);
+	team::teamLeader(TeamLeader);
+	getTargetGoal(TeamLeader,GoalX,GoalY);
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	DistanceX = GoalX - UpdatedX;
@@ -257,7 +259,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //<-
 //	getMyPos(MyX, MyY);
 //	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-//	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+//	?team::teamLeader(TeamLeader);
+//	getRetrieverAvailablePos(TeamLeader, UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
 //	TargetX = TargetXGlobal - UpdatedX;
 //	TargetY = TargetYGlobal - UpdatedY;
 //	.print("Chosen Global Goal position: ", TargetXGlobal, TargetYGlobal);
@@ -369,7 +372,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
-	addRetrieverAvailablePos(MyUpdatedX,MyUpdatedY);
+	?team::teamLeader(TeamLeader);
+	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);
 	DistanceX = GoalX - MyUpdatedX;
 	DistanceY = GoalY - MyUpdatedY;
 	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
@@ -401,7 +405,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.findall(D, default::play(D,deliverer,Group), LD);
 	if(.length(LD, 1)){
 		!action::forget_old_action;
-	    getTargetTaskboard(TaskbX,TaskbY);
+		?team::teamLeader(TeamLeader);
+	    getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
 	} else {
 		!!retrieve::retrieve_block;
@@ -418,7 +423,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	removeBlock(Me);
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,MyUpdatedX,MyUpdatedY);
-	addRetrieverAvailablePos(MyUpdatedX,MyUpdatedY);
+	?team::teamLeader(TeamLeader);
+	addRetrieverAvailablePos(TeamLeader,MyUpdatedX,MyUpdatedY);
 	DistanceX = GoalX - MyUpdatedX;
 	DistanceY = GoalY - MyUpdatedY;
 	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);

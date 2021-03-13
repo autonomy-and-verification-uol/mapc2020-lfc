@@ -183,10 +183,10 @@ i_met_new_agent(Iknow, IdList) :-
 //		+retrieve::target(TargetX+OriginX,TargetY+OriginY);
 //	}
 	if(Map \== MapOther){
-		getTargetGoal(GoalAgent, GoalX, GoalY);
+		?team::teamLeader(TeamLeader);
 		.term2string(Me, Me1);
-		if(GoalAgent == Me1){
-			updateTargets(OriginX, OriginY);
+		if(TeamLeader == Me1){
+			updateTargets(TeamLeader,OriginX, OriginY);
 		}
 	}
 	.

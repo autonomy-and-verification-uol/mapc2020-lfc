@@ -163,7 +163,7 @@
 //			!closest_goal(GoalX, GoalY, TaskbX, TaskbY, 99999, Goals, 0, 0);
 //			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 //			!map::printall;
-			
+			+team::teamLeader(Me);
 			.broadcast(tell, stop::first_to_stop(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GX, GY);
@@ -187,14 +187,16 @@
 		-bully::beginning;
 		+bully::stop_being_a_bully;	
 	} else{
-		joinStopGroup(Flag);
-	    if (Flag == "origin2") {
+		joinStopGroup(Flag,TeamLeader);
+		+team::teamLeader(TeamLeader);
+	    if (Flag == "origin") {
 	  //		.print("Removing explorer");
 	      !action::forget_old_action;
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
-	      getTargetGoal2(_,GX2,GY2);
+	      !calculate_new_cluster;
+//	      getTargetGoal2(_,GX2,GY2);
 	      !!stop::become_origin(GX2, GY2);
 	    }
 	    elif (Flag == "deliverer") {
@@ -203,17 +205,8 @@
 	      -common::avoid(_);
 	      -common::escape;
 	      !action::forget_old_action;
-	      getTargetTaskboard(TaskbX,TaskbY);
+	      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
 	      !!stop::become_deliverer(TaskbX,TaskbY);
-	    }
-	    elif (Flag == "deliverer2") {
-	  //		.print("Removing explorer");
-	      -exploration::special(_);
-	      -common::avoid(_);
-	      -common::escape;
-	      !action::forget_old_action;
-	      getTargetTaskboard2(TaskbX2,TaskbY2);
-	      !!stop::become_deliverer(TaskbX2,TaskbY2);
 	    }
 	    elif (Flag == "retriever") {
 	  //		.print("Removing explorer");
@@ -231,15 +224,6 @@
 			!!stop::become_bully;
 		}
   	}
-//	else {
-////		.print("Removing explorer");
-//		-exploration::special(_);
-//		-common::avoid(_);
-//		-common::escape;
-//		!action::forget_old_action;
-//		!!stop::become_useless;
-//	}
-//	!!retrieve::retrieve_block;
 	.
 	
 +stop : true <- -stop::stop.
@@ -327,31 +311,48 @@
 	.send(Ag, askOne, map::myMap(Leader1), map::myMap(Leader1));
 //	.print("Leader: ", Leader, " Leader1: ", Leader1);
 	if(Leader == Leader1){
-		joinStopGroup(Flag);
-			if (Flag == "deliverer") {
-//				.print("Removing explorer");
+		+stop::really_stop;
+		if(default::play(Me, bully, Group)) {
+			-bully::beginning;
+			+bully::stop_being_a_bully;	
+		} else{
+			joinStopGroup(Flag,TeamLeader);
+			+team::teamLeader(TeamLeader);
+		    if (Flag == "origin") {
+		  //		.print("Removing explorer");
+		      !action::forget_old_action;
+		      -exploration::special(_);
+		      -common::avoid(_);
+		      -common::escape;
+		      !calculate_new_cluster;
+	//	      getTargetGoal2(_,GX2,GY2);
+		      !!stop::become_origin(GX2, GY2);
+		    }
+		    elif (Flag == "deliverer") {
+		  //		.print("Removing explorer");
+		      -exploration::special(_);
+		      -common::avoid(_);
+		      -common::escape;
+		      !action::forget_old_action;
+		      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
+		      !!stop::become_deliverer(TaskbX,TaskbY);
+		    }
+		    elif (Flag == "retriever") {
+		  //		.print("Removing explorer");
+		      -exploration::special(_);
+		      -common::avoid(_);
+		      -common::escape;
+		      !action::forget_old_action;
+		      !!stop::become_retriever;
+		    }
+			elif (Flag == "bully") {
 				-exploration::special(_);
 				-common::avoid(_);
 				-common::escape;
 				!action::forget_old_action;
-				!!stop::become_deliverer;
+				!!stop::become_bully;
 			}
-		elif (Flag == "retriever") {
-//			.print("Removing explorer");
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::become_retriever;
-		}
-		else {
-//			.print("Removing explorer");
-			-exploration::special(_);
-			-common::avoid(_);
-			-common::escape;
-			!action::forget_old_action;
-			!!stop::become_useless;
-		}
+	  	}
 	}
 	.
 +!stop::check_join_group : true. // <- .print("I cannot join the stop group yet").

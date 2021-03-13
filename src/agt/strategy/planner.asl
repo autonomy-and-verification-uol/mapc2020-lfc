@@ -40,7 +40,8 @@ dispenser_in_vision :-
 <- 
 	getMyPos(MyX, MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
-	getRetrieverAvailablePos(UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
+	?team::teamLeader(TeamLeader);
+	getRetrieverAvailablePos(TeamLeader, UpdatedX, UpdatedY, TargetXGlobal, TargetYGlobal);
 	DistanceX = TargetXGlobal - UpdatedX;
 	DistanceY = TargetYGlobal - UpdatedY;
 	!map::normalise_distance(x, DistanceX,NormalisedDistanceX);
@@ -657,7 +658,8 @@ dispenser_in_vision :-
 <-
 	-retrieve::getting_to_position;
 	getMyPos(MyX,MyY);
-	addRetrieverAvailablePos(TargetX+MyX,TargetY+MyY);
+	?team::teamLeader(TeamLeader);
+	addRetrieverAvailablePos(TeamLeader,TargetX+MyX,TargetY+MyY);
 	removeBlock(Me);
 	!!retrieve::retrieve_block;
 	.
