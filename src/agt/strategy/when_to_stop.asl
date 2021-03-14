@@ -338,9 +338,10 @@
 	}
 	.
 	
-+!stop::become_deliverer(TaskbX,TaskbY) :
-	true
++!stop::become_deliverer(TaskbX,TaskbY) 
+	: team::teamLeader(Leader)
 <-
+	.broadcast(tell, team::deliverer(Leader));
 	!common::change_role(deliverer);
 //	.print("Closest taskboard X = ",TaskbX," Y = ",TaskbY);
 	getMyPos(MyX, MyY);

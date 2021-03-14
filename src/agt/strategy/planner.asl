@@ -79,7 +79,6 @@ dispenser_in_vision :-
  		.print("@@@@@@@@@@@@@@@@@@@ Deliverer in position");
 		+task::deliverer;
 		.send(Ag, tell, task::deliverer_in_position_no_task(Me));
-		.broadcast(tell, team::deliverer(Leader));
 		!!default::always_skip;
 	}
 	elif (default::thing(X, Y, taskboard, _)) {
