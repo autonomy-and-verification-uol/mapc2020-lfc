@@ -460,7 +460,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.findall(D, default::play(D,deliverer,Group), LD);
 	if(.length(LD, 1)){
 		!action::forget_old_action;
-	    getTargetTaskboard(TaskbX,TaskbY);
+	    getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
 	} else {
 		!!retrieve::retrieve_block;
