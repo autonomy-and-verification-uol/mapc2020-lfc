@@ -138,7 +138,6 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-committed(Task,CommitListSort);
 	-ready_submit(0);
 	-batch(_);
-	.abolish(retrieve::block(_,_));
 	!action::forget_old_action(default,always_skip);
 	?team::teamLeader(TeamLeader);
 	getTargetGoal(TeamLeader,GoalX,GoalY);
@@ -161,6 +160,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!action::detach(s);
 	-task::origin;
 	!try_to_move;
+	.abolish(retrieve::block(_,_));
 	//?default::play(Ag,deliverer,Group);
 	.send(Deliverer, achieve, task::deliver(Id));
 //	!action::submit(Id);

@@ -191,6 +191,8 @@ get_other_side(e,OtherDir1,OtherDir2) :- OtherDir1 = n & OtherDir2 = s.
 +!explore_until_obstacle(Dir)
 	: .my_name(Me) & default::play(Me,explorer,Group) & not check_obstacle_clear(Dir) & not action::out_of_bounds(Dir) & exploration::count(Count) & exploration::threshold(Threshold) & Count >= Threshold  & .delete(Dir,[n,s,e,w],DirAux) & remove_opposite(Dir,NewDir) & .delete(NewDir,DirAux,DirList) 
 <-
+	-exploration::count(Count);
+	+exploration::count(0);
 	!!explore(DirList);
 	.
 
