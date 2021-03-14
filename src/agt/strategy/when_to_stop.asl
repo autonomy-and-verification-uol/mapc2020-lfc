@@ -263,7 +263,7 @@
 			-lowest_distance(_,GX,GY,TaskbX,TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
-			
+		  setTargets(Me, TaskbX, TaskbY, GX, GY);
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
@@ -459,7 +459,7 @@
 			-lowest_distance(_,GX,GY,TaskbX,TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
-			
+		  setTargets(Me, TaskbX, TaskbY, GX, GY);
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
