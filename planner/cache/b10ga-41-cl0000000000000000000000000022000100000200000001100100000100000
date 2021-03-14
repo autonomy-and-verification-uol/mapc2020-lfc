@@ -1,0 +1,6 @@
+clear(-3,0)
+move(s)
+move(w)
+move(w)
+move(w)
+move(w)
