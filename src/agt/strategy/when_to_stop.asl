@@ -400,6 +400,10 @@
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
+	      if (team::busy[source(_)]) {
+	      	.wait(not team::busy[source(_)]);
+	      }
+	      .broadcast(tell, team::busy);
 			!map::get_goals(Goals);
 			!map::get_taskboards(Taskboards);
 			!get_clusters(Goals);
@@ -469,6 +473,7 @@
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
 		  setTargets(Me, TaskbX, TaskbY, GX, GY);
 		  .broadcast(tell, team::wait(Me));
+		  .broadcast(untell, team::busy);
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
