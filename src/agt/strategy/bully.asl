@@ -300,18 +300,22 @@ patience(20).
 			}
 			?bottom(BottomGoalListOld);
 			-bottom(BottomGoalListOld);
+//			.print("Clusters: ",BottomGoalListOld);
 			.abolish(stop::cluster(_));
 			getTargetGoals(GoalClusters);
-			+bottom([]);
+//			.print("Minus: ",GoalClusters);
+			+bottom(BottomGoalListOld);
 			for (.member(GC,GoalClusters)) {
-				if (not .member(GC,BottomGoalList)) {
+				if (.member(GC,BottomGoalListOld)) {
 					?bottom(List);
 					-bottom(List);
-					+bottom([List|GC]);
+					.delete(GC,List,NewList);
+					+bottom(NewList);
 				}
 			}
 			?bottom(BottomGoalList);
 			-bottom(BottomGoalList);
+//			.print("Equals: ",BottomGoalList);
 			
 			for ( .member(goal(GX,GY), BottomGoalList) ) {
 				!closest_taskboard(TaskbX, TaskbY, GX, GY, 99999, Taskboards, 0, 0);
