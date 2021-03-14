@@ -34,7 +34,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 
 @task[atomic]
 +default::task(Id, Deadline, Reward, ReqList)
-	: task::origin & task::deliverer_in_position_no_task(Deliverer)[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_))// & .length(ReqList) <= 6
+	: task::origin & task::deliverer_in_position_no_task(Deliverer)[source(_)] & not task::committed(Id2,_) & .my_name(Me) & ((default::energy(Energy) & Energy < 30) | not default::obstacle(_,_)) & not task::other_team(Id)[source(_)]// & .length(ReqList) <= 6
 <-
 	.print("@@@@@@@@@@@@@@@@@@ ", Id, "  ",Deadline);
 	?team::teamLeader(TeamLeader);
@@ -42,7 +42,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	?evaluate_task(ReqList, AgList, [], CommitList);
 	.print("New task required length ",.length(ReqList));
 	.print("Committed length ",.length(CommitList));
-	if (.length(ReqList) == .length(CommitList)) {
+	if ((.length(ReqList) == .length(CommitList)) & not task::other_team(Id)[source(_)]) {
+		.broadcast(tell, task::other_team(Id));
 		?sort_committed(CommitList,[],NewCommitList);
 		.sort(NewCommitList,CommitListSort);
 		+committed(Id,CommitListSort);
@@ -63,7 +64,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!accept_and_deliver(Task,X,Y)
-	: default::play(Ag,origin,Group)
+	: true
 <-
 	!action::forget_old_action(default,always_skip);
 	!action::accept(Task);
