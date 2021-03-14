@@ -164,10 +164,9 @@
 //			.print("@@@@@@@@@@@@@@ Closest goal to the taskboard X ",GoalX," Y ",GoalY);
 //			!map::printall;
 			.abolish(stop::cluster(_));
-			.term2string(Me,MeS);
-			+team::teamLeader(MeS);
+			+team::teamLeader(Me);
 			.broadcast(tell, stop::first_to_stop(Me));
-			.broadcast(tell, team::wait(MeS));
+			.broadcast(tell, team::wait(Me));
 			!action::forget_old_action;
 			!!stop::become_origin(GX, GY);
 		}
@@ -190,7 +189,8 @@
 		-bully::beginning;
 		+bully::stop_being_a_bully;	
 	} else{
-		joinStopGroup(Flag,TeamLeader);
+		joinStopGroup(Flag,TeamLeaderS);
+		.term2string(TeamLeader,TeamLeaderS);
 		+team::teamLeader(TeamLeader);
 	    if (Flag == "origin") {
 	  //		.print("Removing explorer");
@@ -266,8 +266,7 @@
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
 		  setTargets(Me, TaskbX, TaskbY, GX, GY);
-		  .term2string(Me,MeS);
-		  .broadcast(tell, team::wait(MeS));
+		  .broadcast(tell, team::wait(Me));
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
@@ -391,7 +390,8 @@
 		-bully::beginning;
 		+bully::stop_being_a_bully;	
 	} else{
-		joinStopGroup(Flag,TeamLeader);
+		joinStopGroup(Flag,TeamLeaderS);
+		.term2string(TeamLeader,TeamLeaderS);
 		+team::teamLeader(TeamLeader);
 	    if (Flag == "origin") {
 	  //		.print("Removing explorer");
@@ -467,8 +467,7 @@
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
 		  setTargets(Me, TaskbX, TaskbY, GX, GY);
-		  .term2string(Me,MeS);
-		  .broadcast(tell, team::wait(MeS));
+		  .broadcast(tell, team::wait(Me));
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }

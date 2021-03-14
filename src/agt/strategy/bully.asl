@@ -269,8 +269,9 @@ patience(20).
 +!messing_around(_) :
 	bully::stop_being_a_bully & stop::really_stop
 <-
-	joinStopGroup(Flag,TeamLeader);
+	joinStopGroup(Flag,TeamLeaderS);
 //	.print("stop being a bully and become a ", Flag);
+	.term2string(TeamLeader,TeamLeaderS);
 	+team::teamLeader(TeamLeader);
 	    if (Flag == "origin") {
 	  //		.print("Removing explorer");
@@ -346,8 +347,7 @@ patience(20).
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
 		  setTargets(Me, TaskbX, TaskbY, GX, GY);
-		  .term2string(Me,MeS);
-		  .broadcast(tell, team::wait(MeS));
+		  .broadcast(tell, team::wait(Me));
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
