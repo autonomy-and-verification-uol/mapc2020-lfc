@@ -1,0 +1,6 @@
+clear(1,2)
+rotate(ccw)
+move(s)
+move(e)
+move(s)
+move(e)
