@@ -64,10 +64,11 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 	
 +!accept_and_deliver(Task,X,Y)
-	: true
+	: team::teamLeader(Leader)
 <-
 	!action::forget_old_action(default,always_skip);
 	!action::accept(Task);
+	.broadcast(untell, team::deliverer(Leader));
 	getMyPos(MyX,MyY);
 	!map::calculate_updated_pos(MyX,MyY,0,0,UpdatedX,UpdatedY);
 	DistanceX = X - UpdatedX;
@@ -228,17 +229,20 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 +!clear_all.
 
 +!task_failed
-	: doing_task & retrieve::block(X,Y) & direction_block(Dir,X,Y)
+	: team::teamLeader(TeamLeader) & doing_task(TeamLeader) & retrieve::block(X,Y) & direction_block(Dir,X,Y)
 <-
 //	+danger2;
 	!action::detach(Dir); // easy fix for the second attached block (I do not know)
 	// we do not care if this has failed or not, the origin should clear the block
 	-retrieve::block(X,Y);
+	-doing_task(TeamLeader);
+	-planner::back_to_origin;
+	!!retrieve::retrieve_block;
 	.
 +!task_failed
-	: doing_task
+	: team::teamLeader(TeamLeader) & doing_task(TeamLeader)
 <-
-	-doing_task;
+	-doing_task(TeamLeader);
 	-planner::back_to_origin;
 	!!retrieve::retrieve_block;
 	.
@@ -365,12 +369,11 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 +!help_connect(ConX,ConY)[source(Help)] <- .wait({+default::actionID(_)}); !help_connect(ConX,ConY)[source(Help)].
 	
 +!perform_task(GoalX,GoalY,noblock)[source(Origin)]
-	: .my_name(Me) & retrieve::block(BBX, BBY) & default::thing(BBX, BBY, block, Type)
+	: .my_name(Me) & retrieve::block(BBX, BBY) & default::thing(BBX, BBY, block, Type) & team::teamLeader(TeamLeader)
 <-
-	+doing_task;
+	+doing_task(TeamLeader);
 	!action::forget_old_action(default,always_skip);
 	.print("@@@@ Received order for new task, origin does not have a block");
-	?team::teamLeader(TeamLeader);
 	removeAvailableAgent(TeamLeader, Me);
 	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
@@ -403,25 +406,27 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //		-planner::back_to_origin;
 //		-danger2;
 //	}
-	-doing_task;	
-	.findall(D, default::play(D,deliverer,Group), LD);
-	if(.length(LD, 1)){
+	-doing_task(TeamLeader);	
+//	.findall(D, default::play(D,deliverer,Group), LD);
+	if (not team::deliverer(TeamLeader)) {
 		!action::forget_old_action;
-		?team::teamLeader(TeamLeader);
-	    getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
+		getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
 	} else {
 		!!retrieve::retrieve_block;
 	}
+//	if(.length(LD, 1)){
+//		!action::forget_old_action;
+//		?team::teamLeader(TeamLeader);
+//	}    
 	.
 	
 +!perform_task(GoalX,GoalY)[source(Origin)]
-	: .my_name(Me) & retrieve::block(BBX, BBY) & default::thing(BBX, BBY, block, Type)
+	: .my_name(Me) & retrieve::block(BBX, BBY) & default::thing(BBX, BBY, block, Type) & team::teamLeader(TeamLeader)
 <-
-	+doing_task;
+	+doing_task(TeamLeader);
 	!action::forget_old_action(default,always_skip);
 	.print("@@@@ Received order for new task, origin has a block");
-	?team::teamLeader(TeamLeader);
 	removeAvailableAgent(TeamLeader, Me);
 	removeBlock(TeamLeader, Me);
 	getMyPos(MyX,MyY);
@@ -457,13 +462,17 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 //		-planner::back_to_origin;
 //		-danger2;
 //	}
-	-doing_task;
-	.findall(D, default::play(D,deliverer,Group), LD);
-	if(.length(LD, 1)){
+	-doing_task(TeamLeader);
+//	.findall(D, default::play(D,deliverer,Group), LD);
+	if (not team::deliverer(TeamLeader)) {
 		!action::forget_old_action;
-	    getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
+		getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 		!!stop::become_deliverer(TaskbX, TaskbY);
 	} else {
 		!!retrieve::retrieve_block;
 	}
+//	if(.length(LD, 1)){
+//		!action::forget_old_action;
+//		?team::teamLeader(TeamLeader);
+//	}   
 	.
