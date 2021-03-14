@@ -117,6 +117,7 @@
 +!move_closer(Ag,MoveTo,Axis)
 	: exploration::check_obstacle_clear(MoveTo)
 <-
+//	.print("Move 1");
 	!try_to_clear(MoveTo);
 	.abolish(carto::new_distance(_,_));
 	!move_closer(Ag,MoveTo,Axis);
@@ -125,6 +126,7 @@
 +!move_closer(Ag,MoveTo,Axis)
 	: .my_name(Me)
 <-
+//	.print("Move 2");
 	!action::move(MoveTo);
 	.wait(carto::new_distance(X,Y));
 	-carto::new_distance(X,Y);
@@ -193,6 +195,7 @@
 +!carto
 	: not cycle_complete(_,_) & my_direction(Dir) & exploration::check_obstacle_clear(Dir)
 <-
+//	.print("carto 1");
 	!try_to_clear(Dir);
 	!carto;
 	.
@@ -200,6 +203,7 @@
 +!carto
 	: not cycle_complete(_,_) & my_direction(Dir) & cells(C)
 <-
+//	.print("carto 2");
 	!action::move(Dir);
 	?default::lastActionResult(Result);
 	if (Result == success) {
@@ -212,6 +216,7 @@
 +!carto
 	: cycle_complete(VisionCellsX,VisionCellsY) & agent_to_identify(Ag) & cells(C) & my_direction(Dir) & .my_name(Me) & .all_names(AllAgents) & .nth(Pos,AllAgents,Me) & .nth(PosOther,AllAgents,Ag)
 <-
+//	.print("carto 3");
 	if (Pos < PosOther)	{
 		.wait(carto::other_cells(C2)[source(Ag)]);
 		?carto::axis(Axis);

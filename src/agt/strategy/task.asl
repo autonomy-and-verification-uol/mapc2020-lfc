@@ -160,7 +160,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!action::detach(s);
 	-task::origin;
 	!try_to_move;
-	.abolish(retrieve::block(_,_));
+	.abolish(retrieve::block(_,_)[source(_)]);
 	//?default::play(Ag,deliverer,Group);
 	.send(Deliverer, achieve, task::deliver(Id));
 //	!action::submit(Id);
@@ -254,7 +254,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!clear_all;
 	-ready_submit(_);
 	-batch(_);
-	.abolish(retrieve::block(_,_));
+	.abolish(retrieve::block(_,_)[source(_)]);
 	-committed(Id,CommitListSort);
 	-helping_connect;
 	-no_skip;

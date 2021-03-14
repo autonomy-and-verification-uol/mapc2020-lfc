@@ -68,6 +68,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!check_added_name;
 	-common::clearing_things;
 //	!always_skip;
+	.wait(2000);
 	!!exploration::explore([n,s,e,w]);
 	.
 	
@@ -198,21 +199,21 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	: task::origin  & task::committed(Id,_) & not task::no_skip & team::teamLeader(Leader)
 <-
 	+safe(1);
-	if (common::danger) {
-		-+safe(0);
-		-common::danger;
-	}
-	else {
-		for (retrieve::block(X,Y)) {
-			?safe(Safe);
-			if (Safe == 1) {
-				if (not default::thing(X,Y,block,_)) {
-					-safe(Safe);
-					+safe(0);
-				}
-			}
-		}
-	}
+//	if (common::danger) {
+//		-+safe(0);
+//		-common::danger;
+//	}
+//	else {
+//		for (retrieve::block(X,Y)) {
+//			?safe(Safe);
+//			if (Safe == 1) {
+//				if (not default::thing(X,Y,block,_)) {
+//					-safe(Safe);
+//					+safe(0);
+//				}
+//			}
+//		}
+//	}
 	?safe(Safe2);
 	-safe(Safe2);
 	if (Safe2 == 0) {
