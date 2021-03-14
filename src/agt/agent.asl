@@ -217,7 +217,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	-safe(Safe2);
 	if (Safe2 == 0) {
 		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK FAILED")
-		.broadcast(achieve, task::task_failed);
+		.broadcast(achieve, task::task_failed(Leader));
 		!task::task_failed(Leader);
 	}
 	else {

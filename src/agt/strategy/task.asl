@@ -266,7 +266,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 	!!stop::become_deliverer(TaskbX, TaskbY);
 	.
-+!task_failed.
++!task_failed(TeamLeader).
 
 //+!go_back_to_position
 //<-
