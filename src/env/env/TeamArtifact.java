@@ -278,6 +278,7 @@ public class TeamArtifact extends Artifact {
 				this.activeTeam = 15;
 				this.teamLeader = getCurrentOpAgentId().getAgentName();
 				flag.set("origin");
+				logger.info("NEW TEAM LEADER "+this.teamLeader);
 				teamLead.set(this.teamLeader);
 			}
 //		else {
@@ -1062,7 +1063,7 @@ public class TeamArtifact extends Artifact {
 	@OPERATION
 	void getBlocks(String name, OpFeedbackParam<Literal[]> list) {
 		List<Literal> things = new ArrayList<Literal>();
-		for(Pair<String, String> p : teams.get(name).getBlocks()) {
+		for(Pair<String, String> p : teams.get(name).getTheBlocks()) {
 			Literal literal = ASSyntax.createLiteral("block");	
 			literal.addTerm(ASSyntax.createAtom(p.getFirst()));
 			literal.addTerm(ASSyntax.createAtom(p.getSecond()));
@@ -1483,7 +1484,7 @@ public class TeamArtifact extends Artifact {
 			this.agentAvailable.remove(name);
 		}
 		
-		public List<Pair<String, String>> getBlocks()
+		public List<Pair<String, String>> getTheBlocks()
 		{
 			return ourBlocks;
 		}
