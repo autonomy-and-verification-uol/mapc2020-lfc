@@ -195,7 +195,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!!retrieve::retrieve_block;
 	.
 +!always_skip 
-	: task::origin  & task::committed(Id,_) & not task::no_skip
+	: task::origin  & task::committed(Id,_) & not task::no_skip & team::teamLeader(Leader)
 <-
 	+safe(1);
 	if (common::danger) {
@@ -218,7 +218,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	if (Safe2 == 0) {
 		.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK FAILED")
 		.broadcast(achieve, task::task_failed);
-		!task::task_failed;
+		!task::task_failed(Leader);
 	}
 	else {
 //		?default::step(Step);

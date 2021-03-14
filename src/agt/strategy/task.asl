@@ -228,7 +228,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	.
 +!clear_all.
 
-+!task_failed
++!task_failed(TeamLeader)
 	: team::teamLeader(TeamLeader) & doing_task(TeamLeader) & retrieve::block(X,Y) & direction_block(Dir,X,Y)
 <-
 //	+danger2;
@@ -239,15 +239,15 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-planner::back_to_origin;
 	!!retrieve::retrieve_block;
 	.
-+!task_failed
++!task_failed(TeamLeader)
 	: team::teamLeader(TeamLeader) & doing_task(TeamLeader)
 <-
 	-doing_task(TeamLeader);
 	-planner::back_to_origin;
 	!!retrieve::retrieve_block;
 	.
-+!task_failed
-	: .my_name(Me) & default::play(Me,origin,Group) & committed(Id,CommitListSort)
++!task_failed(TeamLeader)
+	: team::teamLeader(TeamLeader) & .my_name(Me) & default::play(Me,origin,Group) & committed(Id,CommitListSort)
 <-
 	.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ===============");
 	+no_skip;
@@ -258,6 +258,13 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-committed(Id,CommitListSort);
 	-helping_connect;
 	-no_skip;
+	.
++!task_failed(TeamLeader)
+	: team::teamLeader(TeamLeader) & .my_name(Me) & default::play(Me,deliverer,Group) & not team::deliverer(TeamLeader)
+<-
+	!action::forget_old_action(default,always_skip);
+	getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
+	!!stop::become_deliverer(TaskbX, TaskbY);
 	.
 +!task_failed.
 
@@ -386,34 +393,39 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
 	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
-	getMyPos(MyXNew,MyYNew);
-//	if (not danger2) {
-		?retrieve::block(BX,BY);
-		!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
-		.send(Origin, achieve, task::help_attach(UpdatedXNew,UpdatedYNew));
-//		if (not danger2) {
-		?get_direction(BX,BY,DetachPos);
-		!action::detach(DetachPos);
-		.wait(task::synch_complete[source(Origin)]);
-		-task::synch_complete[source(Origin)];
-//		}
-//		else {
-//			-planner::back_to_origin;
-//			-danger2;
-//		}
-//	}
-//	else {
-//		-planner::back_to_origin;
-//		-danger2;
-//	}
-	-doing_task(TeamLeader);	
-//	.findall(D, default::play(D,deliverer,Group), LD);
-	if (not team::deliverer(TeamLeader)) {
-		!action::forget_old_action;
-		getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
-		!!stop::become_deliverer(TaskbX, TaskbY);
+	if (retrieve::block(RBX, RBY) & default::thing(RBX, RBY, block, Type)) {
+		getMyPos(MyXNew,MyYNew);
+	//	if (not danger2) {
+			?retrieve::block(BX,BY);
+			!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
+			.send(Origin, achieve, task::help_attach(UpdatedXNew,UpdatedYNew));
+	//		if (not danger2) {
+			?get_direction(BX,BY,DetachPos);
+			!action::detach(DetachPos);
+			.wait(task::synch_complete[source(Origin)]);
+			-task::synch_complete[source(Origin)];
+	//		}
+	//		else {
+	//			-planner::back_to_origin;
+	//			-danger2;
+	//		}
+	//	}
+	//	else {
+	//		-planner::back_to_origin;
+	//		-danger2;
+	//	}
+		-doing_task(TeamLeader);	
+	//	.findall(D, default::play(D,deliverer,Group), LD);
+		if (not team::deliverer(TeamLeader)) {
+			!action::forget_old_action;
+			getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
+			!!stop::become_deliverer(TaskbX, TaskbY);
+		} else {
+			!!retrieve::retrieve_block;
+		}
 	} else {
-		!!retrieve::retrieve_block;
+		.broadcast(achieve, task::task_failed);
+		!task::task_failed(TeamLeader);
 	}
 //	if(.length(LD, 1)){
 //		!action::forget_old_action;
@@ -439,37 +451,42 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
 	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
 	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
-	getMyPos(MyXNew,MyYNew);
-//	if (not danger2) {
-		?retrieve::block(BX,BY);
-		!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
-		.send(Origin, achieve, task::help_connect(UpdatedXNew,UpdatedYNew));
-		while (not (default::lastAction(connect) & default::lastActionResult(success))) {
-			!action::connect(Origin,BX,BY);
+	if (retrieve::block(RBX, RBY) & default::thing(RBX, RBY, block, Type)) {
+		getMyPos(MyXNew,MyYNew);
+	//	if (not danger2) {
+			?retrieve::block(BX,BY);
+			!map::calculate_updated_pos(MyXNew,MyYNew,BX,BY,UpdatedXNew,UpdatedYNew);
+			.send(Origin, achieve, task::help_connect(UpdatedXNew,UpdatedYNew));
+			while (not (default::lastAction(connect) & default::lastActionResult(success))) {
+				!action::connect(Origin,BX,BY);
+			}
+			.wait(task::synch_complete[source(Origin)]);
+			-task::synch_complete[source(Origin)];
+	//		if (not danger2) {
+				?get_direction(BX,BY,DetachPos);
+				!action::detach(DetachPos);
+	//		}
+	//		else {
+	//			-planner::back_to_origin;
+	//			-danger2;
+	//		}
+	//	}
+	//	else {
+	//		-planner::back_to_origin;
+	//		-danger2;
+	//	}
+		-doing_task(TeamLeader);
+	//	.findall(D, default::play(D,deliverer,Group), LD);
+		if (not team::deliverer(TeamLeader)) {
+			!action::forget_old_action;
+			getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
+			!!stop::become_deliverer(TaskbX, TaskbY);
+		} else {
+			!!retrieve::retrieve_block;
 		}
-		.wait(task::synch_complete[source(Origin)]);
-		-task::synch_complete[source(Origin)];
-//		if (not danger2) {
-			?get_direction(BX,BY,DetachPos);
-			!action::detach(DetachPos);
-//		}
-//		else {
-//			-planner::back_to_origin;
-//			-danger2;
-//		}
-//	}
-//	else {
-//		-planner::back_to_origin;
-//		-danger2;
-//	}
-	-doing_task(TeamLeader);
-//	.findall(D, default::play(D,deliverer,Group), LD);
-	if (not team::deliverer(TeamLeader)) {
-		!action::forget_old_action;
-		getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
-		!!stop::become_deliverer(TaskbX, TaskbY);
 	} else {
-		!!retrieve::retrieve_block;
+		.broadcast(achieve, task::task_failed);
+		!task::task_failed(TeamLeader);
 	}
 //	if(.length(LD, 1)){
 //		!action::forget_old_action;
