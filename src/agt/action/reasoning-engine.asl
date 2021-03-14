@@ -50,6 +50,12 @@
 	
 	?default::lastAction(LastAction);
 //	?default::lastActionParams(LastActionParams);
+	if (default::play(Me,explorer,Group)) {
+		?exploration::count(ExpCount);
+		-exploration::count(ExpCount);
+		+exploration::count(ExpCount+1);
+	}
+
 	if ( Result == unknown_action){
 		.print("My action ",LastAction," was unknown to the server. This should never happen!");
 	}	
