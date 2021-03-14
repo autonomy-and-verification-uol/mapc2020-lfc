@@ -517,7 +517,7 @@
 	.length(Goals, NGoals) & NGoals >= 1 &
 //	.length(Blocks, NBlocks) & 
 	.length(Taskboards, NTaskboards) & NTaskboards >= 1 &
-	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & (NKnownAgs + 1) >= 3 &//NBlocks & // enough agents to build the structure
+	identification::identified(KnownAgs) & .length(KnownAgs, NKnownAgs) & default::teamSize(Size) & (NKnownAgs + 1) >= Size div 2 &//NBlocks & // enough agents to build the structure
 	.findall(Type, (.member(req(_, _, Type), Blocks) & not(.member(dispenser(Type, _, _), Dispensers))), []) // all the necessary types are known
 .
 //<- 
