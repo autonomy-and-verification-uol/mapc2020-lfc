@@ -346,33 +346,39 @@ patience(20).
 			.print("@@@@@@@@@@@@@@ Target Taskboard Cluster  X ",TaskbX," Y ",TaskbY);
 			.print("@@@@@@@@@@@@@@ Target Goal Cluster X ",GX," Y ",GY);
 		  setTargets(Me, TaskbX, TaskbY, GX, GY);
+		  .term2string(Me,MeS);
+		  .broadcast(tell, team::wait(MeS));
 		  .broadcast(achieve, bully::new_team);
 	      !!stop::become_origin(GX, GY);
 	    }
-    elif (Flag == "deliverer") {
-  //		.print("Removing explorer");
-      -exploration::special(_);
-      -common::avoid(_);
-      -common::escape;
-      !action::forget_old_action;
-      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
-      !!stop::become_deliverer(TaskbX,TaskbY);
-    }
-    elif (Flag == "retriever") {
-  //		.print("Removing explorer");
-      -exploration::special(_);
-      -common::avoid(_);
-      -common::escape;
-      !action::forget_old_action;
-      !!stop::become_retriever;
-    }
-	elif (Flag == "bully") {
-		-exploration::special(_);
-		-common::avoid(_);
-		-common::escape;
-		!action::forget_old_action;
-		!!stop::become_bully;
-	}
+	    elif (Flag == "deliverer") {
+	    	
+	    	.wait(team::wait(TeamLeader)[source(_)]);
+	  //		.print("Removing explorer");
+	      -exploration::special(_);
+	      -common::avoid(_);
+	      -common::escape;
+	      !action::forget_old_action;
+	      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
+	      !!stop::become_deliverer(TaskbX,TaskbY);
+	    }
+	    elif (Flag == "retriever") {
+	    	.wait(team::wait(TeamLeader)[source(_)]);
+	  //		.print("Removing explorer");
+	      -exploration::special(_);
+	      -common::avoid(_);
+	      -common::escape;
+	      !action::forget_old_action;
+	      !!stop::become_retriever;
+	    }
+		elif (Flag == "bully") {
+			.wait(team::wait(TeamLeader)[source(_)]);
+			-exploration::special(_);
+			-common::avoid(_);
+			-common::escape;
+			!action::forget_old_action;
+			!!stop::become_bully;
+		}
 	.
 +!messing_around(_) :
 	bully::stop_being_a_bully 
