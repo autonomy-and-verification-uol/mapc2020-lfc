@@ -76,6 +76,7 @@ dispenser_in_vision :-
 	: not task::deliverer & .my_name(Me) & default::play(Me,deliverer,Group) & default::play(Ag,origin,Group)
 <- 
  	if (default::thing(X, Y, taskboard, _) & X <= 2 & Y <= 2) {
+ 		.print("@@@@@@@@@@@@@@@@@@@ Deliverer in position");
 		+task::deliverer;
 		.send(Ag, tell, task::deliverer_in_position_no_task(Me));
 		!!default::always_skip;

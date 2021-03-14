@@ -272,31 +272,30 @@
 	      !!stop::become_origin(GX, GY);
 	    }
 	    elif (Flag == "deliverer") {
-	    	
-	    	.wait(team::wait(TeamLeader)[source(_)]);
 	  //		.print("Removing explorer");
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
 	      !action::forget_old_action;
+	      .wait(team::wait(TeamLeader)[source(_)]);
 	      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
 	      !!stop::become_deliverer(TaskbX,TaskbY);
 	    }
 	    elif (Flag == "retriever") {
-	    	.wait(team::wait(TeamLeader)[source(_)]);
 	  //		.print("Removing explorer");
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
 	      !action::forget_old_action;
+	      .wait(team::wait(TeamLeader)[source(_)]);
 	      !!stop::become_retriever;
 	    }
 		elif (Flag == "bully") {
-			.wait(team::wait(TeamLeader)[source(_)]);
 			-exploration::special(_);
 			-common::avoid(_);
 			-common::escape;
 			!action::forget_old_action;
+			.wait(team::wait(TeamLeader)[source(_)]);
 			!!stop::become_bully;
 		}
   	}
@@ -474,31 +473,30 @@
 	      !!stop::become_origin(GX, GY);
 	    }
 	    elif (Flag == "deliverer") {
-	    	
-	    	.wait(team::wait(TeamLeader)[source(_)]);
 	  //		.print("Removing explorer");
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
 	      !action::forget_old_action;
+	      .wait(team::wait(TeamLeader)[source(_)]);
 	      getTargetTaskboard(TeamLeader,TaskbX,TaskbY);
 	      !!stop::become_deliverer(TaskbX,TaskbY);
 	    }
 	    elif (Flag == "retriever") {
-	    	.wait(team::wait(TeamLeader)[source(_)]);
 	  //		.print("Removing explorer");
 	      -exploration::special(_);
 	      -common::avoid(_);
 	      -common::escape;
 	      !action::forget_old_action;
+	      .wait(team::wait(TeamLeader)[source(_)]);
 	      !!stop::become_retriever;
 	    }
 		elif (Flag == "bully") {
-			.wait(team::wait(TeamLeader)[source(_)]);
 			-exploration::special(_);
 			-common::avoid(_);
 			-common::escape;
 			!action::forget_old_action;
+			.wait(team::wait(TeamLeader)[source(_)]);
 			!!stop::become_bully;
 		}
   	}

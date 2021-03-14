@@ -259,6 +259,7 @@ public class TeamArtifact extends Artifact {
 	//			this.goalAgent2 = this.getCurrentOpAgentId().getAgentName();
 	//		}
 			if (this.activeTeam == 15) {
+				logger.info("NEW DELIVERER "+getCurrentOpAgentId().getAgentName());
 				this.activeTeam = activeTeam - 2;
 				flag.set("deliverer");
 				teamLead.set(this.teamLeader);
