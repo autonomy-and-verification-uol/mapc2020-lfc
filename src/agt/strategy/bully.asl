@@ -158,7 +158,8 @@ patience(20).
 +!reconsider_clusters :
 	true
 <-
-	!update_patience(0)
+	-there_is_a_new_team;
+	+there_is_a_new_team;
 	.
 
 +!messing_around :
@@ -189,8 +190,7 @@ patience(20).
 	} else{
 		.shuffle(ClustersToMessWith, Clusters1);
 		.nth(0, Clusters1, cluster(_, _, _, Positions));
-		-curr_patience(_);
-		+curr_patience(Patience);
+		!update_patience(Patience);
 		-positions(_);
 		+positions(Positions);
 		-stop_being_a_bully;
@@ -390,6 +390,12 @@ patience(20).
 	!action::forget_old_action;
 	!common::change_role(explorer);
 	!!exploration::explore([n,s,e,w]);
+	.
++!messing_around(_) :
+	there_is_a_new_team
+<-
+	-there_is_a_new_team;
+	!messing_around;
 	.
 +!messing_around([]) :
 	positions(Positions) & .my_name(Me) & default::play(Me, bully, Group)
