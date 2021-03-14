@@ -424,7 +424,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 			!!retrieve::retrieve_block;
 		}
 	} else {
-		.broadcast(achieve, task::task_failed);
+		.broadcast(achieve, task::task_failed(TeamLeader));
 		!task::task_failed(TeamLeader);
 	}
 //	if(.length(LD, 1)){
@@ -485,7 +485,7 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 			!!retrieve::retrieve_block;
 		}
 	} else {
-		.broadcast(achieve, task::task_failed);
+		.broadcast(achieve, task::task_failed(TeamLeader));
 		!task::task_failed(TeamLeader);
 	}
 //	if(.length(LD, 1)){
