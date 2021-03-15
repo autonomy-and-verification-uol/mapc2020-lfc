@@ -1,0 +1,5 @@
+clear(-3,0)
+rotate(cw)
+move(w)
+move(w)
+move(n)
