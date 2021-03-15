@@ -271,11 +271,11 @@ public class TeamArtifact extends Artifact {
 			}
 			else if (this.activeTeam == 1) {
 				this.activeTeam--;
-				this.teamsComplete++;
 				flag.set("bully");
 				teamLead.set(this.teamLeader);
 			}
 			else {
+				this.teamsComplete++;
 				this.activeTeam = 15;
 				this.teamLeader = getCurrentOpAgentId().getAgentName();
 				flag.set("origin");

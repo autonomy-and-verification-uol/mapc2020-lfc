@@ -40,7 +40,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 +default::teamSize(50)
 	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
 <-
-	addTeamSize(30);
+	addTeamSize(2);
 	.	
 @teamsize[atomic]
 +default::teamSize(Size)
@@ -74,7 +74,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!check_added_name;
 	-common::clearing_things;
 //	!always_skip;
-//	.wait(2000);
+	.wait(2000);
 	!!exploration::explore([n,s,e,w]);
 	.
 	
