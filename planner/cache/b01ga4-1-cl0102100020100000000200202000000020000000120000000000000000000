@@ -1,0 +1,7 @@
+rotate(cw)
+clear(3,-1)
+move(e)
+move(n)
+move(e)
+move(e)
+move(e)
