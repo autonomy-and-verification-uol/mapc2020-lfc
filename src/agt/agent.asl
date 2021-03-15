@@ -68,7 +68,7 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	!check_added_name;
 	-common::clearing_things;
 //	!always_skip;
-	.wait(2000);
+//	.wait(2000);
 	!!exploration::explore([n,s,e,w]);
 	.
 	

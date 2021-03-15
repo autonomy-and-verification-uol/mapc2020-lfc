@@ -24,9 +24,10 @@
 	: default::actionID(Id) & not action::action(Id,_) & .current_intention(intention(IntentionId,_)) & ::access_token(IntentionId,Token)
 <-
 	.current_intention(intention(IntentionId2,_));
-	if(IntentionId \== IntentionId2){
-		.drop_intention;
-	}
+//	if(IntentionId \== IntentionId2){
+//		.print("WTF2");
+//		.drop_intention;
+//	}
 	.abolish(action::action(_,_)); // removes all the possible last actions
 	+action::action(Id,Action);
 //	.print("Doing action ",Action, " for ",IntentionId," at step ",Id," . Waiting for step ",Id+1);
