@@ -43,11 +43,12 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 //	addTeamSize(2);
 //	.	
 @teamsize[atomic]
-+default::teamSize(Size)
++!addTeamSize
 	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
 <-
-	addTeamSize(Size div 15);
+	addTeamSize(3);
 	.
++!addTeamSize.
 
 /*+default::actionID(0)
 	: .my_name(Me)
@@ -68,13 +69,14 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 <- 
 	+start;
 	+energy_threshold(EnergyThreshold);
-//	.wait(1000);
+	!addTeamSize;
+//	.wait(500);
 	!identification;
 	!clear_blocks;
 	!check_added_name;
 	-common::clearing_things;
 //	!always_skip;
-//	.wait(2000);
+//	.wait(500);
 	!!exploration::explore([n,s,e,w]);
 	.
 	
@@ -118,9 +120,9 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 +!clear_blocks
 	: default::energy(Energy) & Energy >= 30 & block_adjacent(X,Y,FinalX,FinalY,Dir)
 <-
-	if (default::attached(X,Y)) {
-		!action::detach(Dir);
-	}
+//	if (default::attached(X,Y)) {
+//		!action::detach(Dir);
+//	}
 	for(.range(I, 1, 3)){
 		!action::clear(FinalX,FinalY);
 	}
