@@ -237,6 +237,8 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	-retrieve::block(X,Y);
 	-doing_task(TeamLeader);
 	-planner::back_to_origin;
+	.abolish(planner::_[source(_)]);
+	.abolish(task::_[source(_)]);
 	!!retrieve::retrieve_block;
 	.
 +!task_failed(TeamLeader)
@@ -244,17 +246,21 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 <-
 	-doing_task(TeamLeader);
 	-planner::back_to_origin;
+	.abolish(planner::_[source(_)]);
+	.abolish(task::_[source(_)]);
 	!!retrieve::retrieve_block;
 	.
 +!task_failed(TeamLeader)
 	: team::teamLeader(TeamLeader) & .my_name(Me) & default::play(Me,origin,Group) & committed(Id,CommitListSort)
 <-
+	!action::forget_old_action(default,always_skip);
 	.print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ===============");
 	+no_skip;
 	!clear_all;
 	-ready_submit(_);
 	-batch(_);
 	.abolish(retrieve::block(_,_)[source(_)]);
+	.abolish(task::_[source(_)]);
 	-committed(Id,CommitListSort);
 	-helping_connect;
 	-no_skip;
@@ -263,8 +269,19 @@ get_block_connect(TargetX, TargetY, X, Y) :- retrieve::block(TargetX,TargetY+1) 
 	: team::teamLeader(TeamLeader) & .my_name(Me) & default::play(Me,deliverer,Group) & not team::deliverer(TeamLeader)
 <-
 	!action::forget_old_action(default,always_skip);
+	.abolish(planner::_[source(_)]);
+	.abolish(task::_[source(_)]);
 	getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
 	!!stop::become_deliverer(TaskbX, TaskbY);
+	.
++!task_failed(TeamLeader)
+	: team::teamLeader(TeamLeader) & .my_name(Me) & default::play(Me,deliverer,Group) & team::deliverer(TeamLeader)
+<-
+	!action::forget_old_action(default,always_skip);
+	.abolish(planner::_[source(_)]);
+	.abolish(task::_[source(_)]);
+	getTargetTaskboard(TeamLeader, TaskbX,TaskbY);
+	!!stop::become_retriever;
 	.
 +!task_failed(TeamLeader).
 
