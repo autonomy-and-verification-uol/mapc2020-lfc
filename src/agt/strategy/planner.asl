@@ -314,6 +314,11 @@ dispenser_in_vision :-
 	.
 
 -!generate_goal(TargetX, TargetY, Aux)[code(.fail(goal_blocked))]
+	: .my_name(Me) & default::play(Me,bully,Group) & bully::inspecting_cluster
+<-
+	plannerDone;
+	.
+-!generate_goal(TargetX, TargetY, Aux)[code(.fail(goal_blocked))]
 <-
 	plannerDone;
 	!execute_plan([], TargetX, TargetY, TargetX, TargetY);

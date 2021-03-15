@@ -1,20 +1,23 @@
 last_direction(n).
 
-clearable_block(X, Y, 1) :-
+bully::clearable_block(X, Y, 1) :-
 //	.print("clearable_block_aux(", X, ", ", Y, ", ", 1, ")") &
 	math.abs(X) + math.abs(Y) <= 4 &
 	default::team(MyTeam) &
-	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
+	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, EnemyTeam) & not (MyTeam = EnemyTeam)), EnemiesAroundBlock) &
+//	.print("Enemies: ", EnemiesAroundBlock) &
 	not(.empty(EnemiesAroundBlock)) &
-	.findall(thing(X1,Y1), (neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, Team)), []). // no friend agents around the block
-clearable_block(X, Y, MinimumNumberOfBlocks) :-
+	.findall(thing(X1,Y1), (bully::neighbour(X, Y, X1, Y1) & default::thing(X1, Y1, entity, MyTeam)), []) // no friend agents around the block
+	.
+//	.print("CLEARABLEEEE!!!!!").
+bully::clearable_block(X, Y, MinimumNumberOfBlocks) :-
 	MinimumNumberOfBlocks > 1 &
 //	.print("clearable_block_aux(", X, ", ", Y, ", ", MinimumNumberOfBlocks, ")") &
-	neighbour(X, Y, X1, Y1) &
+	bully::neighbour(X, Y, X1, Y1) &
 //	.print("check if there is a block in position (", X1, ", ", Y1, ")") &
 	default::thing(X1, Y1, block, _) &
 //	.print("a block is actually there") &
-	clearable_block(X1, Y1, MinimumNumberOfBlocks-1).
+	bully::clearable_block(X1, Y1, MinimumNumberOfBlocks-1).
 
 neighbour(X, Y, X-1, Y).
 neighbour(X, Y, X+1, Y).
@@ -419,12 +422,18 @@ patience(20).
 	!map::normalise_distance(y, DistanceY,NormalisedDistanceY);
 	!map::best_route(DistanceX,NormalisedDistanceX,NewTargetX);
 	!map::best_route(DistanceY,NormalisedDistanceY,NewTargetY);
-	!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+	if(Patience == (InitialPatience - 1)) {
+		!planner::generate_goal(NewTargetX, NewTargetY, notblock);	
+	} else {
+		+bully::inspecting_cluster;
+		!planner::generate_goal(NewTargetX, NewTargetY, notblock);
+		-bully::inspecting_cluster;
+	}
 //	.print("In place..");
-	for(default::thing(X, Y, block, _) & 
-		clearable_block(X, Y, 1) & patience(Patience)
+	for(default::thing(X, Y, block, _) &
+		bully::clearable_block(X, Y, 1)
 	) {
-//		.print("There is a block here, clear it!");
+		.print("There is a block here, clear it!");
 		!update_patience(InitialPatience);
 		!action::clear(X, Y);
 		if(default::thing(X, Y, block, _)){
@@ -434,7 +443,7 @@ patience(20).
 			}
 		}
 	}
-//	.print("Nothing else to do here, move to next position");
+	.print("Nothing else to do here, move to next position");
 	!messing_around(PositionsToMessWith);
 	.
 +!messing_around(_) : true. //<- .print("messing_around ended").	
