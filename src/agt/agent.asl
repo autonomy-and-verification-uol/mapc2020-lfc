@@ -35,7 +35,13 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	+common::added_name;
 	addServerName(Me,ServerMe);
 	.
-	
+
+@teamsize50[atomic]
++default::teamSize(50)
+	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
+<-
+	addTeamSize(30);
+	.	
 @teamsize[atomic]
 +default::teamSize(Size)
 	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
