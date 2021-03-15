@@ -166,14 +166,13 @@ patience(20).
 	.
 
 +!messing_around :
-	patience(Patience) & .my_name(Me) & default::play(Me, bully, Group)
+	patience(Patience) & .my_name(Me) & default::play(Me, bully, Group) & team::teamLeader(TeamLeader)
 <-
 //	.print("Start messing around");
 	getMyPos(MyX, MyY);
 	!map::get_goals(Goals);
 	!stop::get_clusters(Goals);
 //	.print("Goals: ", Goals);
-	?team::teamLeader(TeamLeader);
 //	getTargetGoal(TeamLeader, GoalX, GoalY);
 	getTargetGoals(TargetGoals);
 //	.print("Target goal: ", GoalX, ", ", GoalY);
