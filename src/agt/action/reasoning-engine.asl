@@ -51,8 +51,7 @@
 	
 	?default::lastAction(LastAction);
 //	?default::lastActionParams(LastActionParams);
-	if (default::play(Me,explorer,Group)) {
-		?exploration::count(ExpCount);
+	if (default::play(Me,explorer,Group) & exploration::count(ExpCount)) {
 		-exploration::count(ExpCount);
 		+exploration::count(ExpCount+1);
 	}
