@@ -443,7 +443,7 @@ patience(20).
 			}
 		}
 	}
-	.print("Nothing else to do here, move to next position");
+//	.print("Nothing else to do here, move to next position");
 	!messing_around(PositionsToMessWith);
 	.
 +!messing_around(_) : true. //<- .print("messing_around ended").	
