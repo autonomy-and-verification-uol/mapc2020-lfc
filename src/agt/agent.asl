@@ -36,19 +36,12 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 	addServerName(Me,ServerMe);
 	.
 
-//@teamsize50[atomic]
-//+default::teamSize(50)
-//	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
-//<-
-//	addTeamSize(2);
-//	.	
 @teamsize[atomic]
-+!addTeamSize
++default::teamSize(Size)
 	: .my_name(Me) & .all_names(List) & .nth(0,List,Me)
 <-
-	addTeamSize(3);
+	addTeamSize(Size div 15);
 	.
-+!addTeamSize.
 
 /*+default::actionID(0)
 	: .my_name(Me)
@@ -69,7 +62,6 @@ block_adjacent(X,Y,FinalX,FinalY,w) :- default::thing(-1,0,block,_) & X = -1 & Y
 <- 
 	+start;
 	+energy_threshold(EnergyThreshold);
-	!addTeamSize;
 //	.wait(500);
 	!identification;
 	!clear_blocks;
